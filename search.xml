@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>MarkDown格式</title>
+    <url>/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="hexo的-md文件开头"><a href="#hexo的-md文件开头" class="headerlink" title="hexo的.md文件开头"></a>hexo的.md文件开头</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">tag: [格式]</span><br><span class="line">第二个 &quot;---&quot; 不用打,按enter即可</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="标题-数个”-”-空格-前置"><a href="#标题-数个”-”-空格-前置" class="headerlink" title="标题[数个”#”+空格 前置]"></a>标题[数个”#”+空格 前置]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">### 三级标题</span><br><span class="line">#### 四级标题</span><br><span class="line">##### 五级标题</span><br><span class="line">###### 六级标题</span><br></pre></td></tr></table></figure>
+
+<h1 id="强调-用-“-”-或-“-”-包围"><a href="#强调-用-“-”-或-“-”-包围" class="headerlink" title="强调 [用 “**” 或 “__” 包围]"></a>强调 [用 “**” 或 “__” 包围]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**欢迎报考南京大学!** (我喜欢用这种)</span><br><span class="line">__欢迎报考南京大学!__</span><br></pre></td></tr></table></figure>
+
+<p><strong>hello</strong> </p>
+<h1 id="斜体-用-“-”-或-“-”-包围"><a href="#斜体-用-“-”-或-“-”-包围" class="headerlink" title="斜体 [用 “*” 或 “_” 包围]"></a>斜体 [用 “*” 或 “_” 包围]</h1><figure class="highlight plaintext"><figcaption><span>(我喜欢用这种)</span></figcaption><table><tr><td class="code"><pre><span class="line">*欢迎大佬来浇浇我各种知识* (我喜欢用这种)</span><br><span class="line">_欢迎大佬来浇浇我各种知识_</span><br></pre></td></tr></table></figure>
+
+<p><em>hello</em></p>
+<h1 id="斜体并强调"><a href="#斜体并强调" class="headerlink" title="斜体并强调"></a>斜体并强调</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***hello***</span><br></pre></td></tr></table></figure>
+
+<p><em><strong>hello</strong></em></p>
+<h1 id="高亮-用”-”包围"><a href="#高亮-用”-”包围" class="headerlink" title="高亮[用”&#x3D;&#x3D;”包围]"></a>高亮[用”&#x3D;&#x3D;”包围]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">==hello==</span><br></pre></td></tr></table></figure>
+
+<p>&#x3D;&#x3D;hello&#x3D;&#x3D;</p>
+<h1 id="删除线-用-“-”-包围"><a href="#删除线-用-“-”-包围" class="headerlink" title="删除线 [用 “~~” 包围]"></a>删除线 [用 “~~” 包围]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~~hello~~</span><br></pre></td></tr></table></figure>
+
+<p><del>hello</del></p>
+<h1 id="代码-用-“-”-包围"><a href="#代码-用-“-”-包围" class="headerlink" title="代码[用 “&#96;” 包围]"></a>代码[用 “&#96;” 包围]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">`cd ..`</span><br></pre></td></tr></table></figure>
+
+<p><code>cd ..</code></p>
+<h1 id="代码块-用”-”-并敲回车"><a href="#代码块-用”-”-并敲回车" class="headerlink" title="代码块 [用”&#96;&#96;&#96;” 并敲回车]"></a>代码块 [用”&#96;&#96;&#96;” 并敲回车]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">​```hello</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mian</span><span class="params">()</span> &#123;</span><br><span class="line">    print（“Hello, world!\n<span class="string">&quot;）;</span></span><br><span class="line"><span class="string">    return 0;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="引用-“-”-空格-前置"><a href="#引用-“-”-空格-前置" class="headerlink" title="*引用 [“&gt;” + 空格 前置]"></a>*引用 [“&gt;” + 空格 前置]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; hello</span><br><span class="line">&gt;</span><br><span class="line">&gt;&gt;hi</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>hello</p>
+<blockquote>
+<p>hi</p>
+</blockquote>
+</blockquote>
+<h1 id="无序列标-“-“-“-”-空格-前置"><a href="#无序列标-“-“-“-”-空格-前置" class="headerlink" title="*无序列标 [“-“&#x2F;“+” + 空格 前置]"></a>*无序列标 [“-“&#x2F;“+” + 空格 前置]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-hello</span><br><span class="line">+hello</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>hello</li>
+</ul>
+<ul>
+<li>hello</li>
+</ul>
+<h1 id="上标-用-“-”-包围"><a href="#上标-用-“-”-包围" class="headerlink" title="*上标 [用 “^” 包围]"></a>*上标 [用 “^” 包围]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2^3^</span><br></pre></td></tr></table></figure>
+
+<p>2^3^</p>
+<h1 id="下标-用-“-”-包围"><a href="#下标-用-“-”-包围" class="headerlink" title="*下标 [用 “~” 包围]"></a>*下标 [用 “~” 包围]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">H~2~O</span><br></pre></td></tr></table></figure>
+
+<p>H<del>2</del>O</p>
+<h1 id="注释-“-”-后置"><a href="#注释-“-”-后置" class="headerlink" title="*注释 [“[^]” 后置]"></a>*注释 [“[^]” 后置]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; 今日我们相聚于此, 是为了学习 Markdown 的使用, 它的教程对于全体「观众」而言, 值得足足两个硬币的支持鼓励![^1]</span><br><span class="line"></span><br><span class="line">[^1]: 沃兹·基·硕德 改编自「公鸡」普契涅拉.</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>hello world<img src="/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C!" alt="^1"></p>
+</blockquote>
+<h1 id="链接-常用-“-”-“-”-分别包围文本与链接"><a href="#链接-常用-“-”-“-”-分别包围文本与链接" class="headerlink" title="链接 [常用 “[ ]” + “( )” 分别包围文本与链接]"></a>链接 [常用 “[ ]” + “( )” 分别包围文本与链接]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[hello world](https://hello world.com)</span><br></pre></td></tr></table></figure>
+
+<p>[hello world](<a href="https://hello/">https://hello</a> world.com)</p>
+<h1 id="任务列表-“-”-空格-前置"><a href="#任务列表-“-”-空格-前置" class="headerlink" title="任务列表 [“- [ ]” + 空格 前置]"></a>任务列表 [“- [ ]” + 空格 前置]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Todo List:</span><br><span class="line">- [ ]刷B站</span><br><span class="line">- [ ]写代码</span><br><span class="line">- [x]起床</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Todo List:</p>
+<ul>
+<li><p><input disabled type="checkbox"> 
+刷B站</p>
+</li>
+<li><p><input disabled type="checkbox"> 
+写代码</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+起床</p>
+</li>
+</ul>
+<h1 id="表格-用-“-”-绘制表格边框"><a href="#表格-用-“-”-绘制表格边框" class="headerlink" title="表格 [用 “|” 绘制表格边框]"></a>表格 [用 “|” 绘制表格边框]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">第一行为表头, 并由第二行分割线决定对齐方式与长度, 第三行及之后即表格数据</span><br><span class="line">| 学号    | 姓名 | 年龄 |</span><br><span class="line">| :------ | :--: | ---: |</span><br><span class="line">| 114514  | 田所 |   24 |</span><br><span class="line">| 1919810 | 浩三 |   25 |</span><br></pre></td></tr></table></figure>
+
+
+
+<table>
+<thead>
+<tr>
+<th align="left">学号</th>
+<th align="center">姓名</th>
+<th align="right">年龄</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">114514</td>
+<td align="center">田所</td>
+<td align="right">24</td>
+</tr>
+<tr>
+<td align="left">1919810</td>
+<td align="center">浩三</td>
+<td align="right">25</td>
+</tr>
+</tbody></table>
+<h1 id="图片-直接拖进来-复制粘贴"><a href="#图片-直接拖进来-复制粘贴" class="headerlink" title="图片 [直接拖进来&#x2F;复制粘贴]"></a>图片 [直接拖进来&#x2F;复制粘贴]</h1><p><img src="/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/%E9%98%BF%E5%B0%94%E6%B3%B0%E4%BA%9A.png" alt="阿尔泰亚"></p>
+<h1 id="分割线-按三个-“-”-或-“-“-或-“-”-并敲回车"><a href="#分割线-按三个-“-”-或-“-“-或-“-”-并敲回车" class="headerlink" title="分割线 [按三个 “*” 或 “-“ 或 “_” 并敲回车]"></a>分割线 [按三个 “*” 或 “-“ 或 “_” 并敲回车]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***/---/___</span><br></pre></td></tr></table></figure>
+
+<hr>
+<hr>
+<hr>
+<h1 id="Emoji表情-“-”-前置-后置的”-”一般不需要手动输"><a href="#Emoji表情-“-”-前置-后置的”-”一般不需要手动输" class="headerlink" title="Emoji表情 [“:” 前置,后置的”:”一般不需要手动输]"></a>Emoji表情 [“:” 前置,后置的”:”一般不需要手动输]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">:sweat_smile:</span><br></pre></td></tr></table></figure>
+
+
+
+<p>:sweat_smile:</p>
+<p><a href="https://emojipedia.org/apple/">全Emoji的网站</a></p>
+<h1 id="公式-用”-”包围"><a href="#公式-用”-”包围" class="headerlink" title="公式[用”$”包围]"></a>公式[用”$”包围]</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$a^n+b^n=c^n$</span><br></pre></td></tr></table></figure>
+
+<p>$a^n+b^n&#x3D;c^n$</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$$</span><br><span class="line">%\usepackage&#123;unicode-math&#125;</span><br><span class="line">\displaystyle \ointctrclockwise\mathcal&#123;D&#125;[x(t)]</span><br><span class="line">\sqrt&#123;\frac&#123;\displaystyle3\uppi^2-\sum_&#123;q=0&#125;^&#123;\infty&#125;(z+\hat L)^&#123;q&#125;</span><br><span class="line">\exp(\symrm&#123;i&#125;q^2 \hbar x)&#125;&#123;\displaystyle (\symsfup&#123;Tr&#125;\symbfcal&#123;A&#125;)</span><br><span class="line">\left(\symbf\Lambda_&#123;j_1j_2&#125;^&#123;i_1i_2&#125;\Gamma_&#123;i_1i_2&#125;^&#123;j_1j_2&#125;</span><br><span class="line">\hookrightarrow\vec D\cdot \symbf P \right)&#125;&#125;</span><br><span class="line">=\underbrace&#123;\widetilde&#123;\left\langle \frac&#123;\notin \emptyset&#125;</span><br><span class="line">&#123;\varpi\alpha_&#123;k\uparrow&#125;&#125;\middle\vert</span><br><span class="line">\frac&#123;\partial_\mu T_&#123;\mu\nu&#125;&#125;&#123;2&#125;\right\rangle&#125;&#125;_&#123;\mathrm&#123;K&#125;_3</span><br><span class="line">\mathrm&#123;Fe&#125;(\mathrm&#123;CN&#125;)_6&#125; ,\forall z \in \mathbb&#123;R&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
+
+<p>$$<br>%\usepackage{unicode-math}<br>\displaystyle \ointctrclockwise\mathcal{D}[x(t)]<br>\sqrt{\frac{\displaystyle3\uppi^2-\sum_{q&#x3D;0}^{\infty}(z+\hat L)^{q}<br>\exp(\symrm{i}q^2 \hbar x)}{\displaystyle (\symsfup{Tr}\symbfcal{A})<br>\left(\symbf\Lambda_{j_1j_2}^{i_1i_2}\Gamma_{i_1i_2}^{j_1j_2}<br>\hookrightarrow\vec D\cdot \symbf P \right)}}<br>&#x3D;\underbrace{\widetilde{\left\langle \frac{\notin \emptyset}<br>{\varpi\alpha_{k\uparrow}}\middle\vert<br>\frac{\partial_\mu T_{\mu\nu}}{2}\right\rangle}}_{\mathrm{K}_3<br>\mathrm{Fe}(\mathrm{CN})_6} ,\forall z \in \mathbb{R}<br>$$</p>
+]]></content>
+      <categories>
+        <category>md格式</category>
+      </categories>
+      <tags>
+        <tag>格式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ros中的头文件与源文件</title>
+    <url>/2024/05/04/ros%E4%B8%AD%E7%9A%84%E5%A4%B4%E6%96%87%E4%BB%B6%E4%B8%8E%E6%BA%90%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<p><strong>流程:</strong></p>
+<ol>
+<li>编写头文件；</li>
+<li>编写可执行文件(同时也是源文件)；</li>
+<li>编辑配置文件并执行。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>ros</category>
+      </categories>
+      <tags>
+        <tag>ros</tag>
+      </tags>
+  </entry>
+</search>
