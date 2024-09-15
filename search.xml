@@ -245,17 +245,6 @@
       </tags>
   </entry>
   <entry>
-    <title>临时存放</title>
-    <url>/2024/05/31/%E4%B8%B4%E6%97%B6%E5%AD%98%E6%94%BE/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>临存</category>
-      </categories>
-      <tags>
-        <tag>临存</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>5 ros常用组件</title>
     <url>/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/</url>
     <content><![CDATA[<p>&emsp;在ROS中内置一些比较实用的工具，通过这些工具可以方便快捷的实现某个功能或调试程序，从而提高开发效率，本章主要介绍ROS中内置的如下组件:</p>
