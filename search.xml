@@ -140,7 +140,11 @@
   <entry>
     <title>hexo的搭建和使用</title>
     <url>/2024/05/04/hexo%E7%9A%84%E6%90%AD%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="1-安装node-js"><a href="#1-安装node-js" class="headerlink" title="1. 安装node.js"></a>1. 安装node.js</h1><p><a href="https://nodejs.org/en">Node.js官网</a></p>
+    <content><![CDATA[<h1 id="hexo的使用"><a href="#hexo的使用" class="headerlink" title="hexo的使用"></a>hexo的使用</h1><p><strong>hexo g</strong>：依据文章为网页生成必要文件</p>
+<p><strong>hexo d</strong>：上传必要文件到github仓库上</p>
+<p><strong>hexo g -d</strong>：先生成文件在上传</p>
+<p><strong>hexo new 文章名</strong>：生成新的md文件和保存图片的文件夹</p>
+<h1 id="1-安装node-js"><a href="#1-安装node-js" class="headerlink" title="1. 安装node.js"></a>1. 安装node.js</h1><p><a href="https://nodejs.org/en">Node.js官网</a></p>
 <p>打开终端输入<strong>node -v</strong>，如果输出版本号则说明安装成功。</p>
 <h1 id="2-安装git"><a href="#2-安装git" class="headerlink" title="2. 安装git"></a>2. 安装git</h1><p><a href="https://git-scm.com/downloads">git官网</a></p>
 <p>打开终端输入 <strong>git –version</strong> ,出现版本号则说明安装成功。</p>
