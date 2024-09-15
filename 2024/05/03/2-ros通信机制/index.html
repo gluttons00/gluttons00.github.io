@@ -1,0 +1,544 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2-ros通信机制 | 雪尘的博客</title><meta name="author" content="雪尘"><meta name="copyright" content="雪尘"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="话题通信话题通信理论模型 (利用XML进行信息的序列化和反序列化)  Talker向Mater注册信息包括话题名（topic）和RPC地址 Listener注册信息并订阅话题 ROS Master匹配信息并通过RPC将Talker的RPC地址发给Listener   利用RPC的通信进行TCP的3次握手建立TCP连接      **关注点: ** （1）话题设置 （2）发布者，订阅者实现 （3）消">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2-ros通信机制">
+<meta property="og:url" content="http://example.com/2024/05/03/2-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="雪尘的博客">
+<meta property="og:description" content="话题通信话题通信理论模型 (利用XML进行信息的序列化和反序列化)  Talker向Mater注册信息包括话题名（topic）和RPC地址 Listener注册信息并订阅话题 ROS Master匹配信息并通过RPC将Talker的RPC地址发给Listener   利用RPC的通信进行TCP的3次握手建立TCP连接      **关注点: ** （1）话题设置 （2）发布者，订阅者实现 （3）消">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/%E5%B0%81%E9%9D%A2-ros.png">
+<meta property="article:published_time" content="2024-05-03T07:03:33.000Z">
+<meta property="article:modified_time" content="2024-08-16T01:50:23.036Z">
+<meta property="article:author" content="雪尘">
+<meta property="article:tag" content="ros">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/%E5%B0%81%E9%9D%A2-ros.png"><link rel="shortcut icon" href="/img/logo.png"><link rel="canonical" href="http://example.com/2024/05/03/2-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: false,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2-ros通信机制',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-08-16 09:50:23'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-ros.png')"><nav id="nav"><span id="blog-info"><a href="/" title="雪尘的博客"><img class="site-icon" src="/img/logo.png"/><span class="site-name">雪尘的博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">2-ros通信机制</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-03T07:03:33.000Z" title="发表于 2024-05-03 15:03:33">2024-05-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-16T01:50:23.036Z" title="更新于 2024-08-16 09:50:23">2024-08-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ros/">ros</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="2-ros通信机制"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="话题通信"><a href="#话题通信" class="headerlink" title="话题通信"></a>话题通信</h1><h2 id="话题通信理论模型"><a href="#话题通信理论模型" class="headerlink" title="话题通信理论模型"></a>话题通信理论模型</h2><p><img src="/2024/05/03/2-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/%E8%AF%9D%E9%A2%98%E9%80%9A%E4%BF%A1%E7%90%86%E8%AE%BA%E6%A8%A1%E5%9E%8B.png" alt="话题通信理论模型"></p>
+<p><strong>(利用XML进行信息的序列化和反序列化)</strong></p>
+<ol>
+<li>Talker向Mater注册信息包括话题名（topic）和RPC地址</li>
+<li>Listener注册信息并订阅话题</li>
+<li>ROS Master匹配信息并通过RPC将Talker的RPC地址发给Listener</li>
+<li><ol start="5">
+<li><ol start="6">
+<li>利用RPC的通信进行TCP的3次握手建立TCP连接</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p>**关注点: **</p>
+<p>（1）话题设置</p>
+<p>（2）发布者，订阅者实现</p>
+<p>（3）消息载体</p>
+<p>（其它大部分步骤已封装实现）</p>
+<h2 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h2><p><strong>发布方：</strong></p>
+<ol>
+<li><p>包含头文件</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;std_msgs/String.h&quot;</span> <span class="comment">//ros普通文本类型的消息</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>初始化 ros 节点 <code>ros::init(argc,argv,&quot;talker&quot;);</code></p>
+</li>
+<li><p>创建节点句柄 <code> ros::NodeHandle nh_name;</code></p>
+</li>
+<li><p>创建发布者对象 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ros::Publisher 发布者对象名 = 句柄名.<span class="built_in">advertise</span>&lt;信息类型&gt;(<span class="string">&quot;话题名&quot;</span>,队列大小);</span><br><span class="line">ros::Publisher pub = nh.<span class="built_in">advertise</span>&lt;std_msgs::String&gt;(<span class="string">&quot;topic&quot;</span>,<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写发布逻辑并发布信息</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ros::<span class="built_in">ok</span>(); <span class="comment">//判断节点是否存活，返回bool值</span></span><br><span class="line">std_msgs::String msg; <span class="comment">//建立消息类型</span></span><br><span class="line">msg.data = <span class="string">&quot;ABC&quot;</span>; <span class="comment">//准备发布的消息</span></span><br><span class="line">pub.<span class="built_in">publish</span>(msg); <span class="comment">//发布消息</span></span><br><span class="line"><span class="function">ros::Rate <span class="title">rate</span><span class="params">(<span class="number">10</span>)</span></span>; <span class="comment">//设置消息发布频率为10HZ(一秒十次)</span></span><br><span class="line">rate.<span class="built_in">sleep</span>(); <span class="comment">//发布消息后调用该函数休眠进程</span></span><br><span class="line">ros::<span class="built_in">spinOnce</span>(); <span class="comment">//官方推荐的回调函数（在函数中使用回调一次）</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//在字符流中进行信息拼接</span></span><br><span class="line">    std::string stream ss;</span><br><span class="line">	ss &lt;&lt; <span class="string">&quot;hello --&gt; &quot;</span> &lt;&lt; num;</span><br><span class="line">	ss.<span class="built_in">str</span>().<span class="built_in">c_str</span>()； <span class="comment">//将字符流中的信息转化为字符串</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">//避免中文无法识别，在main中加入</span></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>订阅方：</strong></p>
+<ol>
+<li><ol start="2">
+<li><ol start="3">
+<li>同发布方</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>创建订阅者对象</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ros::Subscriber sub = nh.<span class="built_in">subscribe</span>(<span class="string">&quot;ropic&quot;</span>, 队列大小, 信息处理函数);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>处理订阅到的数据</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">doMsgs</span><span class="params">(<span class="type">const</span> std_msgs::String::ConstPtr &amp;msg)</span></span>&#123;</span><br><span class="line">    ···</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//回调函数（非循环用）</span></span><br><span class="line">ros::<span class="built_in">spin</span>()</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="问题及解决"><a href="#问题及解决" class="headerlink" title="问题及解决"></a>问题及解决</h2><p>订阅时前几条数据丢失，原因是发送数据时 publisher 还未注册完毕</p>
+<p>解决：注册后，加入<code>ros::Duration(3.0).sleep() //ros持续3秒休眠延迟信息发送</code> </p>
+<hr>
+<h1 id="话题通信自定义msg"><a href="#话题通信自定义msg" class="headerlink" title="话题通信自定义msg"></a>话题通信自定义msg</h1><h2 id="按固定格式在固定位置创建msg文件"><a href="#按固定格式在固定位置创建msg文件" class="headerlink" title="按固定格式在固定位置创建msg文件"></a>按固定格式在固定位置创建msg文件</h2><ol>
+<li><p>在功能包下新建 msg 文件夹，新建 name.msg 文件</p>
+</li>
+<li><p>编写</p>
+<p>msgs 只是简单的文本文件，每行具有字段类型和字段名称，可以使用的字段类型有：</p>
+<ul>
+<li>int8, int16, int32, int64 (或者无符号类型: uint*)</li>
+<li>float32, float64</li>
+<li>string</li>
+<li>time, duration</li>
+<li>other msg files （其他msg文件）</li>
+<li>variable-length array[] and fixed-length array[C] (边长和定长数组)</li>
+</ul>
+<p>ROS中还有一种特殊类型：<code>Header</code>，标头包含时间戳和ROS中常用的坐标帧信息。会经常看到msg文件的第一行具有<code>Header标头</code>。</p>
+</li>
+<li><p>例子</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">string name</span><br><span class="line">uint16 age</span><br><span class="line">float64 height</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h2><p><strong><em>package.xml</em>中添加编译依赖与执行依赖</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build_depend</span>&gt;</span>message_generation<span class="tag">&lt;/<span class="name">build_depend</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">exec_depend</span>&gt;</span>message_runtime<span class="tag">&lt;/<span class="name">exec_depend</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- </span></span><br><span class="line"><span class="comment">exce_depend 以前对应的是 run_depend 现在非法</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><em>CMakeLists.txt</em>编辑 msg 相关配置</strong></p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># catkin编译需要的组件中加入 message_generation，而message_generation依赖于 std_msgs，故必须有 std_msgs</span></span><br><span class="line"><span class="keyword">find_package</span>(catkin REQUIRED COMPONENTS</span><br><span class="line">  roscpp</span><br><span class="line">  rospy</span><br><span class="line">  std_msgs</span><br><span class="line">  message_generation</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置 msg 源文件</span></span><br><span class="line">add_message_files(</span><br><span class="line">  FILES</span><br><span class="line">  Person.msg</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成自定义 msg 时所需的依赖列表</span></span><br><span class="line">generate_messages(</span><br><span class="line">  DEPENDENCIES</span><br><span class="line">  std_msgs</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 本项在文件中原本为被注释项，应该是在生成功能包添加依赖时 catkin 自动设置默认为创建以来，现发生变动故添加各项依赖（含创建依赖和新加依赖）</span></span><br><span class="line"><span class="comment"># 执行时依赖</span></span><br><span class="line">catkin_package(</span><br><span class="line"><span class="comment">#  INCLUDE_DIRS include</span></span><br><span class="line"><span class="comment">#  LIBRARIES demo02_talker_listener</span></span><br><span class="line">  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime</span><br><span class="line"><span class="comment">#  DEPENDS system_lib</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><strong>编译</strong></p>
+<p>c++：产生的中间文件可以在 devel 文件夹下的 include 文件夹中的 xxx.h</p>
+<p>python：产生的中间文件可以在 devel 文件夹下的 lib 文件夹中的 xxx.h</p>
+<h2 id="自定义msg文件的使用"><a href="#自定义msg文件的使用" class="headerlink" title="自定义msg文件的使用"></a>自定义msg文件的使用</h2><ol>
+<li><p>在xxx.cpp文体中加入<code># include &quot;功能包名/name.h&quot;</code></p>
+</li>
+<li><p>修改 CMakeList</p>
+<p>需要添加 <strong>add_dependencies</strong> 用以设置所依赖的消息相关的中间文件。</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_executable</span>(person_talker src/person_talker.cpp)</span><br><span class="line"><span class="keyword">add_executable</span>(person_listener src/person_listener.cpp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 多一个修改项，添加依赖</span></span><br><span class="line"><span class="keyword">add_dependencies</span>(person_talker <span class="variable">$&#123;PROJECT_NAME&#125;</span>_generate_messages_cpp)</span><br><span class="line"><span class="keyword">add_dependencies</span>(person_listener <span class="variable">$&#123;PROJECT_NAME&#125;</span>_generate_messages_cpp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span>(person_talker</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(person_listener</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 vscode 中使用可以配置一下 c_cpp_properties.json 来实现代码提示并避免抛异常将 head 文件路径添加到 includePath 中，在 vscode 终端中使用 <code>pwd</code> 命令可显示当前文件所在位置的路径</p>
+</li>
+</ol>
+<hr>
+<h1 id="服务通信"><a href="#服务通信" class="headerlink" title="服务通信"></a>服务通信</h1><p><strong>概念：</strong>以<strong>请求响应</strong>的方式实现不同节点之间数据交互的通信模式</p>
+<p><strong>作用：</strong>用于偶然性、对实时性有要求，有一定逻辑处理需求的数据传输场景</p>
+<p><img src="/2024/05/03/2-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/%E6%9C%8D%E5%8A%A1%E9%80%9A%E4%BF%A1%E7%90%86%E8%AE%BA%E6%A8%A1%E5%9E%8B.png" alt="服务通信理论模型"></p>
+<ol>
+<li><ol start="2">
+<li>向 ROS Master 注册自身信息，包括请求或提供的服务名，Master会将信息加入注册表中</li>
+</ol>
+</li>
+<li><p>Master 进行信息匹配，并向 Client 发送 Server 的 TCP 地址</p>
+</li>
+<li><p>建立 TCP 连接 Client 向 Server 提交请求</p>
+</li>
+<li><p>接收解析请求信息并响应结果返回给 Client</p>
+</li>
+</ol>
+<h2 id="自定义-srv-文件"><a href="#自定义-srv-文件" class="headerlink" title="自定义 srv 文件"></a>自定义 srv 文件</h2><h3 id="1-按固定格式创建-srv-文件"><a href="#1-按固定格式创建-srv-文件" class="headerlink" title="1.按固定格式创建 srv 文件"></a>1.按固定格式创建 srv 文件</h3><ol>
+<li><p>功能包下新建 srv 文件夹，新建 .srv 文件</p>
+</li>
+<li><p>编辑 srv 文件</p>
+<p>（1）可使用类型同 .msg 文件</p>
+<p>（2）请求与响应按 <code>---</code> 分隔</p>
+</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 客户端请求时发送的两个数字</span><br><span class="line">int32 num1</span><br><span class="line">int32 num2</span><br><span class="line">---</span><br><span class="line"># 服务器响应发送的数据</span><br><span class="line">int32 sum</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-编辑配置文件"><a href="#2-编辑配置文件" class="headerlink" title="2.编辑配置文件"></a>2.编辑配置文件</h3><p><strong>package.xml</strong>中添加编译依赖与执行依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build_depend</span>&gt;</span>message_generation<span class="tag">&lt;/<span class="name">build_depend</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">exec_depend</span>&gt;</span>message_runtime<span class="tag">&lt;/<span class="name">exec_depend</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- </span></span><br><span class="line"><span class="comment">exce_depend 以前对应的是 run_depend 现在非法</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>CMakeLists.txt</strong>编辑 srv 相关配置</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">find_package</span>(catkin REQUIRED COMPONENTS</span><br><span class="line">  roscpp</span><br><span class="line">  rospy</span><br><span class="line">  std_msgs</span><br><span class="line">  message_generation</span><br><span class="line">)</span><br><span class="line"><span class="comment"># 需要加入 message_generation,必须有 std_msgs</span></span><br><span class="line"></span><br><span class="line">add_service_files(</span><br><span class="line">  FILES</span><br><span class="line">  xxx.srv</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">generate_messages(</span><br><span class="line">  DEPENDENCIES</span><br><span class="line">  std_msgs</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注意: 官网没有在 catkin_package 中配置 message_runtime,经测试配置也可以</span></span><br><span class="line"><span class="comment"># 执行时依赖</span></span><br><span class="line">catkin_package(</span><br><span class="line"><span class="comment">#  INCLUDE_DIRS include</span></span><br><span class="line"><span class="comment">#  LIBRARIES demo02_talker_listener</span></span><br><span class="line">  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime</span><br><span class="line"><span class="comment">#  DEPENDS system_lib</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>编译后的中间文件查看：C++ 需要调用的中间文件(…&#x2F;工作空间&#x2F;devel&#x2F;include&#x2F;包名&#x2F;xxx.h)</p>
+<h2 id="自定义-srv-文件的使用"><a href="#自定义-srv-文件的使用" class="headerlink" title="自定义 srv 文件的使用"></a>自定义 srv 文件的使用</h2><h3 id="服务器实现"><a href="#服务器实现" class="headerlink" title="服务器实现"></a>服务器实现</h3><ol>
+<li><p>包含头文件</p>
+<p><code># include &quot;功能包名/SrvName.h&quot;</code></p>
+</li>
+<li><p>初始化 ros 节点，创建 ros 句柄</p>
+</li>
+<li><p>创建服务对象</p>
+<p><code>ros::ServiceServer server = nh.advertiseService(&quot;服务名&quot;,doReq);</code></p>
+</li>
+<li><p>处理请求并响应</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">xxx</span><span class="params">(功能包名::SrvName::Request &amp;req, 功能包名::SrvName::Response &amp;resp)</span></span>&#123;</span><br><span class="line">	<span class="comment">//可以通过 req.xx 来访问 srv 文件的请求数据</span></span><br><span class="line">	<span class="comment">//可以通过 resp.xx 来准备 srv 文件的响应数据</span></span><br><span class="line">    ···</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;&quot;</span>); <span class="comment">//ROS信息打印</span></span><br><span class="line">    <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;···&quot;</span>); <span class="comment">//用于异常反馈</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>回调函数</p>
+<p><code>ros::spin();</code></p>
+</li>
+</ol>
+<h3 id="客户端实现"><a href="#客户端实现" class="headerlink" title="客户端实现"></a>客户端实现</h3><ol>
+<li><p>包含头文件</p>
+<p><code># include &quot;功能包名/SrvName.h&quot;</code></p>
+</li>
+<li><p>初始化 ros 节点，创建 ros 句柄</p>
+</li>
+<li><p>创建客户端对象</p>
+<p><code>ros::Service Client = nh.serviceclient&lt;功能包名::SrvName&gt;(&quot;服务名&quot;)</code></p>
+</li>
+<li><p>组织请求数据</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">功能包名::SrvName xxx; <span class="comment">//定义srv变量</span></span><br><span class="line"><span class="comment">//设置请求数据</span></span><br><span class="line">xxx.request.aa = aaa; </span><br><span class="line">xxx.request.bb = bbb; </span><br></pre></td></tr></table></figure>
+</li>
+<li><p>发送请求返回 bool 值标记是否成功</p>
+<p><code>bool flag = 客户端对象.call(srv变量);</code></p>
+</li>
+<li><p>处理请求</p>
+<p>失败时多用 <strong>ROS_ERROR</strong> 打印日志，<code>return 1;</code></p>
+</li>
+</ol>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><ol>
+<li><p>动态传参</p>
+<p><strong>启动命令：</strong><code>rosrun 功能包名 映射名 参数1 参数2 ···</code></p>
+<p>main 的 <strong>argc</strong> 为传递的参数个数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">功能包::SrvName xxx;</span><br><span class="line">xxx.request.aa = <span class="built_in">atoi</span>(argv[<span class="number">1</span>]);</span><br><span class="line">xxx.request.bb = <span class="built_in">atoi</span>(argv[<span class="number">2</span>]);</span><br><span class="line">···</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>处理客户端先启动时的运行失败</p>
+<p>在客户端第5步发送请求前，添加</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//方法1</span></span><br><span class="line">ros::service::<span class="built_in">waitForService</span>(<span class="string">&quot;服务名&quot;</span>);</span><br><span class="line"><span class="comment">//方法2</span></span><br><span class="line">client.<span class="built_in">waitForExistence</span>();</span><br></pre></td></tr></table></figure>
+
+<p>以阻塞进程，当服务启动后才继续执行</p>
+</li>
+</ol>
+<h3 id="修改CMakeList-txt"><a href="#修改CMakeList-txt" class="headerlink" title="修改CMakeList.txt"></a>修改CMakeList.txt</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_executable</span>(AddInts_Server src/AddInts_Server.cpp)</span><br><span class="line"><span class="keyword">add_executable</span>(AddInts_Client src/AddInts_Client.cpp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">add_dependencies</span>(AddInts_Server <span class="variable">$&#123;PROJECT_NAME&#125;</span>_gencpp)</span><br><span class="line"><span class="keyword">add_dependencies</span>(AddInts_Client <span class="variable">$&#123;PROJECT_NAME&#125;</span>_gencpp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span>(AddInts_Server</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(AddInts_Client</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h1 id="参数服务器"><a href="#参数服务器" class="headerlink" title="参数服务器"></a>参数服务器</h1><p><strong>定义：</strong>以共享的方式实现不同节点之间的数据交互的通信模式，在参数服务器中存储一些多节点共享数据，各节点皆可存取（参数服务器不是为高性能而设计的）</p>
+<h2 id="参数服务器理论模型"><a href="#参数服务器理论模型" class="headerlink" title="参数服务器理论模型"></a>参数服务器理论模型</h2><p><img src="/2024/05/03/2-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%90%86%E8%AE%BA%E6%A8%A1%E5%9E%8B.png" alt="参数服务器理论模型"></p>
+<ol>
+<li><p>Talker 设置参数：Talker 通过 RPC 向参数服务器发送参数(包括参数名与参数值)，ROS Master 将参数保存到参数列表中。</p>
+</li>
+<li><p>Listener 获取参数：Listener 通过 RPC 向参数服务器发送参数查找请求，请求中包含要查找的参数名。</p>
+</li>
+<li><p>ROS Master 向 Listener 发送参数值：ROS Master 根据步骤2请求提供的参数名查找参数值，并将查询结果通过 RPC 发送给 Listener。</p>
+</li>
+</ol>
+<h2 id="设置、修改、删除参数"><a href="#设置、修改、删除参数" class="headerlink" title="设置、修改、删除参数"></a>设置、修改、删除参数</h2><p>在 roscpp 中提供了两套 API 实现参数操作（可设置的参数：整形、浮点、字符串、bool、列表、字典等类型参数）</p>
+<ol>
+<li><p>获取参数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//方法1</span></span><br><span class="line">ros::NodeHandle nh;</span><br><span class="line">nh.<span class="built_in">setParam</span>(<span class="string">&quot;键&quot;</span>,值));</span><br><span class="line"><span class="comment">//方法2</span></span><br><span class="line">ros::param::<span class="built_in">set</span>(<span class="string">&quot;键&quot;</span>,<span class="string">&quot;值&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置演示</span></span><br><span class="line">nh.<span class="built_in">setParam</span>(<span class="string">&quot;nh_int&quot;</span>,<span class="number">10</span>); <span class="comment">//整型</span></span><br><span class="line">nh.<span class="built_in">setParam</span>(<span class="string">&quot;nh_double&quot;</span>,<span class="number">3.14</span>); <span class="comment">//浮点型s</span></span><br><span class="line"></span><br><span class="line">ros::param::<span class="built_in">set</span>(<span class="string">&quot;param_int&quot;</span>,<span class="number">20</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改参数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//修改演示(相同的键，不同的值)</span></span><br><span class="line">nh.<span class="built_in">setParam</span>(<span class="string">&quot;nh_int&quot;</span>,<span class="number">10000</span>);</span><br><span class="line"></span><br><span class="line">ros::param::<span class="built_in">set</span>(<span class="string">&quot;param_int&quot;</span>,<span class="number">10000</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除参数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除演示</span></span><br><span class="line">nh.<span class="built_in">deleteParam</span>(<span class="string">&quot;key&quot;</span>);</span><br><span class="line"></span><br><span class="line">ros::param::<span class="built_in">del</span>(<span class="string">&quot;key&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="获取参数"><a href="#获取参数" class="headerlink" title="获取参数"></a>获取参数</h2><p>在 roscpp 中提供了两套 API 实现参数操作<code>ros::NodeHandle</code>和<code>ros::param</code></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">ros::NodeHandle nh;</span><br><span class="line"></span><br><span class="line">nh.<span class="built_in">param</span>(键,默认值);</span><br><span class="line"><span class="comment">//存在，返回对应结果，否则返回默认值</span></span><br><span class="line"></span><br><span class="line">nh.<span class="built_in">getParam</span>(键,存储结果的变量);</span><br><span class="line"><span class="comment">//存在,返回 true,且将值赋值给参数2</span></span><br><span class="line"><span class="comment">//若果键不存在，那么返回值为 false，且不为参数2赋值</span></span><br><span class="line"></span><br><span class="line">nh.<span class="built_in">getParamCached</span>(键,存储结果的变量);</span><br><span class="line"><span class="comment">//提高变量获取效率</span></span><br><span class="line"><span class="comment">//存在,返回 true,且将值赋值给参数2</span></span><br><span class="line"><span class="comment">//若果键不存在，那么返回值为 false，且不为参数2赋值</span></span><br><span class="line"></span><br><span class="line">nh.<span class="built_in">getParamNames</span>(std::vector&lt;std::string&gt;);</span><br><span class="line"><span class="comment">//获取所有的键,并存储在参数 vector 中 </span></span><br><span class="line"></span><br><span class="line">nh.<span class="built_in">hasParam</span>(键);</span><br><span class="line"><span class="comment">//是否包含某个键，存在返回 true，否则返回 false</span></span><br><span class="line"></span><br><span class="line">nh.<span class="built_in">searchParam</span>(参数<span class="number">1</span>，参数<span class="number">2</span>);</span><br><span class="line"><span class="comment">//搜索键，参数1是被搜索的键，参数2存储搜索结果的变量</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*==========ros::param的用法同NodeHandle==========*/</span></span><br><span class="line">ros::param::<span class="built_in">param</span>(键,默认值);</span><br><span class="line"><span class="comment">//存在，返回对应结果，否则返回默认值</span></span><br><span class="line">······</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="ros常用命令"><a href="#ros常用命令" class="headerlink" title="ros常用命令"></a>ros常用命令</h1><h2 id="rosnode"><a href="#rosnode" class="headerlink" title="rosnode"></a>rosnode</h2><p>rosnode 是用于获取节点信息的命令</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rosnode ping    测试到节点的连接状态</span><br><span class="line">rosnode list    列出活动节点</span><br><span class="line">rosnode info    打印节点信息</span><br><span class="line">rosnode machine    列出指定设备上节点</span><br><span class="line">rosnode <span class="built_in">kill</span>    杀死某个节点</span><br><span class="line">rosnode cleanup    清除不可连接的节点</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>rosnode ping</p>
+<p>测试到节点的连接状态</p>
+</li>
+<li><p>rosnode list</p>
+<p>列出活动节点</p>
+</li>
+<li><p>rosnode info</p>
+<p>打印节点信息</p>
+</li>
+<li><p>rosnode machine</p>
+<p>列出指定设备上的节点</p>
+</li>
+<li><p>rosnode kill</p>
+<p>杀死某个节点</p>
+</li>
+<li><p>rosnode cleanup</p>
+<p>清除无用节点，启动乌龟节点，然后 ctrl + c 关闭，该节点并没被彻底清除，可以使用 cleanup 清除节点</p>
+</li>
+</ul>
+<h2 id="rostopic"><a href="#rostopic" class="headerlink" title="rostopic"></a>rostopic</h2><p>rostopic 命令行工具，用于显示有关 ROS 主题的调试信息，包括发布者，订阅者，发布频率和 ROS 消息。它还包含一个实验性 Python 库，用于动态获取有关主题的信息并与之交互。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">rostopic bw     显示主题使用的带宽</span><br><span class="line">rostopic delay  显示带有 header 的主题延迟</span><br><span class="line">rostopic <span class="built_in">echo</span>   打印消息到屏幕</span><br><span class="line">rostopic find   根据类型查找主题</span><br><span class="line">rostopic hz     显示主题的发布频率</span><br><span class="line">rostopic info   显示主题相关信息</span><br><span class="line">rostopic list   显示所有活动状态下的主题</span><br><span class="line">rostopic pub    将数据发布到主题</span><br><span class="line">rostopic <span class="built_in">type</span>   打印主题类型</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>rostopic list</strong>(-v)</p>
+<p>直接调用即可，控制台将打印当前运行状态下的主题名称</p>
+<p>rostopic list -v : 获取话题详情(比如列出：发布者和订阅者个数…)</p>
+</li>
+<li><p><strong>rostopic pub</strong></p>
+<p>可以直接调用命令向订阅者发布消息</p>
+<p>为roboware 自动生成的 发布&#x2F;订阅 模型案例中的 订阅者 发布一条字符串</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rostopic pub /主题名称 消息类型 消息内容</span><br><span class="line">rostopic pub /chatter std_msgs gagaxixi</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>rostpic echo</strong></p>
+<p>获取指定话题当前发布的消息</p>
+</li>
+<li><p><strong>rostopic info</strong></p>
+<p>获取当前话题的小关信息</p>
+<p>消息类型</p>
+<p>发布者信息</p>
+<p>订阅者信息</p>
+</li>
+<li><p><strong>rostopic type</strong></p>
+<p>列出话题的消息类型</p>
+</li>
+<li><p><strong>rostopic find 消息类型</strong></p>
+<p>根据消息类型查找话题</p>
+</li>
+<li><p><strong>rostopic delay</strong></p>
+<p>列出消息头信息</p>
+</li>
+<li><p><strong>rostopic hz</strong></p>
+<p>列出消息发布频率</p>
+</li>
+<li><p><strong>rostopic bw</strong></p>
+<p>列出消息发布带宽</p>
+</li>
+</ul>
+<h2 id="rosmsg"><a href="#rosmsg" class="headerlink" title="rosmsg"></a>rosmsg</h2><p>rosmsg 是用于显示有关 ROS 消息类型的 信息的命令行工具。</p>
+<p><strong>rosmsg 演示</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rosmsg show    显示消息描述</span><br><span class="line">rosmsg info    显示消息信息</span><br><span class="line">rosmsg list    列出所有消息</span><br><span class="line">rosmsg md5    显示 md5 加密后的消息</span><br><span class="line">rosmsg package    显示某个功能包下的所有消息</span><br><span class="line">rosmsg packages    列出包含消息的功能包</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>rosmsg list</p>
+<p>会列出当前 ROS 中的所有 msg</p>
+</li>
+<li><p>rosmsg packages</p>
+<p>列出包含消息的所有包</p>
+</li>
+<li><p>rosmsg package</p>
+<p>列出某个包下的所有msg</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//rosmsg package 包名 </span><br><span class="line">rosmsg package turtlesim</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosmsg show</p>
+<p>显示消息描述</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//rosmsg show 消息名称</span><br><span class="line">rosmsg show turtlesim/Pose</span><br><span class="line">结果:</span><br><span class="line">float32 x</span><br><span class="line">float32 y</span><br><span class="line">float32 theta</span><br><span class="line">float32 linear_velocity</span><br><span class="line">float32 angular_velocity</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosmsg info</p>
+<p>作用与 rosmsg show 一样</p>
+</li>
+</ul>
+<h2 id="rosservice"><a href="#rosservice" class="headerlink" title="rosservice"></a>rosservice</h2><p>rosservice 包含用于列出和查询的 rosservice 命令行工具。</p>
+<p>调用部分服务时，如果对相关工作空间没有配置 path，需要进入工作空间调用 source .&#x2F;devel&#x2F;setup.bash</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rosservice args 打印服务参数</span><br><span class="line">rosservice call    使用提供的参数调用服务</span><br><span class="line">rosservice find    按照服务类型查找服务</span><br><span class="line">rosservice info    打印有关服务的信息</span><br><span class="line">rosservice list    列出所有活动的服务</span><br><span class="line">rosservice <span class="built_in">type</span>    打印服务类型</span><br><span class="line">rosservice uri    打印服务的 ROSRPC uri</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>rosservice list</p>
+<p>列出所有活动的 service</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">~ rosservice list</span><br><span class="line"></span><br><span class="line">/<span class="built_in">clear</span></span><br><span class="line">/<span class="built_in">kill</span></span><br><span class="line">/listener/get_loggers</span><br><span class="line">/listener/set_logger_level</span><br><span class="line">/reset</span><br><span class="line">/rosout/get_loggers</span><br><span class="line">/rosout/set_logger_level</span><br><span class="line">/rostopic_4985_1578723066421/get_loggers</span><br><span class="line">/rostopic_4985_1578723066421/set_logger_level</span><br><span class="line">/rostopic_5582_1578724343069/get_loggers</span><br><span class="line">/rostopic_5582_1578724343069/set_logger_level</span><br><span class="line">/spawn</span><br><span class="line">/turtle1/set_pen</span><br><span class="line">/turtle1/teleport_absolute</span><br><span class="line">/turtle1/teleport_relative</span><br><span class="line">/turtlesim/get_loggers</span><br><span class="line">/turtlesim/set_logger_level</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosservice args</p>
+<p>打印服务参数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rosservice args /spawn</span><br><span class="line">x y theta name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosservice call</p>
+<p>调用服务</p>
+<p>为小乌龟的案例生成一只新的乌龟</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rosservice call /spawn <span class="string">&quot;x: 1.0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">y: 2.0</span></span><br><span class="line"><span class="string">theta: 0.0</span></span><br><span class="line"><span class="string">name: &#x27;xxx&#x27;&quot;</span></span><br><span class="line">name: <span class="string">&quot;xxx&quot;</span></span><br><span class="line"></span><br><span class="line">//生成一只叫 xxx 的乌龟</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosservice find</p>
+<p>根据消息类型获取话题</p>
+</li>
+<li><p>rosservice info</p>
+<p>获取服务话题详情</p>
+</li>
+<li><p>rosservice type</p>
+<p>获取消息类型</p>
+</li>
+<li><p>rosservice uri</p>
+<p>获取服务器 uri</p>
+</li>
+</ul>
+<h2 id="rossrv"><a href="#rossrv" class="headerlink" title="rossrv"></a>rossrv</h2><p>rossrv 是用于显示有关 ROS 服务类型的信息的命令行工具，与 rosmsg 使用语法高度雷同。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rossrv show    显示服务消息详情</span><br><span class="line">rossrv info    显示服务消息相关信息</span><br><span class="line">rossrv list    列出所有服务信息</span><br><span class="line">rossrv md5    显示 md5 加密后的服务消息</span><br><span class="line">rossrv package    显示某个包下所有服务消息</span><br><span class="line">rossrv packages    显示包含服务消息的所有包</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>rossrv list</p>
+<p>会列出当前 ROS 中的所有 srv 消息</p>
+</li>
+<li><p>rossrv packages</p>
+<p>列出包含服务消息的所有包</p>
+</li>
+<li><p>rossrv package</p>
+<p>列出某个包下的所有msg</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//rossrv package 包名 </span><br><span class="line">rossrv package turtlesim</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rossrv show</p>
+<p>显示消息描述</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//rossrv show 消息名称</span><br><span class="line">rossrv show turtlesim/Spawn</span><br><span class="line"></span><br><span class="line">结果:</span><br><span class="line">float32 x</span><br><span class="line">float32 y</span><br><span class="line">float32 theta</span><br><span class="line">string name</span><br><span class="line"><span class="literal">---</span></span><br><span class="line">string name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rossrv info</p>
+<p>作用与 rossrv show 一致</p>
+</li>
+<li><p>rossrv md5</p>
+<p>对 service 数据使用 md5 校验(加密)</p>
+</li>
+</ul>
+<h2 id="rosparam"><a href="#rosparam" class="headerlink" title="rosparam"></a>rosparam</h2><p>rosparam 包含 rosparam 命令行工具，用于使用 YAML 编码文件在参数服务器上获取和设置 ROS 参数。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rosparam <span class="built_in">set</span>    设置参数</span><br><span class="line">rosparam get    获取参数</span><br><span class="line">rosparam load    从外部文件加载参数</span><br><span class="line">rosparam dump    将参数写出到外部文件</span><br><span class="line">rosparam delete    删除参数</span><br><span class="line">rosparam list    列出所有参数</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>rosparam list</p>
+<p>列出所有参数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rosparam list</span><br><span class="line"></span><br><span class="line">//默认结果</span><br><span class="line">/rosdistro</span><br><span class="line">/roslaunch/uris/host_helloros_virtual_machine__42911</span><br><span class="line">/rosversion</span><br><span class="line">/run_id</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosparam set</p>
+<p>设置参数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rosparam <span class="built_in">set</span> name huluwa</span><br><span class="line"></span><br><span class="line">//再次调用 rosparam list 结果</span><br><span class="line">/name</span><br><span class="line">/rosdistro</span><br><span class="line">/roslaunch/uris/host_helloros_virtual_machine__42911</span><br><span class="line">/rosversion</span><br><span class="line">/run_id</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosparam get</p>
+<p>获取参数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rosparam get name</span><br><span class="line"></span><br><span class="line">//结果</span><br><span class="line">huluwa</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosparam delete</p>
+<p>删除参数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rosparam delete name</span><br><span class="line"></span><br><span class="line">//结果</span><br><span class="line">//去除了name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosparam load(先准备 yaml 文件)</p>
+<p>从外部文件加载参数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosparam load xxx.yaml</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rosparam dump</p>
+<p>将参数写出到外部文件</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosparam dump yyy.yaml</span><br></pre></td></tr></table></figure></li>
+</ul>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ros/">ros</a></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/" title="MarkDown格式"><img class="cover" src="/./images/%E5%B0%81%E9%9D%A2-%E6%A0%BC%E5%BC%8F.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">MarkDown格式</div></div></a></div><div class="next-post pull-right"><a href="/2024/05/02/1-ros%E6%A6%82%E8%BF%B0%E4%B8%8E%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/" title="1 ros概述与编程基础"><img class="cover" src="/./images/%E5%B0%81%E9%9D%A2-ros.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">1 ros概述与编程基础</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/" title="5 ros常用组件"><img class="cover" src="/./images/%E5%B0%81%E9%9D%A2-ros.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-30</div><div class="title">5 ros常用组件</div></div></a></div><div><a href="/2024/05/07/4-ros%E8%BF%90%E8%A1%8C%E7%AE%A1%E7%90%86/" title="4 ros运行管理"><img class="cover" src="/./images/%E5%B0%81%E9%9D%A2-ros.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-07</div><div class="title">4 ros运行管理</div></div></a></div><div><a href="/2024/06/08/6-%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%B3%BB%E7%BB%9F%E4%BB%BF%E7%9C%9F/" title="6 机器人系统仿真"><img class="cover" src="/./images/%E5%B0%81%E9%9D%A2-ros.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-08</div><div class="title">6 机器人系统仿真</div></div></a></div><div><a href="/2024/05/02/1-ros%E6%A6%82%E8%BF%B0%E4%B8%8E%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/" title="1 ros概述与编程基础"><img class="cover" src="/./images/%E5%B0%81%E9%9D%A2-ros.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-02</div><div class="title">1 ros概述与编程基础</div></div></a></div><div><a href="/2024/05/04/3-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6%E7%9A%84%E8%BF%9B%E9%98%B6/" title="3 ros通信机制的进阶"><img class="cover" src="/./images/%E5%B0%81%E9%9D%A2-ros.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-04</div><div class="title">3 ros通信机制的进阶</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">雪尘</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%9D%E9%A2%98%E9%80%9A%E4%BF%A1"><span class="toc-text">话题通信</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%9D%E9%A2%98%E9%80%9A%E4%BF%A1%E7%90%86%E8%AE%BA%E6%A8%A1%E5%9E%8B"><span class="toc-text">话题通信理论模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-text">实现步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3"><span class="toc-text">问题及解决</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%9D%E9%A2%98%E9%80%9A%E4%BF%A1%E8%87%AA%E5%AE%9A%E4%B9%89msg"><span class="toc-text">话题通信自定义msg</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%89%E5%9B%BA%E5%AE%9A%E6%A0%BC%E5%BC%8F%E5%9C%A8%E5%9B%BA%E5%AE%9A%E4%BD%8D%E7%BD%AE%E5%88%9B%E5%BB%BAmsg%E6%96%87%E4%BB%B6"><span class="toc-text">按固定格式在固定位置创建msg文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">编辑配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89msg%E6%96%87%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">自定义msg文件的使用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E9%80%9A%E4%BF%A1"><span class="toc-text">服务通信</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-srv-%E6%96%87%E4%BB%B6"><span class="toc-text">自定义 srv 文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%8C%89%E5%9B%BA%E5%AE%9A%E6%A0%BC%E5%BC%8F%E5%88%9B%E5%BB%BA-srv-%E6%96%87%E4%BB%B6"><span class="toc-text">1.按固定格式创建 srv 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">2.编辑配置文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-srv-%E6%96%87%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">自定义 srv 文件的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%9E%E7%8E%B0"><span class="toc-text">服务器实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%9E%E7%8E%B0"><span class="toc-text">客户端实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96"><span class="toc-text">优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9CMakeList-txt"><span class="toc-text">修改CMakeList.txt</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-text">参数服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%90%86%E8%AE%BA%E6%A8%A1%E5%9E%8B"><span class="toc-text">参数服务器理论模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E3%80%81%E4%BF%AE%E6%94%B9%E3%80%81%E5%88%A0%E9%99%A4%E5%8F%82%E6%95%B0"><span class="toc-text">设置、修改、删除参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%8F%82%E6%95%B0"><span class="toc-text">获取参数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ros%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">ros常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#rosnode"><span class="toc-text">rosnode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rostopic"><span class="toc-text">rostopic</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rosmsg"><span class="toc-text">rosmsg</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rosservice"><span class="toc-text">rosservice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rossrv"><span class="toc-text">rossrv</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rosparam"><span class="toc-text">rosparam</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/06/08/6-%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%B3%BB%E7%BB%9F%E4%BB%BF%E7%9C%9F/" title="6 机器人系统仿真"><img src="/./images/%E5%B0%81%E9%9D%A2-ros.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="6 机器人系统仿真"/></a><div class="content"><a class="title" href="/2024/06/08/6-%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%B3%BB%E7%BB%9F%E4%BB%BF%E7%9C%9F/" title="6 机器人系统仿真">6 机器人系统仿真</a><time datetime="2024-06-08T00:57:42.000Z" title="发表于 2024-06-08 08:57:42">2024-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/" title="5 ros常用组件"><img src="/./images/%E5%B0%81%E9%9D%A2-ros.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="5 ros常用组件"/></a><div class="content"><a class="title" href="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/" title="5 ros常用组件">5 ros常用组件</a><time datetime="2024-05-30T07:37:32.000Z" title="发表于 2024-05-30 15:37:32">2024-05-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/07/4-ros%E8%BF%90%E8%A1%8C%E7%AE%A1%E7%90%86/" title="4 ros运行管理"><img src="/./images/%E5%B0%81%E9%9D%A2-ros.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="4 ros运行管理"/></a><div class="content"><a class="title" href="/2024/05/07/4-ros%E8%BF%90%E8%A1%8C%E7%AE%A1%E7%90%86/" title="4 ros运行管理">4 ros运行管理</a><time datetime="2024-05-07T06:23:34.000Z" title="发表于 2024-05-07 14:23:34">2024-05-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/04/hexo%E7%9A%84%E6%90%AD%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/" title="hexo的搭建和使用"><img src="/./images/%E5%B0%81%E9%9D%A2-%E6%A0%BC%E5%BC%8F.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hexo的搭建和使用"/></a><div class="content"><a class="title" href="/2024/05/04/hexo%E7%9A%84%E6%90%AD%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/" title="hexo的搭建和使用">hexo的搭建和使用</a><time datetime="2024-05-04T06:39:08.000Z" title="发表于 2024-05-04 14:39:08">2024-05-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/04/3-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6%E7%9A%84%E8%BF%9B%E9%98%B6/" title="3 ros通信机制的进阶"><img src="/./images/%E5%B0%81%E9%9D%A2-ros.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="3 ros通信机制的进阶"/></a><div class="content"><a class="title" href="/2024/05/04/3-ros%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6%E7%9A%84%E8%BF%9B%E9%98%B6/" title="3 ros通信机制的进阶">3 ros通信机制的进阶</a><time datetime="2024-05-04T04:58:38.000Z" title="发表于 2024-05-04 12:58:38">2024-05-04</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-ros.png')"><div id="footer-wrap"><div class="copyright">&copy;2024 By 雪尘</div><div class="footer_custom_text">Hi, welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
