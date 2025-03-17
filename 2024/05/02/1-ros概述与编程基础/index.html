@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>1 ros概述与编程基础 | 雪尘的博客</title><meta name="author" content="雪尘"><meta name="copyright" content="雪尘"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ros程序实现流程 建立工作空间 12mkdir -p 工作空间名&#x2F;src #创建多级目录rm -r 工作空间名&#x2F;src #删除多级目录    进入工作空间并编译 12cd 工作空间名catkin_make  建立功能包、设置依赖 1234#方法1catkin_create_pkg 功能包名 依赖1 依赖2 ···#方法2在vscode中可以直接右键工作空间下的 src 选择建立功能包  在功能包">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>1 ros概述与编程基础 | 雪尘的博客</title><meta name="author" content="雪尘"><meta name="copyright" content="雪尘"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ros程序实现流程   建立工作空间 12mkdir -p 工作空间名&#x2F;src #创建多级目录rm -r 工作空间名&#x2F;src #删除多级目录   进入工作空间并编译 12cd 工作空间名catkin_make   建立功能包、设置依赖 1234#方法1catkin_create_pkg 功能包名 依赖1 依赖2 ···#方法2在vscode中可以直接右键工作空间下的 src 选择建立功能包   在">
 <meta property="og:type" content="article">
 <meta property="og:title" content="1 ros概述与编程基础">
 <meta property="og:url" content="http://example.com/2024/05/02/1-ros%E6%A6%82%E8%BF%B0%E4%B8%8E%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="雪尘的博客">
-<meta property="og:description" content="ros程序实现流程 建立工作空间 12mkdir -p 工作空间名&#x2F;src #创建多级目录rm -r 工作空间名&#x2F;src #删除多级目录    进入工作空间并编译 12cd 工作空间名catkin_make  建立功能包、设置依赖 1234#方法1catkin_create_pkg 功能包名 依赖1 依赖2 ···#方法2在vscode中可以直接右键工作空间下的 src 选择建立功能包  在功能包">
+<meta property="og:description" content="ros程序实现流程   建立工作空间 12mkdir -p 工作空间名&#x2F;src #创建多级目录rm -r 工作空间名&#x2F;src #删除多级目录   进入工作空间并编译 12cd 工作空间名catkin_make   建立功能包、设置依赖 1234#方法1catkin_create_pkg 功能包名 依赖1 依赖2 ···#方法2在vscode中可以直接右键工作空间下的 src 选择建立功能包   在">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/%E5%B0%81%E9%9D%A2-ros.png">
 <meta property="article:published_time" content="2024-05-02T02:51:17.000Z">
@@ -174,21 +174,25 @@
     document.addEventListener('pjax:send', () => { preloader.initLoading() })
     document.addEventListener('pjax:complete', () => { preloader.endLoading() })
   }
-})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-ros.png')"><nav id="nav"><span id="blog-info"><a href="/" title="雪尘的博客"><img class="site-icon" src="/img/logo.png"/><span class="site-name">雪尘的博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">1 ros概述与编程基础</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-02T02:51:17.000Z" title="发表于 2024-05-02 10:51:17">2024-05-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-02-03T12:53:51.791Z" title="更新于 2025-02-03 20:53:51">2025-02-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ros/">ros</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ros/ros-autolabor/">ros_autolabor</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="1 ros概述与编程基础"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="ros程序实现流程"><a href="#ros程序实现流程" class="headerlink" title="ros程序实现流程"></a>ros程序实现流程</h1><ol>
-<li><p>建立工作空间</p>
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-ros.png')"><nav id="nav"><span id="blog-info"><a href="/" title="雪尘的博客"><img class="site-icon" src="/img/logo.png"/><span class="site-name">雪尘的博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">1 ros概述与编程基础</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-02T02:51:17.000Z" title="发表于 2024-05-02 10:51:17">2024-05-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-02-03T12:53:51.791Z" title="更新于 2025-02-03 20:53:51">2025-02-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ros/">ros</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ros/ros-autolabor/">ros_autolabor</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="1 ros概述与编程基础"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="ros程序实现流程">ros程序实现流程</h1>
+<ol>
+<li class="lvl-3">
+<p>建立工作空间</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir <span class="literal">-p</span> 工作空间名/src <span class="comment">#创建多级目录</span></span><br><span class="line"><span class="built_in">rm</span> <span class="literal">-r</span> 工作空间名/src <span class="comment">#删除多级目录</span></span><br></pre></td></tr></table></figure>
 </li>
-</ol>
-<ol>
-<li><p>进入工作空间并编译</p>
+<li class="lvl-3">
+<p>进入工作空间并编译</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> 工作空间名</span><br><span class="line">catkin_make</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>建立功能包、设置依赖</p>
+<li class="lvl-3">
+<p>建立功能包、设置依赖</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#方法1</span></span><br><span class="line">catkin_create_pkg 功能包名 依赖<span class="number">1</span> 依赖<span class="number">2</span> ···</span><br><span class="line"><span class="comment">#方法2</span></span><br><span class="line">在vscode中可以直接右键工作空间下的 src 选择建立功能包</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>在功能包的src目录下创建 文件名.cpp 文件</p>
+<li class="lvl-3">
+<p>在功能包的src目录下创建 文件名.cpp 文件</p>
 </li>
-<li><p>编写源文件</p>
+<li class="lvl-3">
+<p>编写源文件</p>
 <p>（1）包含头文件</p>
 <p>（2）main()</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span></span>&#123;</span><br><span class="line">    ···</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -199,40 +203,54 @@
 <p>（5）其他代码，功能代码</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置输出文字格式（解决文字异常）</span></span><br><span class="line"><span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>配置 CMakeList.txt</p>
+<li class="lvl-3">
+<p>配置 CMakeList.txt</p>
 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_executable</span>(映射名</span><br><span class="line">  src/源文件名.cpp</span><br><span class="line">)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(映射名</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>新建终端，启动核心：<code>roscore</code></p>
+<li class="lvl-3">
+<p>新建终端，启动核心：<code>roscore</code></p>
 </li>
-<li><p>新建终端，运行ROS代码：</p>
+<li class="lvl-3">
+<p>新建终端，运行ROS代码：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#通过 source 命令来朱行执行setup.bash的命令，来修改环境变量</span></span><br><span class="line">source ./devel/setup.bash</span><br><span class="line"><span class="comment">#运行ros程序</span></span><br><span class="line">rosrun 功能包名 映射名</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><ol>
-<li><p>“::”在c++中为：作用域分辨符（调用自定义头文件类函数）</p>
+<h1 id="附录">附录</h1>
+<ol>
+<li class="lvl-3">
+<p>&quot;::&quot;在c++中为：作用域分辨符（调用自定义头文件类函数）</p>
 </li>
-<li><p>source 命令：顺序执行文件中的命令</p>
+<li class="lvl-3">
+<p>source 命令：顺序执行文件中的命令</p>
 </li>
-<li><p>echo 命令：ubuntu输出命令（可利用 &gt;&gt; 重定向输出到文件中）</p>
+<li class="lvl-3">
+<p>echo 命令：ubuntu输出命令（可利用 &gt;&gt; 重定向输出到文件中）</p>
 </li>
-<li><p><code>NodeHandle</code>：是ROS的一个重要组件，提供一个用于在自定义程序和ROS系统之间通信的接口</p>
+<li class="lvl-3">
+<p><code>NodeHandle</code>：是ROS的一个重要组件，提供一个用于在自定义程序和ROS系统之间通信的接口</p>
 </li>
-<li><p><code>catkin</code>：是ROS基于 CMake 的编译构建系统，解决了多软件包构建顺序问题，可扩阿姨来项目编译，自动生成配置文件</p>
+<li class="lvl-3">
+<p><code>catkin</code>：是ROS基于 CMake 的编译构建系统，解决了多软件包构建顺序问题，可扩阿姨来项目编译，自动生成配置文件</p>
 </li>
-<li><p>在 vscode 中可用</p>
+<li class="lvl-3">
+<p>在 vscode 中可用</p>
 <p>（1）ctrl + “+”：放大界面</p>
 <p>（2）crtl + shift + B 来快捷编译选择 catkin_make : build （需配置 tasks.json ）</p>
-<p>（3）配置c_cpp_properties.json的 includePath 加上”/home/用户名/……/工作空间/src/功能包/include/**”</p>
-<p>（4）ctrl + “`”打开终端</p>
+<p>（3）配置c_cpp_properties.json的 includePath 加上&quot;/home/用户名/……/工作空间/src/功能包/include/**&quot;</p>
+<p>（4）ctrl + &quot;`&quot;打开终端</p>
 </li>
 </ol>
-<h1 id="launch文件的多节点启动"><a href="#launch文件的多节点启动" class="headerlink" title="launch文件的多节点启动"></a>launch文件的多节点启动</h1><ol>
-<li><p>在功能包上创建 launch 文件夹并创建 .launch 文件</p>
+<h1 id="launch文件的多节点启动">launch文件的多节点启动</h1>
+<ol>
+<li class="lvl-3">
+<p>在功能包上创建 launch 文件夹并创建 .launch 文件</p>
 </li>
-<li><p>编写 .launch 文件</p>
+<li class="lvl-3">
+<p>编写 .launch 文件</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span> = <span class="string">&quot;功能包名&quot;</span> <span class="attr">type</span> = <span class="string">&quot;节点文件名&quot;</span> <span class="attr">name</span> = <span class="string">&quot;映射名&quot;</span> <span class="attr">output</span> = <span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--output属性为：日志输出目标（可无）--&gt;</span></span><br><span class="line">        ···</span><br><span class="line">    <span class="tag">&lt;/<span class="name">node</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>运行</p>
+<li class="lvl-3">
+<p>运行</p>
 <p>（1）<code>source ./devel/setup.bash</code></p>
 <p>（2）<code>roslaunch 功能包名 文件名.launch</code></p>
 </li>
