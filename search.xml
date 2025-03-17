@@ -1200,6 +1200,531 @@
       </tags>
   </entry>
   <entry>
+    <title>5 ros常用组件</title>
+    <url>/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/</url>
+    <content><![CDATA[<p> 在ROS中内置一些比较实用的工具，通过这些工具可以方便快捷的实现某个功能或调试程序，从而提高开发效率，本章主要介绍ROS中内置的如下组件:</p>
+<ul class="lvl-0">
+<li class="lvl-2">TF坐标变换，实现不同类型的坐标系之间的转换</li>
+<li class="lvl-2">rosbag 用于录制ROS节点的执行过程并可以重放该过程</li>
+<li class="lvl-2">rqt 工具箱，集成了多款图形化的调试工具</li>
+</ul>
+<h1 id="5-1-TF坐标变换">5.1 TF坐标变换</h1>
+<p> 机器人系统上，有多个传感器，如激光雷达、摄像头等，有的传感器是可以感知机器人周边的物体方位(或者称之为:坐标，横向、纵向、高度的距离信息)的，以协助机器人定位障碍物，但这是相对于传感器的方位信息，若要使用，需要一个转换过程，使其变为相对于机器人或相关组件的方位信息。</p>
+<p><strong>作用</strong>：在 ROS 中用于实现不同坐标系之间的点或向量的转换。</p>
+<p><strong>说明</strong>：在ROS中坐标变换最初对应的是tf，不过在 hydro 版本开始, tf 被弃用，迁移到 tf2,后者更为简洁高效，</p>
+<p><strong>tf2对应的常用功能包有</strong>：</p>
+<p>tf2_geometry_msgs : 可以将ROS消息转换成tf2消息。</p>
+<p>tf2 : 封装了坐标变换的常用消息。</p>
+<p>tf2_ros : 为tf2提供了roscpp和rospy绑定，封装了坐标变换常用的API。</p>
+<hr>
+<h2 id="5-1-1-坐标msg消息">5.1.1 坐标msg消息</h2>
+<p>订阅发布模型中数据载体 msg 是一个重要实现，首先需要了解一下，在坐标转换实现中常用的 msg : <strong>geometry_msgs/TransformStamped</strong> 和 <strong>geometry_msgs/PointStamped</strong></p>
+<p>前者用于传输坐标系相关位置信息，后者用于传输某个坐标系内坐标点的信息。在坐标变换中，频繁的需要使用到坐标系的相对关系以及坐标点信息。</p>
+<p><strong>1. geometry_msgs/TransformStamped</strong></p>
+<p>命令行键入:<code>rosmsg info geometry_msgs/TransformStamped</code></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">std_msgs/Header header                     <span class="comment">#头信息</span></span><br><span class="line">  uint32 seq                                <span class="comment">#|-- 序列号</span></span><br><span class="line">  time stamp                                <span class="comment">#|-- 时间戳</span></span><br><span class="line">  string frame_id                            <span class="comment">#|-- 坐标 ID</span></span><br><span class="line">string child_frame_id                    <span class="comment">#子坐标系的 id</span></span><br><span class="line">geometry_msgs/Transform transform        <span class="comment">#坐标信息</span></span><br><span class="line">  geometry_msgs/Vector3 translation        <span class="comment">#偏移量</span></span><br><span class="line">    float64 x                                <span class="comment">#|-- X 方向的偏移量</span></span><br><span class="line">    float64 y                                <span class="comment">#|-- Y 方向的偏移量</span></span><br><span class="line">    float64 z                                <span class="comment">#|-- Z 方向上的偏移量</span></span><br><span class="line">  geometry_msgs/Quaternion rotation        <span class="comment">#四元数，右手法则</span></span><br><span class="line">    float64 x                                <span class="comment">#|-- 水平面的偏移方向，绕Z轴转</span></span><br><span class="line">    float64 y                                <span class="comment">#|-- 俯仰面的偏移方向，绕Y轴转</span></span><br><span class="line">    float64 z                                <span class="comment">#|-- 翻滚面的偏移方向，绕X轴转</span></span><br><span class="line">    float64 w</span><br></pre></td></tr></table></figure>
+<p>四元数用于表示坐标的相对姿态</p>
+<p><strong>2. geometry_msgs/PointStamped</strong></p>
+<p>命令行键入:<code>rosmsg info geometry_msgs/PointStamped</code></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">std_msgs/Header header                    <span class="comment">#头</span></span><br><span class="line">  uint32 seq                                <span class="comment">#|-- 序号</span></span><br><span class="line">  time stamp                                <span class="comment">#|-- 时间戳</span></span><br><span class="line">  string frame_id                            <span class="comment">#|-- 所属坐标系的 id</span></span><br><span class="line">geometry_msgs/Point point                <span class="comment">#点坐标</span></span><br><span class="line">  float64 x                                    <span class="comment">#|-- x y z 坐标</span></span><br><span class="line">  float64 y</span><br><span class="line">  float64 z</span><br></pre></td></tr></table></figure>
+<h2 id="5-1-2-静态坐标变换">5.1.2 静态坐标变换</h2>
+<p>所谓静态坐标变换，是指两个坐标系之间的相对位置是固定的。</p>
+<p><strong>需求描述:</strong></p>
+<p>现有一机器人模型，核心构成包含主体与雷达，各对应一坐标系，坐标系的原点分别位于主体与雷达的物理中心，已知雷达原点相对于主体原点位移关系如下: x 0.2 y0.0 z0.5。当前雷达检测到一障碍物，在雷达坐标系中障碍物的坐标为 (2.0 3.0 5.0),请问，该障碍物相对于主体的坐标是多少？</p>
+<p><strong>结果演示:</strong>（命令行键入 rviz）</p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606144619843.png" alt="image-20240606144619843"></p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606144603696.png" alt="image-20240606144603696"></p>
+<p><strong>实现分析:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>坐标系相对关系，可以通过发布方发布</p>
+</li>
+<li class="lvl-3">
+<p>订阅方，订阅到发布的坐标系相对关系，再传入坐标点信息(可以写死)，然后借助于 tf 实现坐标变换，并将结果输出</p>
+</li>
+</ol>
+<p>**实现流程:**C++ 与 Python 实现流程一致</p>
+<ol>
+<li class="lvl-3">
+<p>新建功能包，添加依赖</p>
+</li>
+<li class="lvl-3">
+<p>编写发布方实现</p>
+</li>
+<li class="lvl-3">
+<p>编写订阅方实现</p>
+</li>
+<li class="lvl-3">
+<p>执行并查看结果</p>
+</li>
+</ol>
+<hr>
+<h3 id="1-创建功能包">1.创建功能包</h3>
+<p>创建项目功能包依赖于 <code>tf2 tf2_ros tf2_geometry_msgs roscpp rospy std_msgs geometry_msgs</code></p>
+<h3 id="2-发布方">2.发布方</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment">    静态坐标变换发布方:</span></span><br><span class="line"><span class="comment">        发布关于 laser 坐标系的位置信息 </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ROS 节点</span></span><br><span class="line"><span class="comment">        3.创建静态坐标转换广播器</span></span><br><span class="line"><span class="comment">        4.创建坐标系信息</span></span><br><span class="line"><span class="comment">        5.广播器发布坐标系信息</span></span><br><span class="line"><span class="comment">        6.spin()</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/static_transform_broadcaster.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;static_brocast&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建静态坐标转换广播器</span></span><br><span class="line">    tf2_ros::StaticTransformBroadcaster broadcaster;</span><br><span class="line">    <span class="comment">// 4.创建坐标系信息</span></span><br><span class="line">    geometry_msgs::TransformStamped ts;</span><br><span class="line">    <span class="comment">//----设置头信息</span></span><br><span class="line">    ts.header.seq = <span class="number">100</span>;</span><br><span class="line">    ts.header.stamp = ros::Time::<span class="built_in">now</span>(); <span class="comment">// </span></span><br><span class="line">    ts.header.frame_id = <span class="string">&quot;base_link&quot;</span>; <span class="comment">// 相对关系中被参考的那个点，即原点或者说起点 </span></span><br><span class="line">    <span class="comment">//----设置子级坐标系</span></span><br><span class="line">    ts.child_frame_id = <span class="string">&quot;laser&quot;</span>;</span><br><span class="line">    <span class="comment">//----设置子级相对于父级的偏移量</span></span><br><span class="line">    ts.transform.translation.x = <span class="number">0.2</span>;</span><br><span class="line">    ts.transform.translation.y = <span class="number">0.0</span>;</span><br><span class="line">    ts.transform.translation.z = <span class="number">0.5</span>;</span><br><span class="line">    <span class="comment">//----设置四元数:将 欧拉角数据转换成四元数</span></span><br><span class="line">    tf2::Quaternion qtn;</span><br><span class="line">    qtn.<span class="built_in">setRPY</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">    ts.transform.rotation.x = qtn.<span class="built_in">getX</span>();</span><br><span class="line">    ts.transform.rotation.y = qtn.<span class="built_in">getY</span>();</span><br><span class="line">    ts.transform.rotation.z = qtn.<span class="built_in">getZ</span>();</span><br><span class="line">    ts.transform.rotation.w = qtn.<span class="built_in">getW</span>();</span><br><span class="line">    <span class="comment">// 5.广播器发布坐标系信息</span></span><br><span class="line">    broadcaster.<span class="built_in">sendTransform</span>(ts);</span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置文件此处略。</p>
+<h3 id="3-订阅方">3.订阅方</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    订阅坐标系信息，生成一个相对于 子级坐标系的坐标点数据，转换成父级坐标系中的坐标点</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ROS 节点</span></span><br><span class="line"><span class="comment">        3.创建 TF 订阅节点</span></span><br><span class="line"><span class="comment">        4.生成一个坐标点(相对于子级坐标系)</span></span><br><span class="line"><span class="comment">        5.转换坐标点(相对于父级坐标系)</span></span><br><span class="line"><span class="comment">        6.spin()</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/buffer.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/PointStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_geometry_msgs/tf2_geometry_msgs.h&quot;</span> <span class="comment">//注意: 调用 transform 必须包含该头文件</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;tf_sub&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 3.创建 TF 订阅节点</span></span><br><span class="line">    tf2_ros::Buffer buffer;</span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="comment">// 4.生成一个坐标点(相对于子级坐标系)，即模拟雷达检测到的目标与雷达的距离</span></span><br><span class="line">        geometry_msgs::PointStamped point_laser;</span><br><span class="line">        point_laser.header.frame_id = <span class="string">&quot;laser&quot;</span>;</span><br><span class="line">        point_laser.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">        point_laser.point.x = <span class="number">1</span>;</span><br><span class="line">        point_laser.point.y = <span class="number">2</span>;</span><br><span class="line">        point_laser.point.z = <span class="number">7.3</span>;</span><br><span class="line">    <span class="comment">// 5.转换坐标点(相对于父级坐标系)</span></span><br><span class="line">        <span class="comment">//--------------使用 try 语句或休眠，否则可能由于缓存接收延迟而导致坐标转换失败------------------------</span></span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;	<span class="comment">//新建一个坐标点，用于接收转换结果  </span></span><br><span class="line">            geometry_msgs::PointStamped point_base;</span><br><span class="line">            <span class="comment">/* 运行时存在的问题：抛出一个异常 base_link 不存在</span></span><br><span class="line"><span class="comment">            				原因：订阅数据是一个耗时的操作，可能再调用 transform 转换函数时，坐标系的相对关系还没有订阅到，因此出现异常。</span></span><br><span class="line"><span class="comment">            				解决：</span></span><br><span class="line"><span class="comment">            					方案1：在调用转换函数前，执行休眠</span></span><br><span class="line"><span class="comment">                                方案2：进行异常处理</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            point_base = buffer.<span class="built_in">transform</span>(point_laser,<span class="string">&quot;base_link&quot;</span>);</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;转换后的数据:(%.2f,%.2f,%.2f),参考的坐标系是:%s&quot;</span>,point_base.point.x,point_base.point.y,point_base.point.z,point_base.header.frame_id.<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;程序异常.....&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        r.<span class="built_in">sleep</span>();  </span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-1-3-动态坐标变换">5.1.3 动态坐标变换</h2>
+<p>所谓动态坐标变换，是指两个坐标系之间的相对位置是变化的。</p>
+<p><strong>需求描述:</strong></p>
+<p>启动 turtlesim_node,该节点中窗体有一个世界坐标系(左下角为坐标系原点)，乌龟是另一个坐标系，键盘控制乌龟运动，将两个坐标系的相对位置动态发布。</p>
+<p><strong>结果演示:</strong></p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/%E5%9D%90%E6%A0%87%E5%8F%98%E6%8D%A2_%E5%8A%A8%E6%80%81.gif" alt="img"></p>
+<p><strong>实现分析:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>乌龟本身不但可以看作坐标系，也是世界坐标系中的一个坐标点</p>
+</li>
+<li class="lvl-3">
+<p>订阅 turtle1/pose,可以获取乌龟在世界坐标系的 x坐标、y坐标、偏移量以及线速度和角速度</p>
+</li>
+<li class="lvl-3">
+<p>将 pose 信息转换成 坐标系相对信息并发布</p>
+</li>
+</ol>
+<p><strong>实现流程:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>新建功能包，添加依赖</p>
+</li>
+<li class="lvl-3">
+<p>创建坐标相对关系发布方(同时需要订阅乌龟位姿信息)</p>
+</li>
+<li class="lvl-3">
+<p>创建坐标相对关系订阅方</p>
+</li>
+<li class="lvl-3">
+<p>执行</p>
+</li>
+</ol>
+<hr>
+<p>方案A:C++实现</p>
+<h3 id="1-创建功能包-2">1.创建功能包</h3>
+<p>创建项目功能包依赖于 tf2、tf2_ros、tf2_geometry_msgs、roscpp rospy std_msgs geometry_msgs、turtlesim</p>
+<h3 id="2-发布方-2">2.发布方</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    动态的坐标系相对姿态发布(一个坐标系相对于另一个坐标系的相对姿态是不断变动的)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    需求: 启动 turtlesim_node,该节点中窗体有一个世界坐标系(左下角为坐标系原点)，乌龟是另一个坐标系，键盘</span></span><br><span class="line"><span class="comment">    控制乌龟运动，将两个坐标系的相对位置动态发布</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现分析:</span></span><br><span class="line"><span class="comment">        1.乌龟本身不但可以看作坐标系，也是世界坐标系中的一个坐标点</span></span><br><span class="line"><span class="comment">        2.订阅 turtle1/pose,可以获取乌龟在世界坐标系的 x坐标、y坐标、偏移量以及线速度和角速度</span></span><br><span class="line"><span class="comment">        3.将 pose 信息转换成 坐标系相对信息并发布</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ROS 节点</span></span><br><span class="line"><span class="comment">        3.创建 ROS 句柄</span></span><br><span class="line"><span class="comment">        4.创建订阅对象</span></span><br><span class="line"><span class="comment">        5.回调函数处理订阅到的数据(实现TF广播)</span></span><br><span class="line"><span class="comment">            5-1.创建 TF 广播器</span></span><br><span class="line"><span class="comment">            5-2.创建 广播的数据(通过 pose 设置)</span></span><br><span class="line"><span class="comment">            5-3.广播器发布数据</span></span><br><span class="line"><span class="comment">        6.spin</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">// 1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;turtlesim/Pose.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_broadcaster.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">doPose</span><span class="params">(<span class="type">const</span> turtlesim::Pose::ConstPtr&amp; pose)</span></span>&#123;</span><br><span class="line">    <span class="comment">//  5-1.创建 TF 广播器</span></span><br><span class="line">    <span class="type">static</span> tf2_ros::TransformBroadcaster broadcaster;</span><br><span class="line">    <span class="comment">//  5-2.创建 广播的数据(通过 pose 设置)</span></span><br><span class="line">    geometry_msgs::TransformStamped tfs;</span><br><span class="line">    <span class="comment">//  |----头设置</span></span><br><span class="line">    tfs.header.frame_id = <span class="string">&quot;world&quot;</span>;</span><br><span class="line">    tfs.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//  |----坐标系 ID</span></span><br><span class="line">    tfs.child_frame_id = <span class="string">&quot;turtle1&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//  |----坐标系相对信息设置</span></span><br><span class="line">    tfs.transform.translation.x = pose-&gt;x;</span><br><span class="line">    tfs.transform.translation.y = pose-&gt;y;</span><br><span class="line">    tfs.transform.translation.z = <span class="number">0.0</span>; <span class="comment">// 二维实现，pose 中没有z，z 是 0</span></span><br><span class="line">    <span class="comment">//  |--------- 四元数设置</span></span><br><span class="line">    tf2::Quaternion qtn;</span><br><span class="line">    qtn.<span class="built_in">setRPY</span>(<span class="number">0</span>,<span class="number">0</span>,pose-&gt;theta);</span><br><span class="line">    tfs.transform.rotation.x = qtn.<span class="built_in">getX</span>();</span><br><span class="line">    tfs.transform.rotation.y = qtn.<span class="built_in">getY</span>();</span><br><span class="line">    tfs.transform.rotation.z = qtn.<span class="built_in">getZ</span>();</span><br><span class="line">    tfs.transform.rotation.w = qtn.<span class="built_in">getW</span>();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//  5-3.广播器发布数据</span></span><br><span class="line">    broadcaster.<span class="built_in">sendTransform</span>(tfs);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;dynamic_tf_pub&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建 ROS 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 4.创建订阅对象</span></span><br><span class="line">    ros::Subscriber sub = nh.<span class="built_in">subscribe</span>&lt;turtlesim::Pose&gt;(<span class="string">&quot;/turtle1/pose&quot;</span>,<span class="number">1000</span>,doPose);</span><br><span class="line">    <span class="comment">//     5.回调函数处理订阅到的数据(实现TF广播)</span></span><br><span class="line">    <span class="comment">//        </span></span><br><span class="line">    <span class="comment">// 6.spin</span></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">Copy</span><br></pre></td></tr></table></figure>
+<p>配置文件此处略。</p>
+<h3 id="3-订阅方-2">3.订阅方</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/buffer.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/PointStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_geometry_msgs/tf2_geometry_msgs.h&quot;</span> <span class="comment">//注意: 调用 transform 必须包含该头文件</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;dynamic_tf_sub&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 3.创建 TF 订阅节点</span></span><br><span class="line">    tf2_ros::Buffer buffer;</span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="comment">// 4.生成一个坐标点(相对于子级坐标系)</span></span><br><span class="line">        geometry_msgs::PointStamped point_laser;</span><br><span class="line">        point_laser.header.frame_id = <span class="string">&quot;turtle1&quot;</span>;</span><br><span class="line">        point_laser.header.stamp = ros::<span class="built_in">Time</span>(); <span class="comment">// 不设置成 now 是为了防止因时间差较大导致的系统自动判错</span></span><br><span class="line">        point_laser.point.x = <span class="number">1</span>;</span><br><span class="line">        point_laser.point.y = <span class="number">1</span>;</span><br><span class="line">        point_laser.point.z = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 5.转换坐标点(相对于父级坐标系)</span></span><br><span class="line">        <span class="comment">//新建一个坐标点，用于接收转换结果  </span></span><br><span class="line">        <span class="comment">//--------------使用 try 语句或休眠，否则可能由于缓存接收延迟而导致坐标转换失败------------------------</span></span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            geometry_msgs::PointStamped point_base;</span><br><span class="line">            point_base = buffer.<span class="built_in">transform</span>(point_laser,<span class="string">&quot;world&quot;</span>);</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;坐标点相对于 world 的坐标为:(%.2f,%.2f,%.2f)&quot;</span>,point_base.point.x,point_base.point.y,point_base.point.z);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;程序异常:%s&quot;</span>,e.<span class="built_in">what</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        r.<span class="built_in">sleep</span>();  </span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置文件此处略。</p>
+<h3 id="4-执行">4.执行</h3>
+<p>可以使用命令行或launch文件的方式分别启动发布节点与订阅节点，如果程序无异常，与演示结果类似。</p>
+<p>可以使用 rviz 查看坐标系相对关系</p>
+<h2 id="5-1-4-多坐标变换">5.1.4 多坐标变换</h2>
+<p><strong>需求描述:</strong></p>
+<p>现有坐标系统，父级坐标系统 world,下有两子级系统 son1，son2，son1 相对于 world，以及 son2 相对于 world 的关系是已知的，求 son1原点在 son2中的坐标，又已知在 son1中一点的坐标，要求求出该点在 son2 中的坐标</p>
+<p><strong>实现分析:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>首先，需要发布 son1 相对于 world，以及 son2 相对于 world 的坐标消息</p>
+</li>
+<li class="lvl-3">
+<p>然后，需要订阅坐标发布消息，并取出订阅的消息，借助于 tf2 实现 son1 和 son2 的转换</p>
+</li>
+<li class="lvl-3">
+<p>最后，还要实现坐标点的转换</p>
+</li>
+</ol>
+<p><strong>实现流程:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>新建功能包，添加依赖</p>
+</li>
+<li class="lvl-3">
+<p>创建坐标相对关系发布方(需要发布两个坐标相对关系)</p>
+</li>
+<li class="lvl-3">
+<p>创建坐标相对关系订阅方</p>
+</li>
+<li class="lvl-3">
+<p>执行</p>
+</li>
+</ol>
+<hr>
+<h3 id="1-创建功能包-3">1. 创建功能包</h3>
+<p>创建项目功能包依赖于 tf2 tf2_ros tf2_geometry_msgs roscpp rospy std_msgs geometry_msgs turtlesim</p>
+<h3 id="2-发布方-3">2. 发布方</h3>
+<p>为了方便，使用静态坐标变换发布</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf2_ros&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;son1&quot;</span> <span class="attr">args</span>=<span class="string">&quot;0.2 0.8 0.3 0 0 0 /world /son1&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf2_ros&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;son2&quot;</span> <span class="attr">args</span>=<span class="string">&quot;0.5 0 0 0 0 0 /world /son2&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-订阅方-3">3. 订阅方</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">需求:</span></span><br><span class="line"><span class="comment">    现有坐标系统，父级坐标系统 world,下有两子级系统 son1，son2，</span></span><br><span class="line"><span class="comment">    son1 相对于 world，以及 son2 相对于 world 的关系是已知的，</span></span><br><span class="line"><span class="comment">    求 son1 与 son2中的坐标关系，又已知在 son1中一点的坐标，要求求出该点在 son2 中的坐标</span></span><br><span class="line"><span class="comment">实现流程:</span></span><br><span class="line"><span class="comment">    1.包含头文件</span></span><br><span class="line"><span class="comment">    2.初始化 ros 节点</span></span><br><span class="line"><span class="comment">    3.创建 ros 句柄</span></span><br><span class="line"><span class="comment">    4.创建 TF 订阅对象</span></span><br><span class="line"><span class="comment">    5.解析订阅信息中获取 son1 坐标系原点在 son2 中的坐标</span></span><br><span class="line"><span class="comment">      解析 son1 中的点相对于 son2 的坐标</span></span><br><span class="line"><span class="comment">    6.spin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_geometry_msgs/tf2_geometry_msgs.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/PointStamped.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;   <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ros 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;sub_frames&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建 ros 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 4.创建 TF 订阅对象</span></span><br><span class="line">    tf2_ros::Buffer buffer; </span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line">    <span class="comment">// 5.解析订阅信息中获取 son1 坐标系原点在 son2 中的坐标</span></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">        <span class="comment">//   解析 son1 中的点相对于 son2 的坐标</span></span><br><span class="line">            geometry_msgs::TransformStamped tfs = buffer.<span class="built_in">lookupTransform</span>(<span class="string">&quot;son2&quot;</span>,<span class="string">&quot;son1&quot;</span>,ros::<span class="built_in">Time</span>(<span class="number">0</span>));</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Son1 相对于 Son2 的坐标关系:父坐标系ID=%s&quot;</span>,tfs.header.frame_id.<span class="built_in">c_str</span>());</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Son1 相对于 Son2 的坐标关系:子坐标系ID=%s&quot;</span>,tfs.child_frame_id.<span class="built_in">c_str</span>());</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Son1 相对于 Son2 的坐标关系:x=%.2f,y=%.2f,z=%.2f&quot;</span>,</span><br><span class="line">                    tfs.transform.translation.x,</span><br><span class="line">                    tfs.transform.translation.y,</span><br><span class="line">                    tfs.transform.translation.z</span><br><span class="line">                    );</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 坐标点解析</span></span><br><span class="line">            geometry_msgs::PointStamped ps;</span><br><span class="line">            ps.header.frame_id = <span class="string">&quot;son1&quot;</span>;</span><br><span class="line">            ps.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">            ps.point.x = <span class="number">1.0</span>;</span><br><span class="line">            ps.point.y = <span class="number">2.0</span>;</span><br><span class="line">            ps.point.z = <span class="number">3.0</span>;</span><br><span class="line"></span><br><span class="line">            geometry_msgs::PointStamped psAtSon2;</span><br><span class="line">            psAtSon2 = buffer.<span class="built_in">transform</span>(ps,<span class="string">&quot;son2&quot;</span>);</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;在 Son2 中的坐标:x=%.2f,y=%.2f,z=%.2f&quot;</span>,</span><br><span class="line">                    psAtSon2.point.x,</span><br><span class="line">                    psAtSon2.point.y,</span><br><span class="line">                    psAtSon2.point.z</span><br><span class="line">                    );</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;异常信息:%s&quot;</span>,e.<span class="built_in">what</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        r.<span class="built_in">sleep</span>();</span><br><span class="line">        <span class="comment">// 6.spin</span></span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-1-5-TF坐标变换实操">5.1.5 TF坐标变换实操</h2>
+<p><strong>需求描述:</strong></p>
+<p>程序启动之初: 产生两只乌龟，中间的乌龟(A) 和 左下乌龟(B), B 会自动运行至A的位置，并且键盘控制时，只是控制 A 的运动，但是 B 可以跟随 A 运行</p>
+<p><strong>结果演示:</strong></p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/TF%E5%9D%90%E6%A0%87%E5%8F%98%E6%8D%A2.gif" alt="img"></p>
+<p><strong>实现分析:</strong></p>
+<p>乌龟跟随实现的核心，是乌龟A和B都要发布相对世界坐标系的坐标信息，然后，订阅到该信息需要转换获取A相对于B坐标系的信息，最后，再生成速度信息，并控制B运动。</p>
+<ol>
+<li class="lvl-3">
+<p>启动乌龟显示节点</p>
+</li>
+<li class="lvl-3">
+<p>在乌龟显示窗体中生成一只新的乌龟(需要使用服务)</p>
+</li>
+<li class="lvl-3">
+<p>编写两只乌龟发布坐标信息的节点</p>
+</li>
+<li class="lvl-3">
+<p>编写订阅节点订阅坐标信息并生成新的相对关系生成速度信息</p>
+</li>
+</ol>
+<p><strong>实现流程:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>新建功能包，添加依赖</p>
+</li>
+<li class="lvl-3">
+<p>编写服务客户端，用于生成一只新的乌龟</p>
+</li>
+<li class="lvl-3">
+<p>编写发布方，发布两只乌龟的坐标信息</p>
+</li>
+<li class="lvl-3">
+<p>编写订阅方，订阅两只乌龟信息，生成速度信息并发布</p>
+</li>
+<li class="lvl-3">
+<p>运行</p>
+</li>
+</ol>
+<p><strong>准备工作:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>了解如何创建第二只乌龟，且不受键盘控制</p>
+<p>创建第二只乌龟需要使用rosservice,话题使用的是 spawn</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosservice call /spawn <span class="string">&quot;x: 1.0 y: 1.0 theta: 1.0 name: &#x27;turtle_flow&#x27;&quot;</span> </span><br><span class="line">name: <span class="string">&quot;turtle_flow&quot;</span></span><br></pre></td></tr></table></figure>
+<p>键盘是无法控制第二只乌龟运动的，因为使用的话题: /第二只乌龟名称/cmd_vel,对应的要控制乌龟运动必须发布对应的话题消息</p>
+</li>
+<li class="lvl-3">
+<p>了解如何获取两只乌龟的坐标</p>
+<p>是通过话题 /乌龟名称/pose 来获取的</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">x: <span class="number">1.0</span> //x坐标</span><br><span class="line">y: <span class="number">1.0</span> //y坐标</span><br><span class="line">theta: <span class="literal">-1</span>.<span class="number">21437060833</span> //角度</span><br><span class="line">linear_velocity: <span class="number">0.0</span> //线速度</span><br><span class="line">angular_velocity: <span class="number">1.0</span> //角速度</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<h3 id="1-创建功能包-4">1. 创建功能包</h3>
+<p>创建项目功能包依赖于 tf2 tf2_ros tf2_geometry_msgs roscpp rospy std_msgs geometry_msgs turtlesim</p>
+<h3 id="2-服务客户端-生成乌龟">2. 服务客户端(生成乌龟)</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment">    创建第二只小乌龟</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;turtlesim/Spawn.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//执行初始化</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;create_turtle&quot;</span>);</span><br><span class="line">    <span class="comment">//创建节点</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">//创建服务客户端</span></span><br><span class="line">    ros::ServiceClient client = nh.<span class="built_in">serviceClient</span>&lt;turtlesim::Spawn&gt;(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line"></span><br><span class="line">    ros::service::<span class="built_in">waitForService</span>(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line">    turtlesim::Spawn spawn;</span><br><span class="line">    spawn.request.name = <span class="string">&quot;turtle2&quot;</span>;</span><br><span class="line">    spawn.request.x = <span class="number">1.0</span>;</span><br><span class="line">    spawn.request.y = <span class="number">2.0</span>;</span><br><span class="line">    spawn.request.theta = <span class="number">3.12415926</span>;</span><br><span class="line">    <span class="type">bool</span> flag = client.<span class="built_in">call</span>(spawn);</span><br><span class="line">    <span class="keyword">if</span> (flag)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;乌龟%s创建成功!&quot;</span>,spawn.response.name.<span class="built_in">c_str</span>());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;乌龟2创建失败!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置文件此处略。</p>
+<h3 id="3-发布方-发布两只乌龟的坐标信息">3. 发布方(发布两只乌龟的坐标信息)</h3>
+<p>可以订阅乌龟的位姿信息，然后再转换成坐标信息，两只乌龟的实现逻辑相同，只是订阅的话题名称，生成的坐标信息等稍有差异，可以将差异部分通过参数传入:</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>该节点需要启动两次</p>
+</li>
+<li class="lvl-2">
+<p>每次启动时都需要传入乌龟节点名称 (第一次是 turtle1 第二次是 turtle2)</p>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    该文件实现:需要订阅 turtle1 和 turtle2 的 pose，然后广播相对 world 的坐标系信息</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    注意: 订阅的两只 turtle,除了命名空间(turtle1 和 turtle2)不同外,</span></span><br><span class="line"><span class="comment">          其他的话题名称和实现逻辑都是一样的，</span></span><br><span class="line"><span class="comment">          所以我们可以将所需的命名空间通过 args 动态传入</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ros 节点</span></span><br><span class="line"><span class="comment">        3.解析传入的命名空间</span></span><br><span class="line"><span class="comment">        4.创建 ros 句柄</span></span><br><span class="line"><span class="comment">        5.创建订阅对象</span></span><br><span class="line"><span class="comment">        6.回调函数处理订阅的 pose 信息</span></span><br><span class="line"><span class="comment">            6-1.创建 TF 广播器</span></span><br><span class="line"><span class="comment">            6-2.将 pose 信息转换成 TransFormStamped</span></span><br><span class="line"><span class="comment">            6-3.发布</span></span><br><span class="line"><span class="comment">        7.spin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;turtlesim/Pose.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_broadcaster.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="comment">//保存乌龟名称</span></span><br><span class="line">std::string turtle_name;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">doPose</span><span class="params">(<span class="type">const</span> turtlesim::Pose::ConstPtr&amp; pose)</span></span>&#123;</span><br><span class="line">    <span class="comment">//  6-1.创建 TF 广播器 ---------------------------------------- 注意 static</span></span><br><span class="line">    <span class="type">static</span> tf2_ros::TransformBroadcaster broadcaster;</span><br><span class="line">    <span class="comment">//  6-2.将 pose 信息转换成 TransFormStamped</span></span><br><span class="line">    geometry_msgs::TransformStamped tfs;</span><br><span class="line">    tfs.header.frame_id = <span class="string">&quot;world&quot;</span>;</span><br><span class="line">    tfs.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">    tfs.child_frame_id = turtle_name;</span><br><span class="line">    tfs.transform.translation.x = pose-&gt;x;</span><br><span class="line">    tfs.transform.translation.y = pose-&gt;y;</span><br><span class="line">    tfs.transform.translation.z = <span class="number">0.0</span>;</span><br><span class="line">    tf2::Quaternion qtn;</span><br><span class="line">    qtn.<span class="built_in">setRPY</span>(<span class="number">0</span>,<span class="number">0</span>,pose-&gt;theta);</span><br><span class="line">    tfs.transform.rotation.x = qtn.<span class="built_in">getX</span>();</span><br><span class="line">    tfs.transform.rotation.y = qtn.<span class="built_in">getY</span>();</span><br><span class="line">    tfs.transform.rotation.z = qtn.<span class="built_in">getZ</span>();</span><br><span class="line">    tfs.transform.rotation.w = qtn.<span class="built_in">getW</span>();</span><br><span class="line">    <span class="comment">//  6-3.发布</span></span><br><span class="line">    broadcaster.<span class="built_in">sendTransform</span>(tfs);</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ros 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;pub_tf&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.解析传入的命名空间</span></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;请传入正确的参数&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        turtle_name = argv[<span class="number">1</span>];</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;乌龟 %s 坐标发送启动&quot;</span>,turtle_name.<span class="built_in">c_str</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4.创建 ros 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 5.创建订阅对象</span></span><br><span class="line">    ros::Subscriber sub = nh.<span class="built_in">subscribe</span>&lt;turtlesim::Pose&gt;(turtle_name + <span class="string">&quot;/pose&quot;</span>,<span class="number">1000</span>,doPose);</span><br><span class="line">    <span class="comment">//     6.回调函数处理订阅的 pose 信息</span></span><br><span class="line">    <span class="comment">//         6-1.创建 TF 广播器</span></span><br><span class="line">    <span class="comment">//         6-2.将 pose 信息转换成 TransFormStamped</span></span><br><span class="line">    <span class="comment">//         6-3.发布</span></span><br><span class="line">    <span class="comment">// 7.spin</span></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置文件此处略。</p>
+<h3 id="4-订阅方-解析坐标信息并生成速度信息">4. 订阅方(解析坐标信息并生成速度信息)</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    订阅 turtle1 和 turtle2 的 TF 广播信息，查找并转换时间最近的 TF 信息</span></span><br><span class="line"><span class="comment">    将 turtle1 转换成相对 turtle2 的坐标，在计算线速度和角速度并发布</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ros 节点</span></span><br><span class="line"><span class="comment">        3.创建 ros 句柄</span></span><br><span class="line"><span class="comment">        4.创建 TF 订阅对象</span></span><br><span class="line"><span class="comment">        5.处理订阅到的 TF</span></span><br><span class="line"><span class="comment">        6.spin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/Twist.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ros 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;sub_TF&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建 ros 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 4.创建 TF 订阅对象</span></span><br><span class="line">    tf2_ros::Buffer buffer;</span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line">    <span class="comment">// 5.处理订阅到的 TF</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 需要创建发布 /turtle2/cmd_vel 的 publisher 对象</span></span><br><span class="line"></span><br><span class="line">    ros::Publisher pub = nh.<span class="built_in">advertise</span>&lt;geometry_msgs::Twist&gt;(<span class="string">&quot;/turtle2/cmd_vel&quot;</span>,<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">rate</span><span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//5-1.先获取 turtle1 相对 turtle2 的坐标信息</span></span><br><span class="line">            geometry_msgs::TransformStamped tfs = buffer.<span class="built_in">lookupTransform</span>(<span class="string">&quot;turtle2&quot;</span>,<span class="string">&quot;turtle1&quot;</span>,ros::<span class="built_in">Time</span>(<span class="number">0</span>));</span><br><span class="line"></span><br><span class="line">            <span class="comment">//5-2.根据坐标信息生成速度信息 -- geometry_msgs/Twist.h</span></span><br><span class="line">            geometry_msgs::Twist twist;</span><br><span class="line">            twist.linear.x = <span class="number">0.5</span> * <span class="built_in">sqrt</span>(<span class="built_in">pow</span>(tfs.transform.translation.x,<span class="number">2</span>) + <span class="built_in">pow</span>(tfs.transform.translation.y,<span class="number">2</span>));</span><br><span class="line">            twist.angular.z = <span class="number">4</span> * <span class="built_in">atan2</span>(tfs.transform.translation.y,tfs.transform.translation.x);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//5-3.发布速度信息 -- 需要提前创建 publish 对象</span></span><br><span class="line">            pub.<span class="built_in">publish</span>(twist);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;错误提示:%s&quot;</span>,e.<span class="built_in">what</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">        <span class="comment">// 6.spin</span></span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置文件此处略。</p>
+<h3 id="5-运行">5. 运行</h3>
+<p>使用 launch 文件组织需要运行的节点，内容示例如下:</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">    tf2 实现小乌龟跟随案例</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动乌龟节点与键盘控制节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;turtlesim&quot;</span> <span class="attr">type</span>=<span class="string">&quot;turtlesim_node&quot;</span> <span class="attr">name</span>=<span class="string">&quot;turtle1&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;turtlesim&quot;</span> <span class="attr">type</span>=<span class="string">&quot;turtle_teleop_key&quot;</span> <span class="attr">name</span>=<span class="string">&quot;key_control&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>/&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动创建第二只乌龟的节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test01_Create_Turtle2&quot;</span> <span class="attr">name</span>=<span class="string">&quot;turtle2&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动两个坐标发布节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test02_TF2_Caster&quot;</span> <span class="attr">name</span>=<span class="string">&quot;caster1&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> <span class="attr">args</span>=<span class="string">&quot;turtle1&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test02_TF2_Caster&quot;</span> <span class="attr">name</span>=<span class="string">&quot;caster2&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> <span class="attr">args</span>=<span class="string">&quot;turtle2&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动坐标转换节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test03_TF2_Listener&quot;</span> <span class="attr">name</span>=<span class="string">&quot;listener&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="5-2-rosbag">5.2 rosbag</h1>
+<p>机器人传感器获取到的信息，有时我们可能需要处理，有时可能只是采集数据，事后分析，比如:</p>
+<blockquote>
+<p>机器人导航实现中，可能需要绘制导航所需的全局地图，地图绘制实现，有两种方式，方式1：可以控制机器人运动，将机器人传感器感知到的数据时时处理，生成地图信息。方式2：同样是控制机器人运动，将机器人传感器感知到的数据留存，事后，再重新读取数据，生成地图信息。两种方式比较，显然方式2使用上更为灵活方便。</p>
+</blockquote>
+<p>在ROS中关于数据的留存以及读取实现，提供了专门的工具: rosbag。</p>
+<hr>
+<p><strong>概念</strong></p>
+<p>是用于录制和回放 ROS 主题的一个工具集。</p>
+<p><strong>作用</strong></p>
+<p>实现了数据的复用，方便调试、测试。</p>
+<p><strong>本质</strong></p>
+<p>rosbag本质也是ros的节点，当录制时，rosbag是一个订阅节点，可以订阅话题消息并将订阅到的数据写入磁盘文件；当重放时，rosbag是一个发布节点，可以读取磁盘文件，发布文件中的话题消息。</p>
+<h2 id="5-2-1-rosbag-使用-命令行">5.2.1 rosbag 使用_命令行</h2>
+<p><strong>需求:</strong></p>
+<p>ROS 内置的乌龟案例并操作，操作过程中使用 rosbag 录制，录制结束后，实现重放</p>
+<p><strong>实现:</strong></p>
+<ol>
+<li class="lvl-3">
+<p>准备</p>
+<p>创建目录保存录制的文件</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mkdir ./xxx</span><br><span class="line"><span class="built_in">cd</span> xxx</span><br></pre></td></tr></table></figure>
+</li>
+<li class="lvl-3">
+<p>开始录制</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosbag record <span class="literal">-a</span> <span class="literal">-O</span> 目标文件</span><br></pre></td></tr></table></figure>
+<p>操作小乌龟一段时间，结束录制使用 ctrl + c，在创建的目录中会生成bag文件。</p>
+</li>
+<li class="lvl-3">
+<p>查看文件</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosbag info 文件名</span><br></pre></td></tr></table></figure>
+</li>
+<li class="lvl-3">
+<p>回放文件</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosbag play 文件名</span><br></pre></td></tr></table></figure>
+<p>重启乌龟节点，会发现，乌龟按照录制时的轨迹运动。</p>
+</li>
+</ol>
+<h2 id="5-2-2-rosbag使用-编码">5.2.2 rosbag使用_编码</h2>
+<p>命令实现不够灵活，可以使用编码的方式，增强录制与回放的灵活性,本节将通过简单的读写实现演示rosbag的编码实现。</p>
+<hr>
+<p>方案A:C++实现</p>
+<h3 id="1-写-bag">1. 写 bag</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rosbag/bag.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;std_msgs/String.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;bag_write&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">//创建bag对象</span></span><br><span class="line">    rosbag::Bag bag;</span><br><span class="line">    <span class="comment">//打开</span></span><br><span class="line">    bag.<span class="built_in">open</span>(<span class="string">&quot;/home/rosdemo/demo/test.bag&quot;</span>,rosbag::BagMode::Write);</span><br><span class="line">    <span class="comment">//写</span></span><br><span class="line">    std_msgs::String msg;</span><br><span class="line">    msg.data = <span class="string">&quot;hello world&quot;</span>;</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    <span class="comment">//关闭</span></span><br><span class="line">    bag.<span class="built_in">close</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-读bag">2. 读bag</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    读取 bag 文件：</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rosbag/bag.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rosbag/view.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;std_msgs/String.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;std_msgs/Int32.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;bag_read&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建 bag 对象</span></span><br><span class="line">    rosbag::Bag bag;</span><br><span class="line">    <span class="comment">//打开 bag 文件</span></span><br><span class="line">    bag.<span class="built_in">open</span>(<span class="string">&quot;/home/rosdemo/demo/test.bag&quot;</span>,rosbag::BagMode::Read);</span><br><span class="line">    <span class="comment">//读数据</span></span><br><span class="line">    <span class="keyword">for</span> (rosbag::MessageInstance <span class="type">const</span> m : rosbag::<span class="built_in">View</span>(bag))</span><br><span class="line">    &#123;</span><br><span class="line">        std_msgs::String::ConstPtr p = m.<span class="built_in">instantiate</span>&lt;std_msgs::String&gt;();</span><br><span class="line">        <span class="keyword">if</span>(p != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;读取的数据:%s&quot;</span>,p-&gt;data.<span class="built_in">c_str</span>());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//关闭文件流</span></span><br><span class="line">    bag.<span class="built_in">close</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="5-3-rqt工具箱">5.3 rqt工具箱</h1>
+<p>之前，在 ROS 中使用了一些实用的工具,比如: ros_bag 用于录制与回放、tf2_tools 可以生成 TF 树 … 这些工具大大提高了开发的便利性，但是也存在一些问题: 这些工具的启动和使用过程中涉及到一些命令操作，应用起来不够方便，在ROS中，提供了rqt工具箱，在调用工具时以图形化操作代替了命令操作，应用更便利，提高了操作效率，优化了用户体验。</p>
+<hr>
+<p><strong>概念</strong></p>
+<p>ROS基于 QT 框架，针对机器人开发提供了一系列可视化的工具，这些工具的集合就是rqt</p>
+<p><strong>作用</strong></p>
+<p>可以方便的实现 ROS 可视化调试，并且在同一窗口中打开多个部件，提高开发效率，优化用户体验。</p>
+<p><strong>组成</strong></p>
+<p>rqt 工具箱组成有三大部分</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>rqt——核心实现，开发人员无需关注</p>
+</li>
+<li class="lvl-2">
+<p>rqt_common_plugins——rqt 中常用的工具套件</p>
+</li>
+<li class="lvl-2">
+<p>rqt_robot_plugins——运行中和机器人交互的插件(比如: rviz)</p>
+</li>
+</ul>
+<h2 id="5-3-1-rqt安装启动与基本使用">5.3.1 rqt安装启动与基本使用</h2>
+<p><strong>1.安装</strong></p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>一般只要你安装的是desktop-full版本就会自带工具箱</p>
+</li>
+<li class="lvl-2">
+<p>如果需要安装可以以如下方式安装</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="variable">$</span> sudo apt<span class="literal">-get</span> install ros<span class="literal">-noetic-rqt</span></span><br><span class="line"><span class="variable">$</span> sudo apt<span class="literal">-get</span> install ros<span class="literal">-noetic-rqt-common-plugins</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>2.启动</strong></p>
+<p><code>rqt</code>的启动方式有两种:</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>方式1:<code>rqt</code></p>
+</li>
+<li class="lvl-2">
+<p>方式2:<code>rosrun rqt_gui rqt_gui</code></p>
+</li>
+</ul>
+<p><strong>3.基本使用</strong></p>
+<p>启动 rqt 之后，可以通过 plugins 添加所需的插件</p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145032177.png" alt="image-20240606145032177"></p>
+<h2 id="5-3-2-rqt常用插件-rqt-graph">5.3.2 rqt常用插件:rqt_graph</h2>
+<p>**简介:**可视化显示计算图</p>
+<p>**启动:**可以在 rqt 的 plugins 中添加，或者使用<code>rqt_graph</code>启动</p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145104665.png" alt="image-20240606145104665"></p>
+<h2 id="5-3-3-rqt常用插件-rqt-console">5.3.3 rqt常用插件:rqt_console</h2>
+<p>**简介:**rqt_console 是 ROS 中用于显示和过滤日志的图形化插件</p>
+<p>**准备:**编写 Node 节点输出各个级别的日志信息</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    ROS 节点:输出各种级别的日志信息</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;log_demo&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">0.3</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_DEBUG</span>(<span class="string">&quot;Debug message d&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Info message oooooooooooooo&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_WARN</span>(<span class="string">&quot;Warn message wwwww&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;Erroe message EEEEEEEEEEEEEEEEEEEE&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_FATAL</span>(<span class="string">&quot;Fatal message FFFFFFFFFFFFFFFFFFFFFFFFFFFFF&quot;</span>);</span><br><span class="line">        r.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>启动:</strong></p>
+<p>可以在 rqt 的 plugins 中添加，或者使用<code>rqt_console</code>启动</p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145136457.png" alt="image-20240606145136457"></p>
+<h2 id="5-3-4-rqt常用插件-rqt-plot">5.3.4 rqt常用插件:rqt_plot</h2>
+<p>**简介:**图形绘制插件，可以以 2D 绘图的方式绘制发布在 topic 上的数据</p>
+<p>**准备:**启动 turtlesim 乌龟节点与键盘控制节点，通过 rqt_plot 获取乌龟位姿</p>
+<p>**启动:**可以在 rqt 的 plugins 中添加，或者使用<code>rqt_plot</code>启动</p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145303743.png" alt="image-20240606145303743"></p>
+<h2 id="5-3-5-rqt常用插件-rqt-bag">5.3.5 rqt常用插件:rqt_bag</h2>
+<p>**简介:**录制和重放 bag 文件的图形化插件</p>
+<p>**准备:**启动 turtlesim 乌龟节点与键盘控制节点</p>
+<p>**启动:**可以在 rqt 的 plugins 中添加，或者使用<code>rqt_bag</code>启动</p>
+<p><strong>录制:</strong></p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606150036521.png" alt="image-20240606150036521"></p>
+<p><strong>重放:</strong></p>
+<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606150123430.png" alt="image-20240606150123430"></p>
+]]></content>
+      <categories>
+        <category>ros</category>
+        <category>ros_autolabor</category>
+      </categories>
+      <tags>
+        <tag>ros</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MarkDown格式</title>
+    <url>/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="hexo的-md文件开头">hexo的.md文件开头</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">tag: [格式]</span><br><span class="line">第二个 &quot;---&quot; 不用打,按enter即可</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<h1 id="hexo缩进">hexo缩进</h1>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">使用Html的空格符<span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;emsp;</span>控制缩进。（噩梦碎片）</span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;emsp;</span>hello</span><br><span class="line">hello</span><br></pre></td></tr></table></figure>
+<p> hello</p>
+<p>hello</p>
+<h1 id="小标题缩进">小标题缩进</h1>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#一级小标题</span></span><br><span class="line">    <span class="number">1</span>.空格 xxx </span><br><span class="line">    <span class="comment">#在 1. 的行末跳格，就可以直接出现 2.</span></span><br><span class="line">    <span class="comment">#在 1. 的下一行输入 2.空格 结果相同</span></span><br><span class="line">    <span class="number">2</span>.空格 yyy</span><br><span class="line">	<span class="comment">#在 n. 的行末直接两次跳格就可以不出现 n+1. 的行首（即空行首）</span></span><br><span class="line"><span class="comment">#二级小标题</span></span><br><span class="line">	<span class="comment">#在 n. 的行末输入一次跳格，一次退格就可以得到二级小标题的空行首</span></span><br><span class="line">	<span class="number">1</span>.空格 xxx </span><br><span class="line">		zzz</span><br></pre></td></tr></table></figure>
+<ol>
+<li class="lvl-3">
+<p>xxx</p>
+</li>
+<li class="lvl-3">
+<p>yyy</p>
+<p>zzz</p>
+</li>
+</ol>
+<h1 id="标题-数个-空格-前置">标题[数个&quot;#&quot;+空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">### 三级标题</span><br><span class="line">#### 四级标题</span><br><span class="line">##### 五级标题</span><br><span class="line">###### 六级标题</span><br></pre></td></tr></table></figure>
+<h1 id="强调-用-“-”-或-“-”-包围">强调 [用 “**” 或 “__” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**欢迎报考南京大学!** (我喜欢用这种)</span><br><span class="line">__欢迎报考南京大学!__</span><br></pre></td></tr></table></figure>
+<p><strong>hello</strong></p>
+<h1 id="斜体-用-“-”-或-“-”-包围">斜体 [用 “*” 或 “_” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">*欢迎大佬来浇浇我各种知识* (我喜欢用这种)</span><br><span class="line">_欢迎大佬来浇浇我各种知识_</span><br></pre></td></tr></table></figure>
+<p><em>hello</em></p>
+<h1 id="斜体并强调">斜体并强调</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***hello***</span><br></pre></td></tr></table></figure>
+<p><em><strong>hello</strong></em></p>
+<h1 id="高亮-用-包围">高亮[用&quot;==&quot;包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">==hello==</span><br></pre></td></tr></table></figure>
+<p><mark>hello</mark></p>
+<h1 id="删除线-用-“-”-包围">删除线 [用 “~~” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~~hello~~</span><br></pre></td></tr></table></figure>
+<p><s>hello</s></p>
+<h1 id="代码-用-“-”-包围">代码[用 “`” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">`cd ..`</span><br></pre></td></tr></table></figure>
+<p><code>cd ..</code></p>
+<h1 id="代码块-用-并敲回车">代码块 [用&quot;```&quot; 并敲回车]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">​```hello</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mian</span><span class="params">()</span> &#123;</span><br><span class="line">    print（“Hello, world!\n<span class="string">&quot;）;</span></span><br><span class="line"><span class="string">    return 0;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="引用-“-”-空格-前置">引用 [“&gt;” + 空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; hello</span><br><span class="line">&gt;</span><br><span class="line">&gt;&gt;hi</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>hello</p>
+<blockquote>
+<p>hi</p>
+</blockquote>
+</blockquote>
+<h1 id="无序列标-“-“或”-”-空格-前置">无序列标 [“-“或”+” + 空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">- hello</span><br><span class="line">+ hello</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>hello</p>
+</li>
+</ul>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>hello</p>
+</li>
+</ul>
+<h1 id="上标-用-“-”-包围">上标 [用 “^” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2^3^</span><br></pre></td></tr></table></figure>
+<p>2<sup>3</sup></p>
+<h1 id="下标-用-“-”-包围">下标 [用 “~” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">H~2~O</span><br></pre></td></tr></table></figure>
+<p>H<sub>2</sub>O</p>
+<h1 id="注释-“-”-后置">注释 [“[^]” 后置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; 今日我们相聚于此, 是为了学习 Markdown 的使用, 它的教程对于全体「观众」而言, 值得足足两个硬币的支持鼓励![^1]</span><br><span class="line"></span><br><span class="line">[^1]: 沃兹·基·硕德 改编自「公鸡」普契涅拉.</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>hello world!<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<h1 id="链接-常用-“-”-“-”-分别包围文本与链接">链接 [常用 “[ ]” + “( )” 分别包围文本与链接]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[hello world](https://hello world.com)</span><br></pre></td></tr></table></figure>
+<p>[hello world](<a href="https://hello">https://hello</a> <a href="http://world.com">world.com</a>)</p>
+<h1 id="任务列表-“-”-空格-前置">任务列表 [“- [ ]” + 空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Todo List:</span><br><span class="line">- [ ]刷B站</span><br><span class="line">- [ ]写代码</span><br><span class="line">- [x]起床</span><br></pre></td></tr></table></figure>
+<p>Todo List:</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><input type="checkbox" id="checkbox0"><label for="checkbox0">刷B站</label></p>
+</li>
+<li class="lvl-2">
+<p><input type="checkbox" id="checkbox1"><label for="checkbox1">写代码</label></p>
+</li>
+<li class="lvl-2">
+<p><input type="checkbox" id="checkbox2" checked="true"><label for="checkbox2">起床</label></p>
+</li>
+</ul>
+<h1 id="表格-用-“-”-绘制表格边框">表格 [用 “|” 绘制表格边框]</h1>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">第一行为表头, 并由第二行分割线决定对齐方式与长度, 第三行及之后即表格数据</span><br><span class="line">| 学号    | 姓名 | 年龄 |</span><br><span class="line">| :------ | :--: | ---: |</span><br><span class="line">| 114514  | 张三 |   24 |</span><br><span class="line">| 1919810 | 李四 |   25 |</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">学号</th>
+<th style="text-align:center">姓名</th>
+<th style="text-align:right">年龄</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">114514</td>
+<td style="text-align:center">张三</td>
+<td style="text-align:right">24</td>
+</tr>
+<tr>
+<td style="text-align:left">1919810</td>
+<td style="text-align:center">李四</td>
+<td style="text-align:right">25</td>
+</tr>
+</tbody>
+</table>
+<h1 id="图片-直接拖进来-复制粘贴">图片 [直接拖进来/复制粘贴]</h1>
+<p><img src="/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/%E9%98%BF%E5%B0%94%E6%B3%B0%E4%BA%9A.png" alt="阿尔泰亚"></p>
+<h1 id="分割线-按三个-“-”-或-“-”-或-“-”-并敲回车">分割线 [按三个 “*” 或 “-” 或 “_” 并敲回车]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***/---/___</span><br></pre></td></tr></table></figure>
+<hr>
+<hr>
+<hr>
+<h1 id="Emoji表情-“-”-前置-后置的-一般不需要手动输">Emoji表情 [“:” 前置,后置的&quot;:&quot;一般不需要手动输]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">:sweat_smile:</span><br></pre></td></tr></table></figure>
+<p>😅</p>
+<p><a href="https://emojipedia.org/apple/">全Emoji的网站</a></p>
+<h1 id="自定义容器。">自定义容器。</h1>
+<div class="tips">
+<p><strong>提示</strong></p>
+<p>这是一个提示</p>
+</div>
+<div class="warning">
+<p><strong>注意</strong></p>
+<p>这是一个警告</p>
+</div>
+<div class="danger">
+<p><strong>警告</strong></p>
+<p>这是一个危险信号</p>
+</div>
+<div class="success">
+<p><strong>成功</strong></p>
+<p>这是一个成功信号</p>
+</div>
+<h1 id="公式-用-包围">公式[用&quot;$&quot;包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$a^n+b^n=c^n$</span><br></pre></td></tr></table></figure>
+<p>$ a<sup>n+b</sup>n=c^n $</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$$</span><br><span class="line">%\usepackage&#123;unicode-math&#125;</span><br><span class="line">\displaystyle \ointctrclockwise\mathcal&#123;D&#125;[x(t)]</span><br><span class="line">\sqrt&#123;\frac&#123;\displaystyle3\uppi^2-\sum_&#123;q=0&#125;^&#123;\infty&#125;(z+\hat L)^&#123;q&#125;</span><br><span class="line">\exp(\symrm&#123;i&#125;q^2 \hbar x)&#125;&#123;\displaystyle (\symsfup&#123;Tr&#125;\symbfcal&#123;A&#125;)</span><br><span class="line">\left(\symbf\Lambda_&#123;j_1j_2&#125;^&#123;i_1i_2&#125;\Gamma_&#123;i_1i_2&#125;^&#123;j_1j_2&#125;</span><br><span class="line">\hookrightarrow\vec D\cdot \symbf P \right)&#125;&#125;</span><br><span class="line">=\underbrace&#123;\widetilde&#123;\left\langle \frac&#123;\notin \emptyset&#125;</span><br><span class="line">&#123;\varpi\alpha_&#123;k\uparrow&#125;&#125;\middle\vert</span><br><span class="line">\frac&#123;\partial_\mu T_&#123;\mu\nu&#125;&#125;&#123;2&#125;\right\rangle&#125;&#125;_&#123;\mathrm&#123;K&#125;_3</span><br><span class="line">\mathrm&#123;Fe&#125;(\mathrm&#123;CN&#125;)_6&#125; ,\forall z \in \mathbb&#123;R&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
+<p>$$<br>
+%\usepackage{unicode-math}<br>
+\displaystyle \ointctrclockwise\mathcal{D}[x(t)]<br>
+\sqrt{\frac{\displaystyle3\uppi<sup>2-\sum_{q=0}</sup>{\infty}(z+\hat L)^{q}<br>
+\exp(\symrm{i}q^2 \hbar x)}{\displaystyle (\symsfup{Tr}\symbfcal{A})<br>
+\left(\symbf\Lambda_{j_1j_2}<sup>{i_1i_2}\Gamma_{i_1i_2}</sup>{j_1j_2}<br>
+\hookrightarrow\vec D\cdot \symbf P \right)}}<br>
+=\underbrace{\widetilde{\left\langle \frac{\notin \emptyset}<br>
+{\varpi\alpha_{k\uparrow}}\middle\vert<br>
+\frac{\partial_\mu T_{\mu\nu}}{2}\right\rangle}}_{\mathrm{K}_3<br>
+\mathrm{Fe}(\mathrm{CN})_6} ,\forall z \in \mathbb{R}<br>
+$$</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>你好世界! <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+      <categories>
+        <category>编码格式</category>
+      </categories>
+      <tags>
+        <tag>md格式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>6 ros机器人系统仿真</title>
     <url>/2024/06/08/6-ros%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%B3%BB%E7%BB%9F%E4%BB%BF%E7%9C%9F/</url>
     <content><![CDATA[<h1 id="6-1-概述">6.1 概述</h1>
@@ -1803,531 +2328,6 @@
       </tags>
   </entry>
   <entry>
-    <title>5 ros常用组件</title>
-    <url>/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/</url>
-    <content><![CDATA[<p> 在ROS中内置一些比较实用的工具，通过这些工具可以方便快捷的实现某个功能或调试程序，从而提高开发效率，本章主要介绍ROS中内置的如下组件:</p>
-<ul class="lvl-0">
-<li class="lvl-2">TF坐标变换，实现不同类型的坐标系之间的转换</li>
-<li class="lvl-2">rosbag 用于录制ROS节点的执行过程并可以重放该过程</li>
-<li class="lvl-2">rqt 工具箱，集成了多款图形化的调试工具</li>
-</ul>
-<h1 id="5-1-TF坐标变换">5.1 TF坐标变换</h1>
-<p> 机器人系统上，有多个传感器，如激光雷达、摄像头等，有的传感器是可以感知机器人周边的物体方位(或者称之为:坐标，横向、纵向、高度的距离信息)的，以协助机器人定位障碍物，但这是相对于传感器的方位信息，若要使用，需要一个转换过程，使其变为相对于机器人或相关组件的方位信息。</p>
-<p><strong>作用</strong>：在 ROS 中用于实现不同坐标系之间的点或向量的转换。</p>
-<p><strong>说明</strong>：在ROS中坐标变换最初对应的是tf，不过在 hydro 版本开始, tf 被弃用，迁移到 tf2,后者更为简洁高效，</p>
-<p><strong>tf2对应的常用功能包有</strong>：</p>
-<p>tf2_geometry_msgs : 可以将ROS消息转换成tf2消息。</p>
-<p>tf2 : 封装了坐标变换的常用消息。</p>
-<p>tf2_ros : 为tf2提供了roscpp和rospy绑定，封装了坐标变换常用的API。</p>
-<hr>
-<h2 id="5-1-1-坐标msg消息">5.1.1 坐标msg消息</h2>
-<p>订阅发布模型中数据载体 msg 是一个重要实现，首先需要了解一下，在坐标转换实现中常用的 msg : <strong>geometry_msgs/TransformStamped</strong> 和 <strong>geometry_msgs/PointStamped</strong></p>
-<p>前者用于传输坐标系相关位置信息，后者用于传输某个坐标系内坐标点的信息。在坐标变换中，频繁的需要使用到坐标系的相对关系以及坐标点信息。</p>
-<p><strong>1. geometry_msgs/TransformStamped</strong></p>
-<p>命令行键入:<code>rosmsg info geometry_msgs/TransformStamped</code></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">std_msgs/Header header                     <span class="comment">#头信息</span></span><br><span class="line">  uint32 seq                                <span class="comment">#|-- 序列号</span></span><br><span class="line">  time stamp                                <span class="comment">#|-- 时间戳</span></span><br><span class="line">  string frame_id                            <span class="comment">#|-- 坐标 ID</span></span><br><span class="line">string child_frame_id                    <span class="comment">#子坐标系的 id</span></span><br><span class="line">geometry_msgs/Transform transform        <span class="comment">#坐标信息</span></span><br><span class="line">  geometry_msgs/Vector3 translation        <span class="comment">#偏移量</span></span><br><span class="line">    float64 x                                <span class="comment">#|-- X 方向的偏移量</span></span><br><span class="line">    float64 y                                <span class="comment">#|-- Y 方向的偏移量</span></span><br><span class="line">    float64 z                                <span class="comment">#|-- Z 方向上的偏移量</span></span><br><span class="line">  geometry_msgs/Quaternion rotation        <span class="comment">#四元数，右手法则</span></span><br><span class="line">    float64 x                                <span class="comment">#|-- 水平面的偏移方向，绕Z轴转</span></span><br><span class="line">    float64 y                                <span class="comment">#|-- 俯仰面的偏移方向，绕Y轴转</span></span><br><span class="line">    float64 z                                <span class="comment">#|-- 翻滚面的偏移方向，绕X轴转</span></span><br><span class="line">    float64 w</span><br></pre></td></tr></table></figure>
-<p>四元数用于表示坐标的相对姿态</p>
-<p><strong>2. geometry_msgs/PointStamped</strong></p>
-<p>命令行键入:<code>rosmsg info geometry_msgs/PointStamped</code></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">std_msgs/Header header                    <span class="comment">#头</span></span><br><span class="line">  uint32 seq                                <span class="comment">#|-- 序号</span></span><br><span class="line">  time stamp                                <span class="comment">#|-- 时间戳</span></span><br><span class="line">  string frame_id                            <span class="comment">#|-- 所属坐标系的 id</span></span><br><span class="line">geometry_msgs/Point point                <span class="comment">#点坐标</span></span><br><span class="line">  float64 x                                    <span class="comment">#|-- x y z 坐标</span></span><br><span class="line">  float64 y</span><br><span class="line">  float64 z</span><br></pre></td></tr></table></figure>
-<h2 id="5-1-2-静态坐标变换">5.1.2 静态坐标变换</h2>
-<p>所谓静态坐标变换，是指两个坐标系之间的相对位置是固定的。</p>
-<p><strong>需求描述:</strong></p>
-<p>现有一机器人模型，核心构成包含主体与雷达，各对应一坐标系，坐标系的原点分别位于主体与雷达的物理中心，已知雷达原点相对于主体原点位移关系如下: x 0.2 y0.0 z0.5。当前雷达检测到一障碍物，在雷达坐标系中障碍物的坐标为 (2.0 3.0 5.0),请问，该障碍物相对于主体的坐标是多少？</p>
-<p><strong>结果演示:</strong>（命令行键入 rviz）</p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606144619843.png" alt="image-20240606144619843"></p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606144603696.png" alt="image-20240606144603696"></p>
-<p><strong>实现分析:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>坐标系相对关系，可以通过发布方发布</p>
-</li>
-<li class="lvl-3">
-<p>订阅方，订阅到发布的坐标系相对关系，再传入坐标点信息(可以写死)，然后借助于 tf 实现坐标变换，并将结果输出</p>
-</li>
-</ol>
-<p>**实现流程:**C++ 与 Python 实现流程一致</p>
-<ol>
-<li class="lvl-3">
-<p>新建功能包，添加依赖</p>
-</li>
-<li class="lvl-3">
-<p>编写发布方实现</p>
-</li>
-<li class="lvl-3">
-<p>编写订阅方实现</p>
-</li>
-<li class="lvl-3">
-<p>执行并查看结果</p>
-</li>
-</ol>
-<hr>
-<h3 id="1-创建功能包">1.创建功能包</h3>
-<p>创建项目功能包依赖于 <code>tf2 tf2_ros tf2_geometry_msgs roscpp rospy std_msgs geometry_msgs</code></p>
-<h3 id="2-发布方">2.发布方</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment">    静态坐标变换发布方:</span></span><br><span class="line"><span class="comment">        发布关于 laser 坐标系的位置信息 </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ROS 节点</span></span><br><span class="line"><span class="comment">        3.创建静态坐标转换广播器</span></span><br><span class="line"><span class="comment">        4.创建坐标系信息</span></span><br><span class="line"><span class="comment">        5.广播器发布坐标系信息</span></span><br><span class="line"><span class="comment">        6.spin()</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/static_transform_broadcaster.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;static_brocast&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建静态坐标转换广播器</span></span><br><span class="line">    tf2_ros::StaticTransformBroadcaster broadcaster;</span><br><span class="line">    <span class="comment">// 4.创建坐标系信息</span></span><br><span class="line">    geometry_msgs::TransformStamped ts;</span><br><span class="line">    <span class="comment">//----设置头信息</span></span><br><span class="line">    ts.header.seq = <span class="number">100</span>;</span><br><span class="line">    ts.header.stamp = ros::Time::<span class="built_in">now</span>(); <span class="comment">// </span></span><br><span class="line">    ts.header.frame_id = <span class="string">&quot;base_link&quot;</span>; <span class="comment">// 相对关系中被参考的那个点，即原点或者说起点 </span></span><br><span class="line">    <span class="comment">//----设置子级坐标系</span></span><br><span class="line">    ts.child_frame_id = <span class="string">&quot;laser&quot;</span>;</span><br><span class="line">    <span class="comment">//----设置子级相对于父级的偏移量</span></span><br><span class="line">    ts.transform.translation.x = <span class="number">0.2</span>;</span><br><span class="line">    ts.transform.translation.y = <span class="number">0.0</span>;</span><br><span class="line">    ts.transform.translation.z = <span class="number">0.5</span>;</span><br><span class="line">    <span class="comment">//----设置四元数:将 欧拉角数据转换成四元数</span></span><br><span class="line">    tf2::Quaternion qtn;</span><br><span class="line">    qtn.<span class="built_in">setRPY</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">    ts.transform.rotation.x = qtn.<span class="built_in">getX</span>();</span><br><span class="line">    ts.transform.rotation.y = qtn.<span class="built_in">getY</span>();</span><br><span class="line">    ts.transform.rotation.z = qtn.<span class="built_in">getZ</span>();</span><br><span class="line">    ts.transform.rotation.w = qtn.<span class="built_in">getW</span>();</span><br><span class="line">    <span class="comment">// 5.广播器发布坐标系信息</span></span><br><span class="line">    broadcaster.<span class="built_in">sendTransform</span>(ts);</span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>配置文件此处略。</p>
-<h3 id="3-订阅方">3.订阅方</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    订阅坐标系信息，生成一个相对于 子级坐标系的坐标点数据，转换成父级坐标系中的坐标点</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ROS 节点</span></span><br><span class="line"><span class="comment">        3.创建 TF 订阅节点</span></span><br><span class="line"><span class="comment">        4.生成一个坐标点(相对于子级坐标系)</span></span><br><span class="line"><span class="comment">        5.转换坐标点(相对于父级坐标系)</span></span><br><span class="line"><span class="comment">        6.spin()</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/buffer.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/PointStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_geometry_msgs/tf2_geometry_msgs.h&quot;</span> <span class="comment">//注意: 调用 transform 必须包含该头文件</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;tf_sub&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 3.创建 TF 订阅节点</span></span><br><span class="line">    tf2_ros::Buffer buffer;</span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="comment">// 4.生成一个坐标点(相对于子级坐标系)，即模拟雷达检测到的目标与雷达的距离</span></span><br><span class="line">        geometry_msgs::PointStamped point_laser;</span><br><span class="line">        point_laser.header.frame_id = <span class="string">&quot;laser&quot;</span>;</span><br><span class="line">        point_laser.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">        point_laser.point.x = <span class="number">1</span>;</span><br><span class="line">        point_laser.point.y = <span class="number">2</span>;</span><br><span class="line">        point_laser.point.z = <span class="number">7.3</span>;</span><br><span class="line">    <span class="comment">// 5.转换坐标点(相对于父级坐标系)</span></span><br><span class="line">        <span class="comment">//--------------使用 try 语句或休眠，否则可能由于缓存接收延迟而导致坐标转换失败------------------------</span></span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;	<span class="comment">//新建一个坐标点，用于接收转换结果  </span></span><br><span class="line">            geometry_msgs::PointStamped point_base;</span><br><span class="line">            <span class="comment">/* 运行时存在的问题：抛出一个异常 base_link 不存在</span></span><br><span class="line"><span class="comment">            				原因：订阅数据是一个耗时的操作，可能再调用 transform 转换函数时，坐标系的相对关系还没有订阅到，因此出现异常。</span></span><br><span class="line"><span class="comment">            				解决：</span></span><br><span class="line"><span class="comment">            					方案1：在调用转换函数前，执行休眠</span></span><br><span class="line"><span class="comment">                                方案2：进行异常处理</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            point_base = buffer.<span class="built_in">transform</span>(point_laser,<span class="string">&quot;base_link&quot;</span>);</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;转换后的数据:(%.2f,%.2f,%.2f),参考的坐标系是:%s&quot;</span>,point_base.point.x,point_base.point.y,point_base.point.z,point_base.header.frame_id.<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;程序异常.....&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        r.<span class="built_in">sleep</span>();  </span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="5-1-3-动态坐标变换">5.1.3 动态坐标变换</h2>
-<p>所谓动态坐标变换，是指两个坐标系之间的相对位置是变化的。</p>
-<p><strong>需求描述:</strong></p>
-<p>启动 turtlesim_node,该节点中窗体有一个世界坐标系(左下角为坐标系原点)，乌龟是另一个坐标系，键盘控制乌龟运动，将两个坐标系的相对位置动态发布。</p>
-<p><strong>结果演示:</strong></p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/%E5%9D%90%E6%A0%87%E5%8F%98%E6%8D%A2_%E5%8A%A8%E6%80%81.gif" alt="img"></p>
-<p><strong>实现分析:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>乌龟本身不但可以看作坐标系，也是世界坐标系中的一个坐标点</p>
-</li>
-<li class="lvl-3">
-<p>订阅 turtle1/pose,可以获取乌龟在世界坐标系的 x坐标、y坐标、偏移量以及线速度和角速度</p>
-</li>
-<li class="lvl-3">
-<p>将 pose 信息转换成 坐标系相对信息并发布</p>
-</li>
-</ol>
-<p><strong>实现流程:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>新建功能包，添加依赖</p>
-</li>
-<li class="lvl-3">
-<p>创建坐标相对关系发布方(同时需要订阅乌龟位姿信息)</p>
-</li>
-<li class="lvl-3">
-<p>创建坐标相对关系订阅方</p>
-</li>
-<li class="lvl-3">
-<p>执行</p>
-</li>
-</ol>
-<hr>
-<p>方案A:C++实现</p>
-<h3 id="1-创建功能包-2">1.创建功能包</h3>
-<p>创建项目功能包依赖于 tf2、tf2_ros、tf2_geometry_msgs、roscpp rospy std_msgs geometry_msgs、turtlesim</p>
-<h3 id="2-发布方-2">2.发布方</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    动态的坐标系相对姿态发布(一个坐标系相对于另一个坐标系的相对姿态是不断变动的)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    需求: 启动 turtlesim_node,该节点中窗体有一个世界坐标系(左下角为坐标系原点)，乌龟是另一个坐标系，键盘</span></span><br><span class="line"><span class="comment">    控制乌龟运动，将两个坐标系的相对位置动态发布</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现分析:</span></span><br><span class="line"><span class="comment">        1.乌龟本身不但可以看作坐标系，也是世界坐标系中的一个坐标点</span></span><br><span class="line"><span class="comment">        2.订阅 turtle1/pose,可以获取乌龟在世界坐标系的 x坐标、y坐标、偏移量以及线速度和角速度</span></span><br><span class="line"><span class="comment">        3.将 pose 信息转换成 坐标系相对信息并发布</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ROS 节点</span></span><br><span class="line"><span class="comment">        3.创建 ROS 句柄</span></span><br><span class="line"><span class="comment">        4.创建订阅对象</span></span><br><span class="line"><span class="comment">        5.回调函数处理订阅到的数据(实现TF广播)</span></span><br><span class="line"><span class="comment">            5-1.创建 TF 广播器</span></span><br><span class="line"><span class="comment">            5-2.创建 广播的数据(通过 pose 设置)</span></span><br><span class="line"><span class="comment">            5-3.广播器发布数据</span></span><br><span class="line"><span class="comment">        6.spin</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">// 1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;turtlesim/Pose.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_broadcaster.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">doPose</span><span class="params">(<span class="type">const</span> turtlesim::Pose::ConstPtr&amp; pose)</span></span>&#123;</span><br><span class="line">    <span class="comment">//  5-1.创建 TF 广播器</span></span><br><span class="line">    <span class="type">static</span> tf2_ros::TransformBroadcaster broadcaster;</span><br><span class="line">    <span class="comment">//  5-2.创建 广播的数据(通过 pose 设置)</span></span><br><span class="line">    geometry_msgs::TransformStamped tfs;</span><br><span class="line">    <span class="comment">//  |----头设置</span></span><br><span class="line">    tfs.header.frame_id = <span class="string">&quot;world&quot;</span>;</span><br><span class="line">    tfs.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//  |----坐标系 ID</span></span><br><span class="line">    tfs.child_frame_id = <span class="string">&quot;turtle1&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//  |----坐标系相对信息设置</span></span><br><span class="line">    tfs.transform.translation.x = pose-&gt;x;</span><br><span class="line">    tfs.transform.translation.y = pose-&gt;y;</span><br><span class="line">    tfs.transform.translation.z = <span class="number">0.0</span>; <span class="comment">// 二维实现，pose 中没有z，z 是 0</span></span><br><span class="line">    <span class="comment">//  |--------- 四元数设置</span></span><br><span class="line">    tf2::Quaternion qtn;</span><br><span class="line">    qtn.<span class="built_in">setRPY</span>(<span class="number">0</span>,<span class="number">0</span>,pose-&gt;theta);</span><br><span class="line">    tfs.transform.rotation.x = qtn.<span class="built_in">getX</span>();</span><br><span class="line">    tfs.transform.rotation.y = qtn.<span class="built_in">getY</span>();</span><br><span class="line">    tfs.transform.rotation.z = qtn.<span class="built_in">getZ</span>();</span><br><span class="line">    tfs.transform.rotation.w = qtn.<span class="built_in">getW</span>();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//  5-3.广播器发布数据</span></span><br><span class="line">    broadcaster.<span class="built_in">sendTransform</span>(tfs);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;dynamic_tf_pub&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建 ROS 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 4.创建订阅对象</span></span><br><span class="line">    ros::Subscriber sub = nh.<span class="built_in">subscribe</span>&lt;turtlesim::Pose&gt;(<span class="string">&quot;/turtle1/pose&quot;</span>,<span class="number">1000</span>,doPose);</span><br><span class="line">    <span class="comment">//     5.回调函数处理订阅到的数据(实现TF广播)</span></span><br><span class="line">    <span class="comment">//        </span></span><br><span class="line">    <span class="comment">// 6.spin</span></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">Copy</span><br></pre></td></tr></table></figure>
-<p>配置文件此处略。</p>
-<h3 id="3-订阅方-2">3.订阅方</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/buffer.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/PointStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_geometry_msgs/tf2_geometry_msgs.h&quot;</span> <span class="comment">//注意: 调用 transform 必须包含该头文件</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ROS 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;dynamic_tf_sub&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 3.创建 TF 订阅节点</span></span><br><span class="line">    tf2_ros::Buffer buffer;</span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="comment">// 4.生成一个坐标点(相对于子级坐标系)</span></span><br><span class="line">        geometry_msgs::PointStamped point_laser;</span><br><span class="line">        point_laser.header.frame_id = <span class="string">&quot;turtle1&quot;</span>;</span><br><span class="line">        point_laser.header.stamp = ros::<span class="built_in">Time</span>(); <span class="comment">// 不设置成 now 是为了防止因时间差较大导致的系统自动判错</span></span><br><span class="line">        point_laser.point.x = <span class="number">1</span>;</span><br><span class="line">        point_laser.point.y = <span class="number">1</span>;</span><br><span class="line">        point_laser.point.z = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 5.转换坐标点(相对于父级坐标系)</span></span><br><span class="line">        <span class="comment">//新建一个坐标点，用于接收转换结果  </span></span><br><span class="line">        <span class="comment">//--------------使用 try 语句或休眠，否则可能由于缓存接收延迟而导致坐标转换失败------------------------</span></span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            geometry_msgs::PointStamped point_base;</span><br><span class="line">            point_base = buffer.<span class="built_in">transform</span>(point_laser,<span class="string">&quot;world&quot;</span>);</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;坐标点相对于 world 的坐标为:(%.2f,%.2f,%.2f)&quot;</span>,point_base.point.x,point_base.point.y,point_base.point.z);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;程序异常:%s&quot;</span>,e.<span class="built_in">what</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        r.<span class="built_in">sleep</span>();  </span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>配置文件此处略。</p>
-<h3 id="4-执行">4.执行</h3>
-<p>可以使用命令行或launch文件的方式分别启动发布节点与订阅节点，如果程序无异常，与演示结果类似。</p>
-<p>可以使用 rviz 查看坐标系相对关系</p>
-<h2 id="5-1-4-多坐标变换">5.1.4 多坐标变换</h2>
-<p><strong>需求描述:</strong></p>
-<p>现有坐标系统，父级坐标系统 world,下有两子级系统 son1，son2，son1 相对于 world，以及 son2 相对于 world 的关系是已知的，求 son1原点在 son2中的坐标，又已知在 son1中一点的坐标，要求求出该点在 son2 中的坐标</p>
-<p><strong>实现分析:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>首先，需要发布 son1 相对于 world，以及 son2 相对于 world 的坐标消息</p>
-</li>
-<li class="lvl-3">
-<p>然后，需要订阅坐标发布消息，并取出订阅的消息，借助于 tf2 实现 son1 和 son2 的转换</p>
-</li>
-<li class="lvl-3">
-<p>最后，还要实现坐标点的转换</p>
-</li>
-</ol>
-<p><strong>实现流程:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>新建功能包，添加依赖</p>
-</li>
-<li class="lvl-3">
-<p>创建坐标相对关系发布方(需要发布两个坐标相对关系)</p>
-</li>
-<li class="lvl-3">
-<p>创建坐标相对关系订阅方</p>
-</li>
-<li class="lvl-3">
-<p>执行</p>
-</li>
-</ol>
-<hr>
-<h3 id="1-创建功能包-3">1. 创建功能包</h3>
-<p>创建项目功能包依赖于 tf2 tf2_ros tf2_geometry_msgs roscpp rospy std_msgs geometry_msgs turtlesim</p>
-<h3 id="2-发布方-3">2. 发布方</h3>
-<p>为了方便，使用静态坐标变换发布</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf2_ros&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;son1&quot;</span> <span class="attr">args</span>=<span class="string">&quot;0.2 0.8 0.3 0 0 0 /world /son1&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf2_ros&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;son2&quot;</span> <span class="attr">args</span>=<span class="string">&quot;0.5 0 0 0 0 0 /world /son2&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-订阅方-3">3. 订阅方</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">需求:</span></span><br><span class="line"><span class="comment">    现有坐标系统，父级坐标系统 world,下有两子级系统 son1，son2，</span></span><br><span class="line"><span class="comment">    son1 相对于 world，以及 son2 相对于 world 的关系是已知的，</span></span><br><span class="line"><span class="comment">    求 son1 与 son2中的坐标关系，又已知在 son1中一点的坐标，要求求出该点在 son2 中的坐标</span></span><br><span class="line"><span class="comment">实现流程:</span></span><br><span class="line"><span class="comment">    1.包含头文件</span></span><br><span class="line"><span class="comment">    2.初始化 ros 节点</span></span><br><span class="line"><span class="comment">    3.创建 ros 句柄</span></span><br><span class="line"><span class="comment">    4.创建 TF 订阅对象</span></span><br><span class="line"><span class="comment">    5.解析订阅信息中获取 son1 坐标系原点在 son2 中的坐标</span></span><br><span class="line"><span class="comment">      解析 son1 中的点相对于 son2 的坐标</span></span><br><span class="line"><span class="comment">    6.spin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_geometry_msgs/tf2_geometry_msgs.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/PointStamped.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;   <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ros 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;sub_frames&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建 ros 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 4.创建 TF 订阅对象</span></span><br><span class="line">    tf2_ros::Buffer buffer; </span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line">    <span class="comment">// 5.解析订阅信息中获取 son1 坐标系原点在 son2 中的坐标</span></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">        <span class="comment">//   解析 son1 中的点相对于 son2 的坐标</span></span><br><span class="line">            geometry_msgs::TransformStamped tfs = buffer.<span class="built_in">lookupTransform</span>(<span class="string">&quot;son2&quot;</span>,<span class="string">&quot;son1&quot;</span>,ros::<span class="built_in">Time</span>(<span class="number">0</span>));</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Son1 相对于 Son2 的坐标关系:父坐标系ID=%s&quot;</span>,tfs.header.frame_id.<span class="built_in">c_str</span>());</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Son1 相对于 Son2 的坐标关系:子坐标系ID=%s&quot;</span>,tfs.child_frame_id.<span class="built_in">c_str</span>());</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Son1 相对于 Son2 的坐标关系:x=%.2f,y=%.2f,z=%.2f&quot;</span>,</span><br><span class="line">                    tfs.transform.translation.x,</span><br><span class="line">                    tfs.transform.translation.y,</span><br><span class="line">                    tfs.transform.translation.z</span><br><span class="line">                    );</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 坐标点解析</span></span><br><span class="line">            geometry_msgs::PointStamped ps;</span><br><span class="line">            ps.header.frame_id = <span class="string">&quot;son1&quot;</span>;</span><br><span class="line">            ps.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">            ps.point.x = <span class="number">1.0</span>;</span><br><span class="line">            ps.point.y = <span class="number">2.0</span>;</span><br><span class="line">            ps.point.z = <span class="number">3.0</span>;</span><br><span class="line"></span><br><span class="line">            geometry_msgs::PointStamped psAtSon2;</span><br><span class="line">            psAtSon2 = buffer.<span class="built_in">transform</span>(ps,<span class="string">&quot;son2&quot;</span>);</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;在 Son2 中的坐标:x=%.2f,y=%.2f,z=%.2f&quot;</span>,</span><br><span class="line">                    psAtSon2.point.x,</span><br><span class="line">                    psAtSon2.point.y,</span><br><span class="line">                    psAtSon2.point.z</span><br><span class="line">                    );</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;异常信息:%s&quot;</span>,e.<span class="built_in">what</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        r.<span class="built_in">sleep</span>();</span><br><span class="line">        <span class="comment">// 6.spin</span></span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-1-5-TF坐标变换实操">5.1.5 TF坐标变换实操</h2>
-<p><strong>需求描述:</strong></p>
-<p>程序启动之初: 产生两只乌龟，中间的乌龟(A) 和 左下乌龟(B), B 会自动运行至A的位置，并且键盘控制时，只是控制 A 的运动，但是 B 可以跟随 A 运行</p>
-<p><strong>结果演示:</strong></p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/TF%E5%9D%90%E6%A0%87%E5%8F%98%E6%8D%A2.gif" alt="img"></p>
-<p><strong>实现分析:</strong></p>
-<p>乌龟跟随实现的核心，是乌龟A和B都要发布相对世界坐标系的坐标信息，然后，订阅到该信息需要转换获取A相对于B坐标系的信息，最后，再生成速度信息，并控制B运动。</p>
-<ol>
-<li class="lvl-3">
-<p>启动乌龟显示节点</p>
-</li>
-<li class="lvl-3">
-<p>在乌龟显示窗体中生成一只新的乌龟(需要使用服务)</p>
-</li>
-<li class="lvl-3">
-<p>编写两只乌龟发布坐标信息的节点</p>
-</li>
-<li class="lvl-3">
-<p>编写订阅节点订阅坐标信息并生成新的相对关系生成速度信息</p>
-</li>
-</ol>
-<p><strong>实现流程:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>新建功能包，添加依赖</p>
-</li>
-<li class="lvl-3">
-<p>编写服务客户端，用于生成一只新的乌龟</p>
-</li>
-<li class="lvl-3">
-<p>编写发布方，发布两只乌龟的坐标信息</p>
-</li>
-<li class="lvl-3">
-<p>编写订阅方，订阅两只乌龟信息，生成速度信息并发布</p>
-</li>
-<li class="lvl-3">
-<p>运行</p>
-</li>
-</ol>
-<p><strong>准备工作:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>了解如何创建第二只乌龟，且不受键盘控制</p>
-<p>创建第二只乌龟需要使用rosservice,话题使用的是 spawn</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosservice call /spawn <span class="string">&quot;x: 1.0 y: 1.0 theta: 1.0 name: &#x27;turtle_flow&#x27;&quot;</span> </span><br><span class="line">name: <span class="string">&quot;turtle_flow&quot;</span></span><br></pre></td></tr></table></figure>
-<p>键盘是无法控制第二只乌龟运动的，因为使用的话题: /第二只乌龟名称/cmd_vel,对应的要控制乌龟运动必须发布对应的话题消息</p>
-</li>
-<li class="lvl-3">
-<p>了解如何获取两只乌龟的坐标</p>
-<p>是通过话题 /乌龟名称/pose 来获取的</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">x: <span class="number">1.0</span> //x坐标</span><br><span class="line">y: <span class="number">1.0</span> //y坐标</span><br><span class="line">theta: <span class="literal">-1</span>.<span class="number">21437060833</span> //角度</span><br><span class="line">linear_velocity: <span class="number">0.0</span> //线速度</span><br><span class="line">angular_velocity: <span class="number">1.0</span> //角速度</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<hr>
-<h3 id="1-创建功能包-4">1. 创建功能包</h3>
-<p>创建项目功能包依赖于 tf2 tf2_ros tf2_geometry_msgs roscpp rospy std_msgs geometry_msgs turtlesim</p>
-<h3 id="2-服务客户端-生成乌龟">2. 服务客户端(生成乌龟)</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment">    创建第二只小乌龟</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;turtlesim/Spawn.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//执行初始化</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;create_turtle&quot;</span>);</span><br><span class="line">    <span class="comment">//创建节点</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">//创建服务客户端</span></span><br><span class="line">    ros::ServiceClient client = nh.<span class="built_in">serviceClient</span>&lt;turtlesim::Spawn&gt;(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line"></span><br><span class="line">    ros::service::<span class="built_in">waitForService</span>(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line">    turtlesim::Spawn spawn;</span><br><span class="line">    spawn.request.name = <span class="string">&quot;turtle2&quot;</span>;</span><br><span class="line">    spawn.request.x = <span class="number">1.0</span>;</span><br><span class="line">    spawn.request.y = <span class="number">2.0</span>;</span><br><span class="line">    spawn.request.theta = <span class="number">3.12415926</span>;</span><br><span class="line">    <span class="type">bool</span> flag = client.<span class="built_in">call</span>(spawn);</span><br><span class="line">    <span class="keyword">if</span> (flag)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;乌龟%s创建成功!&quot;</span>,spawn.response.name.<span class="built_in">c_str</span>());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;乌龟2创建失败!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>配置文件此处略。</p>
-<h3 id="3-发布方-发布两只乌龟的坐标信息">3. 发布方(发布两只乌龟的坐标信息)</h3>
-<p>可以订阅乌龟的位姿信息，然后再转换成坐标信息，两只乌龟的实现逻辑相同，只是订阅的话题名称，生成的坐标信息等稍有差异，可以将差异部分通过参数传入:</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>该节点需要启动两次</p>
-</li>
-<li class="lvl-2">
-<p>每次启动时都需要传入乌龟节点名称 (第一次是 turtle1 第二次是 turtle2)</p>
-</li>
-</ul>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    该文件实现:需要订阅 turtle1 和 turtle2 的 pose，然后广播相对 world 的坐标系信息</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    注意: 订阅的两只 turtle,除了命名空间(turtle1 和 turtle2)不同外,</span></span><br><span class="line"><span class="comment">          其他的话题名称和实现逻辑都是一样的，</span></span><br><span class="line"><span class="comment">          所以我们可以将所需的命名空间通过 args 动态传入</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ros 节点</span></span><br><span class="line"><span class="comment">        3.解析传入的命名空间</span></span><br><span class="line"><span class="comment">        4.创建 ros 句柄</span></span><br><span class="line"><span class="comment">        5.创建订阅对象</span></span><br><span class="line"><span class="comment">        6.回调函数处理订阅的 pose 信息</span></span><br><span class="line"><span class="comment">            6-1.创建 TF 广播器</span></span><br><span class="line"><span class="comment">            6-2.将 pose 信息转换成 TransFormStamped</span></span><br><span class="line"><span class="comment">            6-3.发布</span></span><br><span class="line"><span class="comment">        7.spin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;turtlesim/Pose.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_broadcaster.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2/LinearMath/Quaternion.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="comment">//保存乌龟名称</span></span><br><span class="line">std::string turtle_name;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">doPose</span><span class="params">(<span class="type">const</span> turtlesim::Pose::ConstPtr&amp; pose)</span></span>&#123;</span><br><span class="line">    <span class="comment">//  6-1.创建 TF 广播器 ---------------------------------------- 注意 static</span></span><br><span class="line">    <span class="type">static</span> tf2_ros::TransformBroadcaster broadcaster;</span><br><span class="line">    <span class="comment">//  6-2.将 pose 信息转换成 TransFormStamped</span></span><br><span class="line">    geometry_msgs::TransformStamped tfs;</span><br><span class="line">    tfs.header.frame_id = <span class="string">&quot;world&quot;</span>;</span><br><span class="line">    tfs.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">    tfs.child_frame_id = turtle_name;</span><br><span class="line">    tfs.transform.translation.x = pose-&gt;x;</span><br><span class="line">    tfs.transform.translation.y = pose-&gt;y;</span><br><span class="line">    tfs.transform.translation.z = <span class="number">0.0</span>;</span><br><span class="line">    tf2::Quaternion qtn;</span><br><span class="line">    qtn.<span class="built_in">setRPY</span>(<span class="number">0</span>,<span class="number">0</span>,pose-&gt;theta);</span><br><span class="line">    tfs.transform.rotation.x = qtn.<span class="built_in">getX</span>();</span><br><span class="line">    tfs.transform.rotation.y = qtn.<span class="built_in">getY</span>();</span><br><span class="line">    tfs.transform.rotation.z = qtn.<span class="built_in">getZ</span>();</span><br><span class="line">    tfs.transform.rotation.w = qtn.<span class="built_in">getW</span>();</span><br><span class="line">    <span class="comment">//  6-3.发布</span></span><br><span class="line">    broadcaster.<span class="built_in">sendTransform</span>(tfs);</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ros 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;pub_tf&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.解析传入的命名空间</span></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;请传入正确的参数&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        turtle_name = argv[<span class="number">1</span>];</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;乌龟 %s 坐标发送启动&quot;</span>,turtle_name.<span class="built_in">c_str</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4.创建 ros 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 5.创建订阅对象</span></span><br><span class="line">    ros::Subscriber sub = nh.<span class="built_in">subscribe</span>&lt;turtlesim::Pose&gt;(turtle_name + <span class="string">&quot;/pose&quot;</span>,<span class="number">1000</span>,doPose);</span><br><span class="line">    <span class="comment">//     6.回调函数处理订阅的 pose 信息</span></span><br><span class="line">    <span class="comment">//         6-1.创建 TF 广播器</span></span><br><span class="line">    <span class="comment">//         6-2.将 pose 信息转换成 TransFormStamped</span></span><br><span class="line">    <span class="comment">//         6-3.发布</span></span><br><span class="line">    <span class="comment">// 7.spin</span></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>配置文件此处略。</p>
-<h3 id="4-订阅方-解析坐标信息并生成速度信息">4. 订阅方(解析坐标信息并生成速度信息)</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    订阅 turtle1 和 turtle2 的 TF 广播信息，查找并转换时间最近的 TF 信息</span></span><br><span class="line"><span class="comment">    将 turtle1 转换成相对 turtle2 的坐标，在计算线速度和角速度并发布</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    实现流程:</span></span><br><span class="line"><span class="comment">        1.包含头文件</span></span><br><span class="line"><span class="comment">        2.初始化 ros 节点</span></span><br><span class="line"><span class="comment">        3.创建 ros 句柄</span></span><br><span class="line"><span class="comment">        4.创建 TF 订阅对象</span></span><br><span class="line"><span class="comment">        5.处理订阅到的 TF</span></span><br><span class="line"><span class="comment">        6.spin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//1.包含头文件</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tf2_ros/transform_listener.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/TransformStamped.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;geometry_msgs/Twist.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="comment">// 2.初始化 ros 节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;sub_TF&quot;</span>);</span><br><span class="line">    <span class="comment">// 3.创建 ros 句柄</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 4.创建 TF 订阅对象</span></span><br><span class="line">    tf2_ros::Buffer buffer;</span><br><span class="line">    <span class="function">tf2_ros::TransformListener <span class="title">listener</span><span class="params">(buffer)</span></span>;</span><br><span class="line">    <span class="comment">// 5.处理订阅到的 TF</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 需要创建发布 /turtle2/cmd_vel 的 publisher 对象</span></span><br><span class="line"></span><br><span class="line">    ros::Publisher pub = nh.<span class="built_in">advertise</span>&lt;geometry_msgs::Twist&gt;(<span class="string">&quot;/turtle2/cmd_vel&quot;</span>,<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">rate</span><span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//5-1.先获取 turtle1 相对 turtle2 的坐标信息</span></span><br><span class="line">            geometry_msgs::TransformStamped tfs = buffer.<span class="built_in">lookupTransform</span>(<span class="string">&quot;turtle2&quot;</span>,<span class="string">&quot;turtle1&quot;</span>,ros::<span class="built_in">Time</span>(<span class="number">0</span>));</span><br><span class="line"></span><br><span class="line">            <span class="comment">//5-2.根据坐标信息生成速度信息 -- geometry_msgs/Twist.h</span></span><br><span class="line">            geometry_msgs::Twist twist;</span><br><span class="line">            twist.linear.x = <span class="number">0.5</span> * <span class="built_in">sqrt</span>(<span class="built_in">pow</span>(tfs.transform.translation.x,<span class="number">2</span>) + <span class="built_in">pow</span>(tfs.transform.translation.y,<span class="number">2</span>));</span><br><span class="line">            twist.angular.z = <span class="number">4</span> * <span class="built_in">atan2</span>(tfs.transform.translation.y,tfs.transform.translation.x);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//5-3.发布速度信息 -- 需要提前创建 publish 对象</span></span><br><span class="line">            pub.<span class="built_in">publish</span>(twist);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">catch</span>(<span class="type">const</span> std::exception&amp; e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// std::cerr &lt;&lt; e.what() &lt;&lt; &#x27;\n&#x27;;</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;错误提示:%s&quot;</span>,e.<span class="built_in">what</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">        <span class="comment">// 6.spin</span></span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>配置文件此处略。</p>
-<h3 id="5-运行">5. 运行</h3>
-<p>使用 launch 文件组织需要运行的节点，内容示例如下:</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">    tf2 实现小乌龟跟随案例</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动乌龟节点与键盘控制节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;turtlesim&quot;</span> <span class="attr">type</span>=<span class="string">&quot;turtlesim_node&quot;</span> <span class="attr">name</span>=<span class="string">&quot;turtle1&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;turtlesim&quot;</span> <span class="attr">type</span>=<span class="string">&quot;turtle_teleop_key&quot;</span> <span class="attr">name</span>=<span class="string">&quot;key_control&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>/&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动创建第二只乌龟的节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test01_Create_Turtle2&quot;</span> <span class="attr">name</span>=<span class="string">&quot;turtle2&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动两个坐标发布节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test02_TF2_Caster&quot;</span> <span class="attr">name</span>=<span class="string">&quot;caster1&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> <span class="attr">args</span>=<span class="string">&quot;turtle1&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test02_TF2_Caster&quot;</span> <span class="attr">name</span>=<span class="string">&quot;caster2&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> <span class="attr">args</span>=<span class="string">&quot;turtle2&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 启动坐标转换节点 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;demo_tf2_test&quot;</span> <span class="attr">type</span>=<span class="string">&quot;Test03_TF2_Listener&quot;</span> <span class="attr">name</span>=<span class="string">&quot;listener&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h1 id="5-2-rosbag">5.2 rosbag</h1>
-<p>机器人传感器获取到的信息，有时我们可能需要处理，有时可能只是采集数据，事后分析，比如:</p>
-<blockquote>
-<p>机器人导航实现中，可能需要绘制导航所需的全局地图，地图绘制实现，有两种方式，方式1：可以控制机器人运动，将机器人传感器感知到的数据时时处理，生成地图信息。方式2：同样是控制机器人运动，将机器人传感器感知到的数据留存，事后，再重新读取数据，生成地图信息。两种方式比较，显然方式2使用上更为灵活方便。</p>
-</blockquote>
-<p>在ROS中关于数据的留存以及读取实现，提供了专门的工具: rosbag。</p>
-<hr>
-<p><strong>概念</strong></p>
-<p>是用于录制和回放 ROS 主题的一个工具集。</p>
-<p><strong>作用</strong></p>
-<p>实现了数据的复用，方便调试、测试。</p>
-<p><strong>本质</strong></p>
-<p>rosbag本质也是ros的节点，当录制时，rosbag是一个订阅节点，可以订阅话题消息并将订阅到的数据写入磁盘文件；当重放时，rosbag是一个发布节点，可以读取磁盘文件，发布文件中的话题消息。</p>
-<h2 id="5-2-1-rosbag-使用-命令行">5.2.1 rosbag 使用_命令行</h2>
-<p><strong>需求:</strong></p>
-<p>ROS 内置的乌龟案例并操作，操作过程中使用 rosbag 录制，录制结束后，实现重放</p>
-<p><strong>实现:</strong></p>
-<ol>
-<li class="lvl-3">
-<p>准备</p>
-<p>创建目录保存录制的文件</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mkdir ./xxx</span><br><span class="line"><span class="built_in">cd</span> xxx</span><br></pre></td></tr></table></figure>
-</li>
-<li class="lvl-3">
-<p>开始录制</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosbag record <span class="literal">-a</span> <span class="literal">-O</span> 目标文件</span><br></pre></td></tr></table></figure>
-<p>操作小乌龟一段时间，结束录制使用 ctrl + c，在创建的目录中会生成bag文件。</p>
-</li>
-<li class="lvl-3">
-<p>查看文件</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosbag info 文件名</span><br></pre></td></tr></table></figure>
-</li>
-<li class="lvl-3">
-<p>回放文件</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rosbag play 文件名</span><br></pre></td></tr></table></figure>
-<p>重启乌龟节点，会发现，乌龟按照录制时的轨迹运动。</p>
-</li>
-</ol>
-<h2 id="5-2-2-rosbag使用-编码">5.2.2 rosbag使用_编码</h2>
-<p>命令实现不够灵活，可以使用编码的方式，增强录制与回放的灵活性,本节将通过简单的读写实现演示rosbag的编码实现。</p>
-<hr>
-<p>方案A:C++实现</p>
-<h3 id="1-写-bag">1. 写 bag</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rosbag/bag.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;std_msgs/String.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;bag_write&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">//创建bag对象</span></span><br><span class="line">    rosbag::Bag bag;</span><br><span class="line">    <span class="comment">//打开</span></span><br><span class="line">    bag.<span class="built_in">open</span>(<span class="string">&quot;/home/rosdemo/demo/test.bag&quot;</span>,rosbag::BagMode::Write);</span><br><span class="line">    <span class="comment">//写</span></span><br><span class="line">    std_msgs::String msg;</span><br><span class="line">    msg.data = <span class="string">&quot;hello world&quot;</span>;</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    bag.<span class="built_in">write</span>(<span class="string">&quot;/chatter&quot;</span>,ros::Time::<span class="built_in">now</span>(),msg);</span><br><span class="line">    <span class="comment">//关闭</span></span><br><span class="line">    bag.<span class="built_in">close</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="2-读bag">2. 读bag</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    读取 bag 文件：</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rosbag/bag.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rosbag/view.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;std_msgs/String.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;std_msgs/Int32.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_ALL,<span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;bag_read&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建 bag 对象</span></span><br><span class="line">    rosbag::Bag bag;</span><br><span class="line">    <span class="comment">//打开 bag 文件</span></span><br><span class="line">    bag.<span class="built_in">open</span>(<span class="string">&quot;/home/rosdemo/demo/test.bag&quot;</span>,rosbag::BagMode::Read);</span><br><span class="line">    <span class="comment">//读数据</span></span><br><span class="line">    <span class="keyword">for</span> (rosbag::MessageInstance <span class="type">const</span> m : rosbag::<span class="built_in">View</span>(bag))</span><br><span class="line">    &#123;</span><br><span class="line">        std_msgs::String::ConstPtr p = m.<span class="built_in">instantiate</span>&lt;std_msgs::String&gt;();</span><br><span class="line">        <span class="keyword">if</span>(p != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;读取的数据:%s&quot;</span>,p-&gt;data.<span class="built_in">c_str</span>());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//关闭文件流</span></span><br><span class="line">    bag.<span class="built_in">close</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="5-3-rqt工具箱">5.3 rqt工具箱</h1>
-<p>之前，在 ROS 中使用了一些实用的工具,比如: ros_bag 用于录制与回放、tf2_tools 可以生成 TF 树 … 这些工具大大提高了开发的便利性，但是也存在一些问题: 这些工具的启动和使用过程中涉及到一些命令操作，应用起来不够方便，在ROS中，提供了rqt工具箱，在调用工具时以图形化操作代替了命令操作，应用更便利，提高了操作效率，优化了用户体验。</p>
-<hr>
-<p><strong>概念</strong></p>
-<p>ROS基于 QT 框架，针对机器人开发提供了一系列可视化的工具，这些工具的集合就是rqt</p>
-<p><strong>作用</strong></p>
-<p>可以方便的实现 ROS 可视化调试，并且在同一窗口中打开多个部件，提高开发效率，优化用户体验。</p>
-<p><strong>组成</strong></p>
-<p>rqt 工具箱组成有三大部分</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>rqt——核心实现，开发人员无需关注</p>
-</li>
-<li class="lvl-2">
-<p>rqt_common_plugins——rqt 中常用的工具套件</p>
-</li>
-<li class="lvl-2">
-<p>rqt_robot_plugins——运行中和机器人交互的插件(比如: rviz)</p>
-</li>
-</ul>
-<h2 id="5-3-1-rqt安装启动与基本使用">5.3.1 rqt安装启动与基本使用</h2>
-<p><strong>1.安装</strong></p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>一般只要你安装的是desktop-full版本就会自带工具箱</p>
-</li>
-<li class="lvl-2">
-<p>如果需要安装可以以如下方式安装</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="variable">$</span> sudo apt<span class="literal">-get</span> install ros<span class="literal">-noetic-rqt</span></span><br><span class="line"><span class="variable">$</span> sudo apt<span class="literal">-get</span> install ros<span class="literal">-noetic-rqt-common-plugins</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><strong>2.启动</strong></p>
-<p><code>rqt</code>的启动方式有两种:</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>方式1:<code>rqt</code></p>
-</li>
-<li class="lvl-2">
-<p>方式2:<code>rosrun rqt_gui rqt_gui</code></p>
-</li>
-</ul>
-<p><strong>3.基本使用</strong></p>
-<p>启动 rqt 之后，可以通过 plugins 添加所需的插件</p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145032177.png" alt="image-20240606145032177"></p>
-<h2 id="5-3-2-rqt常用插件-rqt-graph">5.3.2 rqt常用插件:rqt_graph</h2>
-<p>**简介:**可视化显示计算图</p>
-<p>**启动:**可以在 rqt 的 plugins 中添加，或者使用<code>rqt_graph</code>启动</p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145104665.png" alt="image-20240606145104665"></p>
-<h2 id="5-3-3-rqt常用插件-rqt-console">5.3.3 rqt常用插件:rqt_console</h2>
-<p>**简介:**rqt_console 是 ROS 中用于显示和过滤日志的图形化插件</p>
-<p>**准备:**编写 Node 节点输出各个级别的日志信息</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">    ROS 节点:输出各种级别的日志信息</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros/ros.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;log_demo&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">0.3</span>)</span></span>;</span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_DEBUG</span>(<span class="string">&quot;Debug message d&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Info message oooooooooooooo&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_WARN</span>(<span class="string">&quot;Warn message wwwww&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;Erroe message EEEEEEEEEEEEEEEEEEEE&quot;</span>);</span><br><span class="line">        <span class="built_in">ROS_FATAL</span>(<span class="string">&quot;Fatal message FFFFFFFFFFFFFFFFFFFFFFFFFFFFF&quot;</span>);</span><br><span class="line">        r.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>启动:</strong></p>
-<p>可以在 rqt 的 plugins 中添加，或者使用<code>rqt_console</code>启动</p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145136457.png" alt="image-20240606145136457"></p>
-<h2 id="5-3-4-rqt常用插件-rqt-plot">5.3.4 rqt常用插件:rqt_plot</h2>
-<p>**简介:**图形绘制插件，可以以 2D 绘图的方式绘制发布在 topic 上的数据</p>
-<p>**准备:**启动 turtlesim 乌龟节点与键盘控制节点，通过 rqt_plot 获取乌龟位姿</p>
-<p>**启动:**可以在 rqt 的 plugins 中添加，或者使用<code>rqt_plot</code>启动</p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606145303743.png" alt="image-20240606145303743"></p>
-<h2 id="5-3-5-rqt常用插件-rqt-bag">5.3.5 rqt常用插件:rqt_bag</h2>
-<p>**简介:**录制和重放 bag 文件的图形化插件</p>
-<p>**准备:**启动 turtlesim 乌龟节点与键盘控制节点</p>
-<p>**启动:**可以在 rqt 的 plugins 中添加，或者使用<code>rqt_bag</code>启动</p>
-<p><strong>录制:</strong></p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606150036521.png" alt="image-20240606150036521"></p>
-<p><strong>重放:</strong></p>
-<p><img src="/2024/05/30/5-ros%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6/image-20240606150123430.png" alt="image-20240606150123430"></p>
-]]></content>
-      <categories>
-        <category>ros</category>
-        <category>ros_autolabor</category>
-      </categories>
-      <tags>
-        <tag>ros</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MarkDown格式</title>
-    <url>/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/</url>
-    <content><![CDATA[<h1 id="hexo的-md文件开头">hexo的.md文件开头</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">tag: [格式]</span><br><span class="line">第二个 &quot;---&quot; 不用打,按enter即可</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<h1 id="hexo缩进">hexo缩进</h1>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">使用Html的空格符<span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;emsp;</span>控制缩进。（噩梦碎片）</span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;emsp;</span>hello</span><br><span class="line">hello</span><br></pre></td></tr></table></figure>
-<p> hello</p>
-<p>hello</p>
-<h1 id="小标题缩进">小标题缩进</h1>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#一级小标题</span></span><br><span class="line">    <span class="number">1</span>.空格 xxx </span><br><span class="line">    <span class="comment">#在 1. 的行末跳格，就可以直接出现 2.</span></span><br><span class="line">    <span class="comment">#在 1. 的下一行输入 2.空格 结果相同</span></span><br><span class="line">    <span class="number">2</span>.空格 yyy</span><br><span class="line">	<span class="comment">#在 n. 的行末直接两次跳格就可以不出现 n+1. 的行首（即空行首）</span></span><br><span class="line"><span class="comment">#二级小标题</span></span><br><span class="line">	<span class="comment">#在 n. 的行末输入一次跳格，一次退格就可以得到二级小标题的空行首</span></span><br><span class="line">	<span class="number">1</span>.空格 xxx </span><br><span class="line">		zzz</span><br></pre></td></tr></table></figure>
-<ol>
-<li class="lvl-3">
-<p>xxx</p>
-</li>
-<li class="lvl-3">
-<p>yyy</p>
-<p>zzz</p>
-</li>
-</ol>
-<h1 id="标题-数个-空格-前置">标题[数个&quot;#&quot;+空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">### 三级标题</span><br><span class="line">#### 四级标题</span><br><span class="line">##### 五级标题</span><br><span class="line">###### 六级标题</span><br></pre></td></tr></table></figure>
-<h1 id="强调-用-“-”-或-“-”-包围">强调 [用 “**” 或 “__” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**欢迎报考南京大学!** (我喜欢用这种)</span><br><span class="line">__欢迎报考南京大学!__</span><br></pre></td></tr></table></figure>
-<p><strong>hello</strong></p>
-<h1 id="斜体-用-“-”-或-“-”-包围">斜体 [用 “*” 或 “_” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">*欢迎大佬来浇浇我各种知识* (我喜欢用这种)</span><br><span class="line">_欢迎大佬来浇浇我各种知识_</span><br></pre></td></tr></table></figure>
-<p><em>hello</em></p>
-<h1 id="斜体并强调">斜体并强调</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***hello***</span><br></pre></td></tr></table></figure>
-<p><em><strong>hello</strong></em></p>
-<h1 id="高亮-用-包围">高亮[用&quot;==&quot;包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">==hello==</span><br></pre></td></tr></table></figure>
-<p><mark>hello</mark></p>
-<h1 id="删除线-用-“-”-包围">删除线 [用 “~~” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~~hello~~</span><br></pre></td></tr></table></figure>
-<p><s>hello</s></p>
-<h1 id="代码-用-“-”-包围">代码[用 “`” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">`cd ..`</span><br></pre></td></tr></table></figure>
-<p><code>cd ..</code></p>
-<h1 id="代码块-用-并敲回车">代码块 [用&quot;```&quot; 并敲回车]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">​```hello</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mian</span><span class="params">()</span> &#123;</span><br><span class="line">    print（“Hello, world!\n<span class="string">&quot;）;</span></span><br><span class="line"><span class="string">    return 0;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-<h1 id="引用-“-”-空格-前置">引用 [“&gt;” + 空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; hello</span><br><span class="line">&gt;</span><br><span class="line">&gt;&gt;hi</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>hello</p>
-<blockquote>
-<p>hi</p>
-</blockquote>
-</blockquote>
-<h1 id="无序列标-“-“或”-”-空格-前置">无序列标 [“-“或”+” + 空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">- hello</span><br><span class="line">+ hello</span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>hello</p>
-</li>
-</ul>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>hello</p>
-</li>
-</ul>
-<h1 id="上标-用-“-”-包围">上标 [用 “^” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2^3^</span><br></pre></td></tr></table></figure>
-<p>2<sup>3</sup></p>
-<h1 id="下标-用-“-”-包围">下标 [用 “~” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">H~2~O</span><br></pre></td></tr></table></figure>
-<p>H<sub>2</sub>O</p>
-<h1 id="注释-“-”-后置">注释 [“[^]” 后置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; 今日我们相聚于此, 是为了学习 Markdown 的使用, 它的教程对于全体「观众」而言, 值得足足两个硬币的支持鼓励![^1]</span><br><span class="line"></span><br><span class="line">[^1]: 沃兹·基·硕德 改编自「公鸡」普契涅拉.</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>hello world!<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
-</blockquote>
-<h1 id="链接-常用-“-”-“-”-分别包围文本与链接">链接 [常用 “[ ]” + “( )” 分别包围文本与链接]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[hello world](https://hello world.com)</span><br></pre></td></tr></table></figure>
-<p>[hello world](<a href="https://hello">https://hello</a> <a href="http://world.com">world.com</a>)</p>
-<h1 id="任务列表-“-”-空格-前置">任务列表 [“- [ ]” + 空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Todo List:</span><br><span class="line">- [ ]刷B站</span><br><span class="line">- [ ]写代码</span><br><span class="line">- [x]起床</span><br></pre></td></tr></table></figure>
-<p>Todo List:</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><input type="checkbox" id="checkbox0"><label for="checkbox0">刷B站</label></p>
-</li>
-<li class="lvl-2">
-<p><input type="checkbox" id="checkbox1"><label for="checkbox1">写代码</label></p>
-</li>
-<li class="lvl-2">
-<p><input type="checkbox" id="checkbox2" checked="true"><label for="checkbox2">起床</label></p>
-</li>
-</ul>
-<h1 id="表格-用-“-”-绘制表格边框">表格 [用 “|” 绘制表格边框]</h1>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">第一行为表头, 并由第二行分割线决定对齐方式与长度, 第三行及之后即表格数据</span><br><span class="line">| 学号    | 姓名 | 年龄 |</span><br><span class="line">| :------ | :--: | ---: |</span><br><span class="line">| 114514  | 张三 |   24 |</span><br><span class="line">| 1919810 | 李四 |   25 |</span><br></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">学号</th>
-<th style="text-align:center">姓名</th>
-<th style="text-align:right">年龄</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">114514</td>
-<td style="text-align:center">张三</td>
-<td style="text-align:right">24</td>
-</tr>
-<tr>
-<td style="text-align:left">1919810</td>
-<td style="text-align:center">李四</td>
-<td style="text-align:right">25</td>
-</tr>
-</tbody>
-</table>
-<h1 id="图片-直接拖进来-复制粘贴">图片 [直接拖进来/复制粘贴]</h1>
-<p><img src="/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/%E9%98%BF%E5%B0%94%E6%B3%B0%E4%BA%9A.png" alt="阿尔泰亚"></p>
-<h1 id="分割线-按三个-“-”-或-“-”-或-“-”-并敲回车">分割线 [按三个 “*” 或 “-” 或 “_” 并敲回车]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***/---/___</span><br></pre></td></tr></table></figure>
-<hr>
-<hr>
-<hr>
-<h1 id="Emoji表情-“-”-前置-后置的-一般不需要手动输">Emoji表情 [“:” 前置,后置的&quot;:&quot;一般不需要手动输]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">:sweat_smile:</span><br></pre></td></tr></table></figure>
-<p>😅</p>
-<p><a href="https://emojipedia.org/apple/">全Emoji的网站</a></p>
-<h1 id="自定义容器。">自定义容器。</h1>
-<div class="tips">
-<p><strong>提示</strong></p>
-<p>这是一个提示</p>
-</div>
-<div class="warning">
-<p><strong>注意</strong></p>
-<p>这是一个警告</p>
-</div>
-<div class="danger">
-<p><strong>警告</strong></p>
-<p>这是一个危险信号</p>
-</div>
-<div class="success">
-<p><strong>成功</strong></p>
-<p>这是一个成功信号</p>
-</div>
-<h1 id="公式-用-包围">公式[用&quot;$&quot;包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$a^n+b^n=c^n$</span><br></pre></td></tr></table></figure>
-<p>$ a<sup>n+b</sup>n=c^n $</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$$</span><br><span class="line">%\usepackage&#123;unicode-math&#125;</span><br><span class="line">\displaystyle \ointctrclockwise\mathcal&#123;D&#125;[x(t)]</span><br><span class="line">\sqrt&#123;\frac&#123;\displaystyle3\uppi^2-\sum_&#123;q=0&#125;^&#123;\infty&#125;(z+\hat L)^&#123;q&#125;</span><br><span class="line">\exp(\symrm&#123;i&#125;q^2 \hbar x)&#125;&#123;\displaystyle (\symsfup&#123;Tr&#125;\symbfcal&#123;A&#125;)</span><br><span class="line">\left(\symbf\Lambda_&#123;j_1j_2&#125;^&#123;i_1i_2&#125;\Gamma_&#123;i_1i_2&#125;^&#123;j_1j_2&#125;</span><br><span class="line">\hookrightarrow\vec D\cdot \symbf P \right)&#125;&#125;</span><br><span class="line">=\underbrace&#123;\widetilde&#123;\left\langle \frac&#123;\notin \emptyset&#125;</span><br><span class="line">&#123;\varpi\alpha_&#123;k\uparrow&#125;&#125;\middle\vert</span><br><span class="line">\frac&#123;\partial_\mu T_&#123;\mu\nu&#125;&#125;&#123;2&#125;\right\rangle&#125;&#125;_&#123;\mathrm&#123;K&#125;_3</span><br><span class="line">\mathrm&#123;Fe&#125;(\mathrm&#123;CN&#125;)_6&#125; ,\forall z \in \mathbb&#123;R&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
-<p>$$<br>
-%\usepackage{unicode-math}<br>
-\displaystyle \ointctrclockwise\mathcal{D}[x(t)]<br>
-\sqrt{\frac{\displaystyle3\uppi<sup>2-\sum_{q=0}</sup>{\infty}(z+\hat L)^{q}<br>
-\exp(\symrm{i}q^2 \hbar x)}{\displaystyle (\symsfup{Tr}\symbfcal{A})<br>
-\left(\symbf\Lambda_{j_1j_2}<sup>{i_1i_2}\Gamma_{i_1i_2}</sup>{j_1j_2}<br>
-\hookrightarrow\vec D\cdot \symbf P \right)}}<br>
-=\underbrace{\widetilde{\left\langle \frac{\notin \emptyset}<br>
-{\varpi\alpha_{k\uparrow}}\middle\vert<br>
-\frac{\partial_\mu T_{\mu\nu}}{2}\right\rangle}}_{\mathrm{K}_3<br>
-\mathrm{Fe}(\mathrm{CN})_6} ,\forall z \in \mathbb{R}<br>
-$$</p>
-<hr class="footnotes-sep">
-<section class="footnotes">
-<ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>你好世界! <a href="#fnref1" class="footnote-backref">↩︎</a></p>
-</li>
-</ol>
-</section>
-]]></content>
-      <categories>
-        <category>编码格式</category>
-      </categories>
-      <tags>
-        <tag>md格式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>PyTorch-01-知识储备</title>
     <url>/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/</url>
     <content><![CDATA[<h1 id="文字定义">文字定义</h1>
@@ -2739,95 +2739,6 @@ $$</p>
       <tags>
         <tag>md格式</tag>
         <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>虚拟环境使用</title>
-    <url>/2025/03/05/%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="登录使用指南">登录使用指南</h1>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -p 6003 th24@123.207.40.28</span><br><span class="line">05254873TH</span><br><span class="line">conda activate /home/th24/SystemFile/MiniConda/envs/virtual-guidedDiffusion-cnet</span><br><span class="line"></span><br><span class="line">ssh -p 6003 zjs@123.207.40.28</span><br><span class="line">zlshykdxsm</span><br></pre></td></tr></table></figure>
-<p>/home/th24/PythonWorkSpace/CodeSaveSpace/ControlNet_main</p>
-<h1 id="pip镜像">pip镜像</h1>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip使用镜像：</span><br><span class="line">pip install pkg_name -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-<h1 id="jupyter">jupyter</h1>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cmd输入启动jupyter：</span><br><span class="line">jupyter lab</span><br></pre></td></tr></table></figure>
-<h1 id="conda">conda</h1>
-<p>在anaconda prompt内使用</p>
-<h2 id="conda管理包">conda管理包</h2>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda install 包名=1.0.0</span><br><span class="line">conda update 包名=1.0.0</span><br><span class="line">conda remove 包名=1.0.0</span><br><span class="line">conda search 包名</span><br></pre></td></tr></table></figure>
-<h2 id="conda镜像">conda镜像</h2>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --add channels mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/</span><br><span class="line"></span><br><span class="line">conda config --<span class="built_in">set</span> show_channel_urls <span class="built_in">yes</span></span><br></pre></td></tr></table></figure>
-<h2 id="conda虚拟环境管理">conda虚拟环境管理</h2>
-<h3 id="使用命令查看所有虚拟环境">使用命令查看所有虚拟环境</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda info --envs</span><br></pre></td></tr></table></figure>
-<h3 id="自定义位置创建虚拟环境">自定义位置创建虚拟环境</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda create --prefix=C:/ProgramData/Anaconda3/envs/pytorch python=3.8</span><br><span class="line">    </span><br><span class="line"><span class="comment">#将自定义路径加入环境目录，防止创了环境没有环境名，导致激活复杂</span></span><br><span class="line">conda config --show envs_dirs 查看当前的虚拟环境目录</span><br><span class="line"></span><br><span class="line">conda config --append envs_dirs your_envs_dirs_path 添加虚拟环境目录(your_envs_dirs_path)</span><br><span class="line"></span><br><span class="line">conda config --remove envs_dirs your_envs_dirs_path 删除不用的虚拟环境目录(your_envs_dirs_path)</span><br></pre></td></tr></table></figure>
-<p>conda create --prefix=/home/th24/SystemFile/MiniConda/envs/virtual-guidedDiffusion-cnet python=3.8</p>
-<p>conda config --append /home/th24/SystemFile/MiniConda/envs</p>
-<p>conda activate /home/th24/SystemFile/MiniConda/envs/virtual-guidedDiffusion-cnet</p>
-<p>conda env create -f environment.yaml --prefix=/home/th24/SystemFile/MiniConda/envs/cnet</p>
-<p>conda config --remove envs_dirs /home/th24/.conda/envs</p>
-<h3 id="启动">启动</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">activate</span><br><span class="line">conda activate pytorch</span><br></pre></td></tr></table></figure>
-<h3 id="关闭">关闭</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
-<h3 id="删除">删除</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda remove -n XXX --all</span><br></pre></td></tr></table></figure>
-<h3 id="利用文本创建虚拟环境">利用文本创建虚拟环境</h3>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">conda env create -f environment.yaml -n 虚拟环境名</span><br><span class="line">conda env update -f environment.yaml -n 虚拟环境名</span><br></pre></td></tr></table></figure>
-<h1 id="Linux">Linux</h1>
-<h2 id="常规命令">常规命令</h2>
-<p>将文件夹解压到指定文件夹</p>
-<p><code>unzip virtual-guidedDiffusion-cnet.zip -d /home/th24/SystemFile/MiniConda/envs</code></p>
-<p>覆盖解压</p>
-<p><code>tar xvf ControlNet_main.zip --overwrite</code></p>
-<p>mkdir 建立文件夹<br>
-cd 进入文件夹<br>
-ls -la 显示全部文件与全部信息<br>
-source 激活命令<br>
-mv 移动文件<br>
-cp 复制文件<br>
-conda miniconda 控制命令</p>
-<h1 id="hugging-face-读写访问token">hugging face 读写访问token</h1>
-<p>write <code>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</code></p>
-<p>fined_grained ``</p>
-<h1 id="Pytorch配置-包括cuda-cudnn">Pytorch配置(包括cuda,cudnn)</h1>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>cmd中输入<code>nvidia-smi</code>检查是否有gpu，以及支持的cuda版本</p>
-</li>
-<li class="lvl-2">
-<p>cuda的官方下载地址：<a href="https://developer.nvidia.com/cuda-toolkit-archive">https://developer.nvidia.com/cuda-toolkit-archive</a></p>
-<ul class="lvl-2">
-<li class="lvl-4">cmd输入nvcc -V可以查看是否安装成功</li>
-</ul>
-</li>
-<li class="lvl-2">
-<p>cudnn的官方下载地址：<a href="https://developer.nvidia.com/rdp/cudnn-archive">https://developer.nvidia.com/rdp/cudnn-archive</a></p>
-<ul class="lvl-2">
-<li class="lvl-4">
-<p>在cmd进入cuda的安装路径</p>
-<p><img src="/2025/03/05/%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8/image-20250308152454767.png" alt="image-20250308152454767"></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">键入：deviceQuery</span><br><span class="line">键入：bandwidthTest</span><br><span class="line">若都输出PASS则安装无误</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li class="lvl-2">
-<p>Pytorch本身的准备：（注意torch要是gpu版本的，不能是cpu版的）</p>
-<p><code>pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118</code></p>
-</li>
-<li class="lvl-2">
-<p>确认是否可以正常使用GPU训练模型</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line">torch.cuda.is_available()</span><br><span class="line"></span><br><span class="line"><span class="comment">#返回True则无误</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h1 id="cuda配置表">cuda配置表</h1>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python <span class="number">3.8</span></span><br><span class="line">torch <span class="number">2.0</span><span class="number">.0</span></span><br><span class="line">cuda <span class="number">11.8</span></span><br><span class="line"></span><br><span class="line">cd D:\1_workspace\1_System\cuda配置包</span><br><span class="line">pip install torch-<span class="number">2.0</span><span class="number">.0</span>+cu118-cp38-cp38-win_amd64.whl</span><br><span class="line">pip install torchaudio==<span class="number">2.0</span><span class="number">.1</span> torchvision==<span class="number">0.15</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#降低版本</span></span><br><span class="line">pip install huggingface_hub==<span class="number">0.25</span><span class="number">.2</span></span><br></pre></td></tr></table></figure>
-<p>return <a href="http://t.to">t.to</a>(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)<br>
-torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB (GPU 0; 2.00 GiB total capacity; 1.71 GiB already allocated; 0 bytes free; 1.76 GiB reserved in total by PyTorch) If reserved memory is &gt;&gt; allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
       </tags>
   </entry>
 </search>
