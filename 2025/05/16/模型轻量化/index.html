@@ -1,0 +1,521 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>模型轻量化 | 雪尘的博客</title><meta name="robots" content="noindex"><meta name="author" content="雪尘"><meta name="copyright" content="雪尘"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="评价指标 1. KID（Kernel Inception Distance） 原理：使用核方法（如MMD）直接比较特征分布，无需高斯假设。 优势：对非高斯分布更鲁棒，偏差更小。 公式   KID&#x3D;E[k(X_{real} ,X_{real}^{′} )]+E[k(X_{fake} ,X_{fake}^{′} )]−2E[k(X_{real} ,X_{fake} )]其中 k 为多项式核函数。 扩散">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模型轻量化">
+<meta property="og:url" content="http://example.com/2025/05/16/%E6%A8%A1%E5%9E%8B%E8%BD%BB%E9%87%8F%E5%8C%96/index.html">
+<meta property="og:site_name" content="雪尘的博客">
+<meta property="og:description" content="评价指标 1. KID（Kernel Inception Distance） 原理：使用核方法（如MMD）直接比较特征分布，无需高斯假设。 优势：对非高斯分布更鲁棒，偏差更小。 公式   KID&#x3D;E[k(X_{real} ,X_{real}^{′} )]+E[k(X_{fake} ,X_{fake}^{′} )]−2E[k(X_{real} ,X_{fake} )]其中 k 为多项式核函数。 扩散">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/%E5%B0%81%E9%9D%A2-.png">
+<meta property="article:published_time" content="2025-05-16T02:02:32.000Z">
+<meta property="article:modified_time" content="2025-05-30T07:46:31.746Z">
+<meta property="article:author" content="雪尘">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/%E5%B0%81%E9%9D%A2-.png"><link rel="shortcut icon" href="/img/logo.png"><link rel="canonical" href="http://example.com/2025/05/16/%E6%A8%A1%E5%9E%8B%E8%BD%BB%E9%87%8F%E5%8C%96/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: false,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '模型轻量化',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-05-30 15:46:31'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/mycss.css"><meta name="generator" content="Hexo 7.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-.png')"><nav id="nav"><span id="blog-info"><a href="/" title="雪尘的博客"><img class="site-icon" src="/img/logo.png"/><span class="site-name">雪尘的博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">模型轻量化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-16T02:02:32.000Z" title="发表于 2025-05-16 10:02:32">2025-05-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-30T07:46:31.746Z" title="更新于 2025-05-30 15:46:31">2025-05-30</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="模型轻量化"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="评价指标"><a href="#评价指标" class="headerlink" title="评价指标"></a>评价指标</h1><p><img src="/2025/05/16/%E6%A8%A1%E5%9E%8B%E8%BD%BB%E9%87%8F%E5%8C%96/image-20250521162538650.png" alt="image-20250521162538650"></p>
+<h4 id="1-KID（Kernel-Inception-Distance）"><a href="#1-KID（Kernel-Inception-Distance）" class="headerlink" title="1. KID（Kernel Inception Distance）"></a>1. <strong>KID（Kernel Inception Distance）</strong></h4><ul>
+<li><strong>原理</strong>：使用核方法（如MMD）直接比较特征分布，无需高斯假设。</li>
+<li><strong>优势</strong>：对非高斯分布更鲁棒，偏差更小。</li>
+<li><strong>公式</strong></li>
+</ul>
+<script type="math/tex; mode=display">
+KID=E[k(X_{real} ,X_{real}^{′} )]+E[k(X_{fake} ,X_{fake}^{′} )]−2E[k(X_{real} ,X_{fake} )]</script><p>其中 k 为多项式核函数。</p>
+<p>扩散模型是一种生成模型，用于评价扩散模型的指标有很多，以下是一些常见的指标，其中部分指标可以通过生成曲线图来更直观地展示模型性能：</p>
+<h3 id="1-生成质量相关指标"><a href="#1-生成质量相关指标" class="headerlink" title="1. 生成质量相关指标"></a>1. 生成质量相关指标</h3><ul>
+<li><strong>Inception Score（IS）</strong><ul>
+<li><strong>原理</strong>：IS 是一种衡量生成图像质量的指标，它基于 Inception-v3 模型的输出。具体来说，它计算生成图像的类别条件概率分布的 KL 散度，以评估生成图像的多样性和质量。高 IS 值表示生成图像既具有多样性，又与真实图像在类别上具有相似性。</li>
+<li><strong>曲线图展示</strong>：可以绘制不同训练阶段或不同超参数设置下的 IS 值变化曲线。例如，随着训练迭代次数的增加，IS 值逐渐上升，最终趋于稳定，这表明模型的生成质量在不断改善。</li>
+</ul>
+</li>
+<li><strong>Frechet Inception Distance（FID）</strong><ul>
+<li><strong>原理</strong>：FID 是一种衡量生成图像与真实图像相似度的指标。它计算生成图像和真实图像在 Inception-v3 模型特征空间中的 Fréchet 距离。FID 值越小，表示生成图像与真实图像越相似。</li>
+<li><strong>曲线图展示</strong>：可以绘制 FID 值随训练过程的变化曲线。通常，随着训练的进行，FID 值会逐渐降低，直到达到一个相对较低的稳定值，这说明模型的生成图像质量在不断提高，与真实图像的相似度在增加。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-样本多样性相关指标"><a href="#2-样本多样性相关指标" class="headerlink" title="2. 样本多样性相关指标"></a>2. 样本多样性相关指标</h3><ul>
+<li><strong>Diversity Score（DS）</strong><ul>
+<li><strong>原理</strong>：DS 用于衡量生成样本的多样性。可以通过计算生成样本之间的距离（如欧几里得距离、余弦距离等）来评估多样性。高 DS 值表示生成样本具有较高的多样性。</li>
+<li><strong>曲线图展示</strong>：可以绘制不同训练阶段或不同超参数设置下的 DS 值变化曲线。例如，随着训练的进行，DS 值先上升后趋于稳定，这表明模型在训练初期逐渐增加样本多样性，最终达到一个平衡状态。</li>
+</ul>
+</li>
+<li><strong>Coverage Score（CS）</strong><ul>
+<li><strong>原理</strong>：CS 用于评估生成样本对目标分布的覆盖程度。可以通过计算生成样本与真实样本之间的相似性矩阵，统计生成样本覆盖真实样本的比例来得到 CS 值。高 CS 值表示生成样本能够较好地覆盖真实数据分布。</li>
+<li><strong>曲线图展示</strong>：可以绘制 CS 值随训练过程的变化曲线。通常，随着训练的进行，CS 值会逐渐增加，表明模型生成的样本能够更好地覆盖真实数据分布。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-生成效率相关指标"><a href="#3-生成效率相关指标" class="headerlink" title="3. 生成效率相关指标"></a>3. 生成效率相关指标</h3><ul>
+<li><strong>Sample Efficiency Index（SEI）</strong><ul>
+<li><strong>原理</strong>：SEI 用于衡量生成模型在生成高质量样本时的效率。它结合了生成质量指标（如 IS 或 FID）和生成样本的数量，通过计算单位时间内生成高质量样本的数量来评估模型的效率。</li>
+<li><strong>曲线图展示</strong>：可以绘制 SEI 值随训练过程或不同模型配置的变化曲线。例如，对于不同的扩散模型架构，绘制其 SEI 值曲线，可以直观地比较不同模型在生成效率上的差异。</li>
+</ul>
+</li>
+<li><strong>Inference Time</strong><ul>
+<li><strong>原理</strong>：Inference Time 是衡量生成模型生成单个样本所需时间的指标。对于扩散模型，由于其通常需要多次迭代来生成样本，因此 Inference Time 可以反映模型的实时生成能力。</li>
+<li><strong>曲线图展示</strong>：可以绘制不同模型配置或不同扩散步数下的 Inference Time 曲线。例如，随着扩散步数的增加，Inference Time 会相应增加，但生成质量也会提高。通过曲线可以找到生成质量和生成效率之间的平衡点。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-模型收敛相关指标"><a href="#4-模型收敛相关指标" class="headerlink" title="4. 模型收敛相关指标"></a>4. 模型收敛相关指标</h3><ul>
+<li><strong>Loss Curve</strong><ul>
+<li><strong>原理</strong>：在扩散模型的训练过程中，通常会计算生成器和判别器的损失函数值。通过绘制损失曲线，可以观察模型的收敛情况。</li>
+<li><strong>曲线图展示</strong>：可以绘制生成器损失和判别器损失随训练迭代次数的变化曲线。理想情况下，生成器损失和判别器损失都会逐渐降低并趋于稳定，这表明模型在训练过程中逐渐收敛。</li>
+</ul>
+</li>
+<li><strong>Learning Rate Schedule</strong><ul>
+<li><strong>原理</strong>：学习率是影响模型收敛速度和质量的重要超参数。通过绘制学习率随训练过程的变化曲线，可以观察学习率调整策略对模型收敛的影响。</li>
+<li><strong>曲线图展示</strong>：可以绘制学习率随训练迭代次数的变化曲线。例如，采用学习率衰减策略时，学习率会随着训练的进行逐渐降低，这有助于模型在训练后期更精细地调整参数，提高收敛质量。</li>
+</ul>
+</li>
+</ul>
+<p>这些指标可以通过绘制曲线图来直观地展示扩散模型在不同方面的性能表现，帮助研究人员更好地理解和优化模型。</p>
+<h1 id="剪枝"><a href="#剪枝" class="headerlink" title="剪枝"></a>剪枝</h1><blockquote>
+<p>扩散模型作为生成任务中的重要架构，其参数量大、计算成本高的特点限制了实际应用场景。结构化剪枝通过系统性移除模型中的冗余结构单元（如完整通道、层或模块），能够有效优化模型效率，同时保持生成质量。这一过程通常需要结合模型特性与任务需求设计剪枝策略，并在压缩后通过微调恢复性能。</p>
+<p>结构化剪枝的实施通常从模型分析阶段开始，需要借助敏感度分析或梯度统计等方法评估不同结构单元的重要性。对于扩散模型特有的U-Net架构，可重点分析各跳跃连接对应的特征融合模块，以及时间步嵌入层的冗余度。通过设定剪枝率阈值，逐步移除对输出特征图影响较小的通道或层，同时确保网络拓扑的完整性。剪枝后的模型需在原始训练数据上进行知识蒸馏或微调，以重新适应被剪枝结构缺失带来的分布偏移。</p>
+<p>这种结构化压缩带来的核心优势体现在计算效率的提升上。移除冗余参数可降低显存占用，使模型能在边缘设备部署。由于结构化剪枝保持了规整的内存访问模式，相比非结构化剪枝更易获得实际加速效果。在图像生成任务中，剪枝后的扩散模型单步推理速度可提升30%-50%，这对于需要迭代数十次的生成过程具有显著意义。同时，适度的剪枝还能起到隐式正则化作用，通过消除过参数化现象提升模型泛化能力，在部分案例中甚至能改善生成图像的细节质量。</p>
+<p>值得注意的是，结构化剪枝的效果依赖于对模型架构的深度理解。过度剪枝可能导致扩散过程的信息传递断裂，表现为生成图像的局部失真或语义错误。因此需要结合可视化工具监控潜在特征图的退化情况，并设计动态调整机制。<strong>未来结合扩散模型的时间步相关性设计时序感知剪枝策略，可能成为进一步优化的方向。</strong></p>
+</blockquote>
+<p><strong>结构化剪枝（Structured Pruning）</strong>是神经网络模型压缩技术的一种，旨在通过移除网络中的冗余结构（如卷积核、通道、层等）来减少模型的计算量和参数量，同时尽量保持模型性能。与非结构化剪枝（移除单个权重）不同，结构化剪枝直接删除整个结构单元，因此更易于硬件加速和实际部署。</p>
+<hr>
+<h3 id="1-结构化剪枝-vs-非结构化剪枝"><a href="#1-结构化剪枝-vs-非结构化剪枝" class="headerlink" title="1. 结构化剪枝 vs. 非结构化剪枝"></a><strong>1. 结构化剪枝 vs. 非结构化剪枝</strong></h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>结构化剪枝</strong></th>
+<th><strong>非结构化剪枝</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>剪枝粒度</strong></td>
+<td>粗粒度（通道、滤波器、层）</td>
+<td>细粒度（单个权重或神经元）</td>
+</tr>
+<tr>
+<td><strong>硬件友好性</strong></td>
+<td>高（保留规则结构）</td>
+<td>低（需要稀疏计算支持）</td>
+</tr>
+<tr>
+<td><strong>压缩效果</strong></td>
+<td>直接减少计算量（如FLOPs）</td>
+<td>减少参数量，但计算效率可能不提升</td>
+</tr>
+<tr>
+<td><strong>部署难度</strong></td>
+<td>低（兼容通用硬件）</td>
+<td>高（依赖稀疏化库或专用硬件）</td>
+</tr>
+<tr>
+<td><strong>典型方法</strong></td>
+<td>通道剪枝、层剪枝</td>
+<td>权重剪枝、神经元剪枝</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="2-结构化剪枝的核心步骤"><a href="#2-结构化剪枝的核心步骤" class="headerlink" title="2. 结构化剪枝的核心步骤"></a><strong>2. 结构化剪枝的核心步骤</strong></h3><h4 id="1-重要性评估准则"><a href="#1-重要性评估准则" class="headerlink" title="(1) 重要性评估准则"></a><strong>(1) 重要性评估准则</strong></h4><p>根据某种指标确定哪些结构单元（如通道或滤波器）对模型性能影响最小，常见方法：</p>
+<ul>
+<li><strong>L1/L2范数</strong>：权重绝对值/平方和较小的通道被认为不重要。</li>
+<li><strong>梯度信息</strong>：反向传播中梯度较小的通道可被移除。</li>
+<li><strong>敏感度分析</strong>：通过扰动通道观察输出变化（如泰勒展开近似）。</li>
+<li><strong>激活值统计</strong>：激活稀疏度高的通道可能冗余。</li>
+</ul>
+<h4 id="2-剪枝策略"><a href="#2-剪枝策略" class="headerlink" title="(2) 剪枝策略"></a><strong>(2) 剪枝策略</strong></h4><ul>
+<li><strong>逐层剪枝（Layer-wise）</strong>：逐层按比例剪枝（如每层剪枝10%）。</li>
+<li><strong>全局剪枝（Global）</strong>：跨层统一选择最不重要的通道。</li>
+<li><strong>动态剪枝</strong>：在训练过程中逐步剪枝（如彩票假设）。</li>
+</ul>
+<h4 id="3-微调（Fine-tuning）"><a href="#3-微调（Fine-tuning）" class="headerlink" title="(3) 微调（Fine-tuning）"></a><strong>(3) 微调（Fine-tuning）</strong></h4><p>剪枝后通常需要重新训练模型以恢复性能，迭代次数和数据集规模影响最终效果。</p>
+<hr>
+<h3 id="3-典型结构化剪枝方法"><a href="#3-典型结构化剪枝方法" class="headerlink" title="3. 典型结构化剪枝方法"></a><strong>3. 典型结构化剪枝方法</strong></h3><h4 id="1-通道剪枝（Channel-Pruning）"><a href="#1-通道剪枝（Channel-Pruning）" class="headerlink" title="(1) 通道剪枝（Channel Pruning）"></a><strong>(1) 通道剪枝（Channel Pruning）</strong></h4><ul>
+<li><strong>原理</strong>：移除卷积层中不重要的输出通道（对应下一层的输入通道）。</li>
+<li><strong>经典方法</strong>：  <ul>
+<li><strong>Network Slimming</strong>（ICCV 2017）：基于通道的L1正则化，剪枝BN层缩放因子接近0的通道。  </li>
+<li><strong>ThiNet</strong>（ICCV 2017）：通过线性回归选择对输出影响最小的通道。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-滤波器剪枝（Filter-Pruning）"><a href="#2-滤波器剪枝（Filter-Pruning）" class="headerlink" title="(2) 滤波器剪枝（Filter Pruning）"></a><strong>(2) 滤波器剪枝（Filter Pruning）</strong></h4><ul>
+<li>直接移除卷积核（滤波器），减少输出特征图的数量。</li>
+<li><strong>示例方法</strong>：  <ul>
+<li><strong>FPGM</strong>（Filter Pruning via Geometric Median，CVPR 2019）  </li>
+<li><strong>HRank</strong>（基于特征图秩的剪枝，ECCV 2020）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-层剪枝（Layer-Pruning）"><a href="#3-层剪枝（Layer-Pruning）" class="headerlink" title="(3) 层剪枝（Layer Pruning）"></a><strong>(3) 层剪枝（Layer Pruning）</strong></h4><ul>
+<li>移除整个网络层（如冗余的残差块）。</li>
+<li><strong>适用场景</strong>：深层网络（ResNet、BERT等）。</li>
+</ul>
+<hr>
+<h3 id="4-结构化剪枝的优势与挑战"><a href="#4-结构化剪枝的优势与挑战" class="headerlink" title="4. 结构化剪枝的优势与挑战"></a><strong>4. 结构化剪枝的优势与挑战</strong></h3><h4 id="优势："><a href="#优势：" class="headerlink" title="优势："></a><strong>优势</strong>：</h4><ul>
+<li><strong>硬件友好</strong>：剪枝后的模型保持密集计算结构，可直接部署到GPU/CPU。  </li>
+<li><strong>显著加速</strong>：减少FLOPs和内存占用，提升推理速度（如剪枝30%通道可提速1.5倍）。  </li>
+<li><strong>兼容性强</strong>：支持与量化、蒸馏等其他压缩技术结合。</li>
+</ul>
+<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a><strong>挑战</strong>：</h4><ul>
+<li><strong>性能损失</strong>：过度剪枝会导致模型精度大幅下降。  </li>
+<li><strong>迭代成本高</strong>：需多次剪枝-微调循环才能达到平衡。  </li>
+<li><strong>依赖数据</strong>：微调需要足够的数据集和计算资源。</li>
+</ul>
+<hr>
+<h3 id="5-实际应用与工具"><a href="#5-实际应用与工具" class="headerlink" title="5. 实际应用与工具"></a><strong>5. 实际应用与工具</strong></h3><h4 id="1-应用场景"><a href="#1-应用场景" class="headerlink" title="(1) 应用场景"></a><strong>(1) 应用场景</strong></h4><ul>
+<li><strong>边缘设备</strong>：手机、无人机等资源受限场景（如MobileNet剪枝）。  </li>
+<li><strong>实时推理</strong>：自动驾驶、视频处理等低延迟任务。  </li>
+<li><strong>大模型压缩</strong>：BERT、ViT等模型的轻量化。</li>
+</ul>
+<h4 id="2-工具库"><a href="#2-工具库" class="headerlink" title="(2) 工具库"></a><strong>(2) 工具库</strong></h4><ul>
+<li><strong>PyTorch</strong>：<code>torch-pruning</code>、<code>Torch-Pruning</code>库。  </li>
+<li><strong>TensorFlow</strong>：<code>model_pruning</code>模块。  </li>
+<li><strong>专用框架</strong>：NNI（Microsoft）、Distiller（Intel）。</li>
+</ul>
+<hr>
+<h3 id="6-注意事项"><a href="#6-注意事项" class="headerlink" title="6. 注意事项"></a><strong>6. 注意事项</strong></h3><ol>
+<li><strong>剪枝率选择</strong>：不同层对剪枝的敏感度不同（浅层通常更敏感）。  </li>
+<li><strong>渐进式剪枝</strong>：逐步剪枝（如每次5%）比一次性剪枝更稳定。  </li>
+<li><strong>验证集监控</strong>：剪枝过程中需持续验证精度变化。  </li>
+<li><strong>部署验证</strong>：剪枝后的模型需在实际硬件上测试推理速度。</li>
+</ol>
+<hr>
+<h3 id="示例：ResNet-50结构化剪枝"><a href="#示例：ResNet-50结构化剪枝" class="headerlink" title="示例：ResNet-50结构化剪枝"></a><strong>示例：ResNet-50结构化剪枝</strong></h3><ul>
+<li><strong>原始模型</strong>：25.5M参数，4.1G FLOPs（ImageNet Top-1 76%）。  </li>
+<li><strong>剪枝后</strong>：移除30%通道，模型缩减至12M参数，1.8G FLOPs，精度下降约1-2%。  </li>
+<li><strong>工具</strong>：使用<code>torch-pruning</code>库实现通道剪枝。</li>
+</ul>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>结构化剪枝通过移除冗余结构实现模型高效压缩，是实际部署中应用最广泛的剪枝技术。其核心在于平衡剪枝率与性能损失，并结合硬件特性选择剪枝粒度。未来趋势包括自动化剪枝（如NAS结合）和对Transformer等新型架构的适配。</p>
+<h1 id="注意力机制"><a href="#注意力机制" class="headerlink" title="注意力机制"></a>注意力机制</h1><p>注意力机制的优越性体现在其能够动态捕捉数据中的长距离依赖关系。传统模型如循环神经网络在处理长序列时容易受到梯度消失或爆炸的影响，而注意力机制通过计算输入序列中所有位置之间的关联权重，直接建立任意两个位置的联系，从而有效解决了长距离依赖问题。这种特性在自然语言处理任务中尤为重要，例如机器翻译中，模型需要根据源语言句子的整体结构生成目标语言，注意力机制可以自动聚焦于当前翻译步骤最相关的词汇，显著提升生成结果的准确性和流畅性。此外，注意力机制还具备较强的可解释性，通过可视化注意力权重分布，能够直观理解模型决策过程中关注的重点区域，为模型优化提供有价值的参考。</p>
+<p>然而，注意力机制的计算复杂度随着输入序列长度的增加呈平方级增长，这成为其在实际应用中的主要瓶颈。对于图像或视频等高维数据，序列长度可能达到数万甚至更高，直接应用标准注意力机制会导致显存占用和计算时间急剧上升，难以满足实时性需求。尽管研究者提出了稀疏注意力、局部窗口注意力等改进方法，但这些方案往往需要牺牲部分全局信息捕获能力，或在特定硬件架构上才能实现高效计算。此外，注意力机制对位置信息的编码依赖较强，原始模型缺乏对序列元素相对位置的显式建模，需额外引入位置编码模块，而不同任务中位置编码的设计直接影响模型性能，这增加了架构设计的复杂性。</p>
+<p>另一个潜在缺陷在于注意力机制对局部细节的捕捉能力相对较弱。虽然全局注意力能够有效建模整体结构，但在图像生成、语音识别等任务中，局部特征的精细重建同样关键。例如，在图像生成过程中，像素级细节的生成需要模型关注相邻区域的细微变化，而全局注意力可能过度分散计算资源，导致局部一致性不足。因此，许多先进模型采用注意力机制与卷积操作的混合架构，利用卷积的局部感受野特性弥补注意力机制的不足，但这种混合设计也使得模型结构趋于复杂，增加了训练和调参的难度。</p>
+<p>注意力机制的性能还高度依赖于训练数据的分布和质量。当面对数据稀缺或存在显著分布偏移的场景时，注意力权重可能无法准确反映特征间的重要关联，导致模型泛化能力下降。例如在低资源语言翻译任务中，由于平行语料有限，模型难以学习到稳定的注意力模式，容易产生错误的对齐关系。此外，注意力机制对噪声数据的敏感性较高，输入序列中的异常值可能通过注意力权重的传播被放大，进而影响整体模型输出的稳定性。这些局限性促使研究者不断探索注意力机制的改进方向，<strong>例如引入动态稀疏注意力、结合领域先验知识约束注意力分布，或是开发具有自适应计算路径的变体结构，以平衡模型效率与性能表现。</strong></p>
+<h1 id="知识蒸馏"><a href="#知识蒸馏" class="headerlink" title="知识蒸馏"></a>知识蒸馏</h1><blockquote>
+<p>知识蒸馏是一种通过将复杂模型（教师模型）的知识迁移到简单模型（学生模型）中来实现模型压缩与性能提升的技术。其实施过程通常从教师模型的训练开始，需要先在目标任务上训练一个高容量的教师模型，使其达到较高的准确率。随后设计学生模型的结构，其参数量显著少于教师模型，但需保留与教师模型兼容的输入输出维度。在蒸馏阶段，学生模型不仅学习原始训练数据的标签（硬标签），更重要的是模仿教师模型对同一数据预测的概率分布（软标签）。这种软标签通过温度参数调整概率分布的平滑度，使学生模型能够捕捉到教师模型中不同类别间的相似性关系，例如图像分类中“猫”与“豹”的关联性可能高于“猫”与“汽车”。最终，学生模型通过联合优化硬标签的交叉熵损失和软标签的KL散度损失完成训练，必要时还需对蒸馏后的模型进行微调以适应实际部署环境。</p>
+<p>知识蒸馏的核心优势在于能够突破学生模型本身架构的性能上限。学生模型通过吸收教师模型提取的特征抽象能力和决策逻辑，在参数量大幅减少的情况下仍能保持较高的推理精度。例如，BERT模型经过蒸馏后可压缩至1/10大小，同时在自然语言理解任务中仅损失2%-3%的准确率。这种特性使得知识蒸馏成为边缘设备部署的关键技术，在移动端图像识别、实时语音处理等场景中显著降低计算资源消耗。此外，软标签提供的类间关系信息具有正则化作用，能帮助学生模型缓解过拟合问题，在训练数据不足或存在噪声时表现出更强的鲁棒性。</p>
+<p>知识蒸馏的另一重要价值体现在跨模态或跨任务的知识迁移中。教师模型与学生模型不必局限于相同架构，例如可以用视觉-语言联合模型指导纯视觉模型学习语义关联，或用集成模型指导单一模型融合多视角特征。这种灵活性为异构系统间的知识传递开辟了新途径，在联邦学习场景中，各参与方可通过蒸馏共享模型知识而不泄露原始数据。值得注意的是，蒸馏效果高度依赖教师模型的质量，若教师模型存在偏差或过拟合，学生模型可能继承其缺陷，因此常需结合对抗训练或注意力机制来筛选有价值的迁移知识。随着自蒸馏技术的发展，现已出现无需预训练教师模型的单模型自优化方法，进一步拓展了该技术的适用边界。</p>
+</blockquote>
+<p><strong>知识蒸馏（Knowledge Distillation）</strong> 是一种模型压缩技术，通过让小型学生模型（Student Model）模仿大型教师模型（Teacher Model）的“知识”（如输出分布或中间特征），从而在保持性能的同时显著降低模型复杂度。其核心思想是<strong>迁移教师模型中的“暗知识”（Dark Knowledge）</strong>，而不仅仅是标签信息。</p>
+<hr>
+<h3 id="1-核心概念"><a href="#1-核心概念" class="headerlink" title="1. 核心概念"></a><strong>1. 核心概念</strong></h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>概念</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>教师模型</strong></td>
+<td>复杂、高性能的大模型（如ResNet-50、BERT），提供“软标签”（Soft Labels）。</td>
+</tr>
+<tr>
+<td><strong>学生模型</strong></td>
+<td>轻量级的小模型（如MobileNet、TinyBERT），学习教师模型的输出或特征。</td>
+</tr>
+<tr>
+<td><strong>软标签</strong></td>
+<td>教师模型输出的概率分布（如分类任务中各类别的概率），包含类别间的关系信息。</td>
+</tr>
+<tr>
+<td><strong>硬标签</strong></td>
+<td>真实标签（如分类任务中的One-Hot编码），仅提供正确类别信息。</td>
+</tr>
+<tr>
+<td><strong>暗知识（Dark Knowledge）</strong></td>
+<td>教师模型在训练中学习到的类别间相似性、决策边界等隐含知识。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="2-知识蒸馏的步骤"><a href="#2-知识蒸馏的步骤" class="headerlink" title="2. 知识蒸馏的步骤"></a><strong>2. 知识蒸馏的步骤</strong></h3><ol>
+<li><p><strong>训练教师模型</strong><br>使用完整数据集训练一个高性能的复杂模型（教师模型）。</p>
+</li>
+<li><p><strong>生成软标签</strong><br>教师模型对训练数据（或未标注数据）进行推理，输出概率分布（软标签）。  </p>
+<ul>
+<li><strong>温度缩放（Temperature Scaling）</strong>：<br>通过调整温度参数 ( T ) 软化概率分布，增强类别间关系： <script type="math/tex; mode=display">
+q_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}</script>（( T &gt; 1 ) 时概率分布更平滑，( T=1 ) 为原始输出）</li>
+</ul>
+</li>
+<li><p><strong>训练学生模型</strong><br>学生模型同时学习：  </p>
+<ul>
+<li><strong>软标签损失</strong>（如KL散度）：模仿教师模型的输出分布。  </li>
+<li><strong>硬标签损失</strong>（如交叉熵）：匹配真实标签。<br>总损失函数通常为两者加权和： <script type="math/tex; mode=display">
+\mathcal{L} = \alpha \mathcal{L}_{\text{soft}} + (1-\alpha) \mathcal{L}_{\text{hard}}</script></li>
+</ul>
+</li>
+<li><p><strong>微调与优化</strong><br>可选步骤：对蒸馏后的学生模型进行微调，进一步提升性能。</p>
+</li>
+</ol>
+<hr>
+<h3 id="3-知识蒸馏的关键方法"><a href="#3-知识蒸馏的关键方法" class="headerlink" title="3. 知识蒸馏的关键方法"></a><strong>3. 知识蒸馏的关键方法</strong></h3><h4 id="1-输出蒸馏（Logits-Distillation）"><a href="#1-输出蒸馏（Logits-Distillation）" class="headerlink" title="(1) 输出蒸馏（Logits Distillation）"></a><strong>(1) 输出蒸馏（Logits Distillation）</strong></h4><ul>
+<li><strong>原理</strong>：直接对齐教师模型和学生模型的输出层（Logits）。  </li>
+<li><strong>经典方法</strong>：  <ul>
+<li><strong>Hinton 蒸馏（2015）</strong>：使用KL散度损失匹配软标签，结合温度缩放。  </li>
+<li><strong>注意力蒸馏</strong>：对齐中间层注意力图（如Transformer中的注意力权重）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-特征蒸馏（Feature-Distillation）"><a href="#2-特征蒸馏（Feature-Distillation）" class="headerlink" title="(2) 特征蒸馏（Feature Distillation）"></a><strong>(2) 特征蒸馏（Feature Distillation）</strong></h4><ul>
+<li><strong>原理</strong>：让学生模型的中间特征层（如卷积特征图、Transformer隐状态）模仿教师模型。  </li>
+<li><strong>方法</strong>：  <ul>
+<li><strong>FitNets（ICLR 2015）</strong>：通过回归损失对齐中间层特征。  </li>
+<li><strong>Hint Learning</strong>：教师模型的某层输出作为学生模型的监督信号。</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-动态蒸馏"><a href="#3-动态蒸馏" class="headerlink" title="(3) 动态蒸馏"></a><strong>(3) 动态蒸馏</strong></h4><ul>
+<li><strong>联合训练</strong>：教师模型和学生模型同步训练（如Deep Mutual Learning）。  </li>
+<li><strong>自蒸馏（Self-Distillation）</strong>：同一模型的不同部分互相蒸馏（如Dual-Student）。</li>
+</ul>
+<hr>
+<h3 id="4-优势与挑战"><a href="#4-优势与挑战" class="headerlink" title="4. 优势与挑战"></a><strong>4. 优势与挑战</strong></h3><h4 id="优势：-1"><a href="#优势：-1" class="headerlink" title="优势："></a><strong>优势</strong>：</h4><ul>
+<li><strong>模型轻量化</strong>：学生模型参数量显著减少（如BERT→TinyBERT，参数量降低7.5倍）。  </li>
+<li><strong>性能提升</strong>：学生模型可能超越同等规模的直接训练模型（尤其在数据不足时）。  </li>
+<li><strong>灵活适配</strong>：可结合剪枝、量化等其他压缩技术。  </li>
+</ul>
+<h4 id="挑战：-1"><a href="#挑战：-1" class="headerlink" title="挑战："></a><strong>挑战</strong>：</h4><ul>
+<li><strong>教师模型质量依赖</strong>：教师模型需足够强大，否则可能传递错误知识。  </li>
+<li><strong>训练成本高</strong>：需额外训练教师模型并生成软标签。  </li>
+<li><strong>领域适配</strong>：跨领域知识迁移可能失效（如自然语言到医疗文本）。</li>
+</ul>
+<hr>
+<h3 id="5-典型应用场景"><a href="#5-典型应用场景" class="headerlink" title="5. 典型应用场景"></a><strong>5. 典型应用场景</strong></h3><ol>
+<li><p><strong>模型部署</strong>  </p>
+<ul>
+<li>将BERT蒸馏为TinyBERT，部署到手机端（如问答系统）。  </li>
+<li>目标检测模型（YOLOv5→YOLOv5n）的轻量化。</li>
+</ul>
+</li>
+<li><p><strong>跨模态迁移</strong>  </p>
+<ul>
+<li>教师模型为多模态模型（图像+文本），学生模型仅保留单模态分支。</li>
+</ul>
+</li>
+<li><p><strong>数据增强</strong>  </p>
+<ul>
+<li>用教师模型为无标签数据生成伪标签，辅助学生模型训练。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="6-常用工具与库"><a href="#6-常用工具与库" class="headerlink" title="6. 常用工具与库"></a><strong>6. 常用工具与库</strong></h3><ul>
+<li><strong>PyTorch</strong>：通过自定义损失函数实现（如<code>KLDivLoss</code>）。  </li>
+<li><strong>TensorFlow</strong>：<code>tf.keras</code>结合自定义训练循环。  </li>
+<li><strong>Hugging Face Transformers</strong>：内置蒸馏接口（如<code>DistilBERT</code>）。  </li>
+<li><strong>Distiller（Intel）</strong>：支持多种蒸馏策略的轻量级框架。</li>
+</ul>
+<hr>
+<h3 id="示例：图像分类任务中的知识蒸馏"><a href="#示例：图像分类任务中的知识蒸馏" class="headerlink" title="示例：图像分类任务中的知识蒸馏"></a><strong>示例：图像分类任务中的知识蒸馏</strong></h3><ul>
+<li><strong>教师模型</strong>：ResNet-50（Top-1准确率76%）。  </li>
+<li><strong>学生模型</strong>：MobileNetV3（参数量减少5倍）。  </li>
+<li><strong>蒸馏结果</strong>：学生模型准确率从70%提升至73%（接近教师模型）。  </li>
+</ul>
+<hr>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>知识蒸馏通过“师徒传承”机制，将复杂模型的知识迁移至轻量模型，是模型压缩与部署的核心技术之一。其核心在于<strong>利用教师模型的泛化能力指导学生模型学习</strong>，而非简单拟合标签。未来趋势包括：</p>
+<ul>
+<li><strong>无监督蒸馏</strong>：无需真实标签，仅依赖教师模型生成伪标签。  </li>
+<li><strong>自动化蒸馏</strong>：结合NAS（神经架构搜索）优化学生模型结构。  </li>
+<li><strong>多教师蒸馏</strong>：融合多个教师模型的知识，提升学生模型鲁棒性。</li>
+</ul>
+<!-- flag of hidden posts --></article><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">雪尘</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://gluttons00.github.io/"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87"><span class="toc-text">评价指标</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-KID%EF%BC%88Kernel-Inception-Distance%EF%BC%89"><span class="toc-text">1. KID（Kernel Inception Distance）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%94%9F%E6%88%90%E8%B4%A8%E9%87%8F%E7%9B%B8%E5%85%B3%E6%8C%87%E6%A0%87"><span class="toc-text">1. 生成质量相关指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%A0%B7%E6%9C%AC%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9B%B8%E5%85%B3%E6%8C%87%E6%A0%87"><span class="toc-text">2. 样本多样性相关指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E6%95%88%E7%8E%87%E7%9B%B8%E5%85%B3%E6%8C%87%E6%A0%87"><span class="toc-text">3. 生成效率相关指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%A8%A1%E5%9E%8B%E6%94%B6%E6%95%9B%E7%9B%B8%E5%85%B3%E6%8C%87%E6%A0%87"><span class="toc-text">4. 模型收敛相关指标</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%AA%E6%9E%9D"><span class="toc-text">剪枝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%BB%93%E6%9E%84%E5%8C%96%E5%89%AA%E6%9E%9D-vs-%E9%9D%9E%E7%BB%93%E6%9E%84%E5%8C%96%E5%89%AA%E6%9E%9D"><span class="toc-text">1. 结构化剪枝 vs. 非结构化剪枝</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%BB%93%E6%9E%84%E5%8C%96%E5%89%AA%E6%9E%9D%E7%9A%84%E6%A0%B8%E5%BF%83%E6%AD%A5%E9%AA%A4"><span class="toc-text">2. 结构化剪枝的核心步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E9%87%8D%E8%A6%81%E6%80%A7%E8%AF%84%E4%BC%B0%E5%87%86%E5%88%99"><span class="toc-text">(1) 重要性评估准则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%89%AA%E6%9E%9D%E7%AD%96%E7%95%A5"><span class="toc-text">(2) 剪枝策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%BE%AE%E8%B0%83%EF%BC%88Fine-tuning%EF%BC%89"><span class="toc-text">(3) 微调（Fine-tuning）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%85%B8%E5%9E%8B%E7%BB%93%E6%9E%84%E5%8C%96%E5%89%AA%E6%9E%9D%E6%96%B9%E6%B3%95"><span class="toc-text">3. 典型结构化剪枝方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E9%80%9A%E9%81%93%E5%89%AA%E6%9E%9D%EF%BC%88Channel-Pruning%EF%BC%89"><span class="toc-text">(1) 通道剪枝（Channel Pruning）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%BB%A4%E6%B3%A2%E5%99%A8%E5%89%AA%E6%9E%9D%EF%BC%88Filter-Pruning%EF%BC%89"><span class="toc-text">(2) 滤波器剪枝（Filter Pruning）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%B1%82%E5%89%AA%E6%9E%9D%EF%BC%88Layer-Pruning%EF%BC%89"><span class="toc-text">(3) 层剪枝（Layer Pruning）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%BB%93%E6%9E%84%E5%8C%96%E5%89%AA%E6%9E%9D%E7%9A%84%E4%BC%98%E5%8A%BF%E4%B8%8E%E6%8C%91%E6%88%98"><span class="toc-text">4. 结构化剪枝的优势与挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8A%BF%EF%BC%9A"><span class="toc-text">优势：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%91%E6%88%98%EF%BC%9A"><span class="toc-text">挑战：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E4%B8%8E%E5%B7%A5%E5%85%B7"><span class="toc-text">5. 实际应用与工具</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">(1) 应用场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%B7%A5%E5%85%B7%E5%BA%93"><span class="toc-text">(2) 工具库</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">6. 注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9AResNet-50%E7%BB%93%E6%9E%84%E5%8C%96%E5%89%AA%E6%9E%9D"><span class="toc-text">示例：ResNet-50结构化剪枝</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="toc-text">注意力机制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F"><span class="toc-text">知识蒸馏</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-text">1. 核心概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="toc-text">2. 知识蒸馏的步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F%E7%9A%84%E5%85%B3%E9%94%AE%E6%96%B9%E6%B3%95"><span class="toc-text">3. 知识蒸馏的关键方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%BE%93%E5%87%BA%E8%92%B8%E9%A6%8F%EF%BC%88Logits-Distillation%EF%BC%89"><span class="toc-text">(1) 输出蒸馏（Logits Distillation）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%89%B9%E5%BE%81%E8%92%B8%E9%A6%8F%EF%BC%88Feature-Distillation%EF%BC%89"><span class="toc-text">(2) 特征蒸馏（Feature Distillation）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%8A%A8%E6%80%81%E8%92%B8%E9%A6%8F"><span class="toc-text">(3) 动态蒸馏</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%BC%98%E5%8A%BF%E4%B8%8E%E6%8C%91%E6%88%98"><span class="toc-text">4. 优势与挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8A%BF%EF%BC%9A-1"><span class="toc-text">优势：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%91%E6%88%98%EF%BC%9A-1"><span class="toc-text">挑战：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">5. 典型应用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E4%B8%8E%E5%BA%93"><span class="toc-text">6. 常用工具与库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1%E4%B8%AD%E7%9A%84%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F"><span class="toc-text">示例：图像分类任务中的知识蒸馏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/06/21/word-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" title="word-使用指南"><img src="/./images/%E5%B0%81%E9%9D%A2-.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="word-使用指南"/></a><div class="content"><a class="title" href="/2025/06/21/word-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" title="word-使用指南">word-使用指南</a><time datetime="2025-06-21T03:28:03.000Z" title="发表于 2025-06-21 11:28:03">2025-06-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/" title="STM32-天气时钟"><img src="/./images/%E5%B0%81%E9%9D%A2-STM32.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="STM32-天气时钟"/></a><div class="content"><a class="title" href="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/" title="STM32-天气时钟">STM32-天气时钟</a><time datetime="2025-06-14T06:51:23.000Z" title="发表于 2025-06-14 14:51:23">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/" title="STM32-01-概述"><img src="/./images/%E5%B0%81%E9%9D%A2-STM32.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="STM32-01-概述"/></a><div class="content"><a class="title" href="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/" title="STM32-01-概述">STM32-01-概述</a><time datetime="2025-04-23T01:58:11.000Z" title="发表于 2025-04-23 09:58:11">2025-04-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/04/06/python%E5%B8%B8%E8%AF%86%E4%B8%8Etorch%E5%85%A5%E9%97%A8/" title="python常识与torch模型入门"><img src="/./images/%E5%B0%81%E9%9D%A2-diffusion.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="python常识与torch模型入门"/></a><div class="content"><a class="title" href="/2025/04/06/python%E5%B8%B8%E8%AF%86%E4%B8%8Etorch%E5%85%A5%E9%97%A8/" title="python常识与torch模型入门">python常识与torch模型入门</a><time datetime="2025-04-06T05:42:27.000Z" title="发表于 2025-04-06 13:42:27">2025-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/24/PyTorch-03-%E5%A4%9A%E9%87%8D%E6%84%9F%E7%9F%A5%E6%9C%BA/" title="PyTorch-03-多重感知机"><img src="/./images/%E5%B0%81%E9%9D%A2-pytorch.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PyTorch-03-多重感知机"/></a><div class="content"><a class="title" href="/2025/02/24/PyTorch-03-%E5%A4%9A%E9%87%8D%E6%84%9F%E7%9F%A5%E6%9C%BA/" title="PyTorch-03-多重感知机">PyTorch-03-多重感知机</a><time datetime="2025-02-24T01:43:52.000Z" title="发表于 2025-02-24 09:43:52">2025-02-24</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-.png')"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By 雪尘</div><div class="footer_custom_text">Hi, welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>

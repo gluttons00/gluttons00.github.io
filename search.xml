@@ -1552,193 +1552,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MarkDown格式</title>
-    <url>/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/</url>
-    <content><![CDATA[<h1 id="hexo的-md文件开头">hexo的.md文件开头</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">tag: [格式]</span><br><span class="line">第二个 &quot;---&quot; 不用打,按enter即可</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<h1 id="hexo缩进">hexo缩进</h1>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">使用Html的空格符<span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;emsp;</span>控制缩进。（噩梦碎片）</span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;emsp;</span>hello</span><br><span class="line">hello</span><br></pre></td></tr></table></figure>
-<p> hello</p>
-<p>hello</p>
-<h1 id="小标题缩进">小标题缩进</h1>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#一级小标题</span></span><br><span class="line">    <span class="number">1</span>.空格 xxx </span><br><span class="line">    <span class="comment">#在 1. 的行末跳格，就可以直接出现 2.</span></span><br><span class="line">    <span class="comment">#在 1. 的下一行输入 2.空格 结果相同</span></span><br><span class="line">    <span class="number">2</span>.空格 yyy</span><br><span class="line">	<span class="comment">#在 n. 的行末直接两次跳格就可以不出现 n+1. 的行首（即空行首）</span></span><br><span class="line"><span class="comment">#二级小标题</span></span><br><span class="line">	<span class="comment">#在 n. 的行末输入一次跳格，一次退格就可以得到二级小标题的空行首</span></span><br><span class="line">	<span class="number">1</span>.空格 xxx </span><br><span class="line">		zzz</span><br></pre></td></tr></table></figure>
-<ol>
-<li class="lvl-3">
-<p>xxx</p>
-</li>
-<li class="lvl-3">
-<p>yyy</p>
-<p>zzz</p>
-</li>
-</ol>
-<h1 id="自定义容器。">自定义容器。</h1>
-<div class="tips">
-<p><strong>提示</strong></p>
-<p>这是一个提示</p>
-</div>
-<div class="warning">
-<p><strong>注意</strong></p>
-<p>这是一个警告</p>
-</div>
-<div class="danger">
-<p><strong>警告</strong></p>
-<p>这是一个危险信号</p>
-</div>
-<div class="success">
-<p><strong>成功</strong></p>
-<p>这是一个成功信号</p>
-</div>
-<div class="note flat"><p>默认</p>
-</div>
-<div class="note default flat"><p>default</p>
-</div>
-<div class="note primary flat"><p>primary</p>
-</div>
-<div class="note success flat"><p>success</p>
-</div>
-<div class="note info flat"><p>info</p>
-</div>
-<div class="note warning flat"><p>warning</p>
-</div>
-<div class="note danger flat"><p>danger</p>
-</div>
-<h1 id="标题-数个-空格-前置">标题[数个&quot;#&quot;+空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">### 三级标题</span><br><span class="line">#### 四级标题</span><br><span class="line">##### 五级标题</span><br><span class="line">###### 六级标题</span><br></pre></td></tr></table></figure>
-<h1 id="强调-用-“-”-或-“-”-包围">强调 [用 “**” 或 “__” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**欢迎报考南京大学!** (我喜欢用这种)</span><br><span class="line">__欢迎报考南京大学!__</span><br></pre></td></tr></table></figure>
-<p><strong>hello</strong></p>
-<h1 id="斜体-用-“-”-或-“-”-包围">斜体 [用 “*” 或 “_” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">*欢迎大佬来浇浇我各种知识* (我喜欢用这种)</span><br><span class="line">_欢迎大佬来浇浇我各种知识_</span><br></pre></td></tr></table></figure>
-<p><em>hello</em></p>
-<h1 id="斜体并强调">斜体并强调</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***hello***</span><br></pre></td></tr></table></figure>
-<p><em><strong>hello</strong></em></p>
-<h1 id="高亮-用-包围">高亮[用&quot;==&quot;包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">==hello==</span><br></pre></td></tr></table></figure>
-<p><mark>hello</mark></p>
-<h1 id="删除线-用-“-”-包围">删除线 [用 “~~” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~~hello~~</span><br></pre></td></tr></table></figure>
-<p><s>hello</s></p>
-<h1 id="代码-用-“-”-包围">代码[用 “`” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">`cd ..`</span><br></pre></td></tr></table></figure>
-<p><code>cd ..</code></p>
-<h1 id="代码块-用-并敲回车">代码块 [用&quot;```&quot; 并敲回车]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">​```hello</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mian</span><span class="params">()</span> &#123;</span><br><span class="line">    print（“Hello, world!\n<span class="string">&quot;）;</span></span><br><span class="line"><span class="string">    return 0;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-<h1 id="引用-“-”-空格-前置">引用 [“&gt;” + 空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; hello</span><br><span class="line">&gt;</span><br><span class="line">&gt;&gt;hi</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>hello</p>
-<blockquote>
-<p>hi</p>
-</blockquote>
-</blockquote>
-<h1 id="无序列标-“-“或”-”-空格-前置">无序列标 [“-“或”+” + 空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">- hello</span><br><span class="line">+ hello</span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>hello</p>
-</li>
-</ul>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>hello</p>
-</li>
-</ul>
-<h1 id="上标-用-“-”-包围">上标 [用 “^” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2^3^</span><br></pre></td></tr></table></figure>
-<p>2<sup>3</sup></p>
-<h1 id="下标-用-“-”-包围">下标 [用 “~” 包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">H~2~O</span><br></pre></td></tr></table></figure>
-<p>H<sub>2</sub>O</p>
-<h1 id="注释-“-”-后置">注释 [“[^]” 后置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; 今日我们相聚于此, 是为了学习 Markdown 的使用, 它的教程对于全体「观众」而言, 值得足足两个硬币的支持鼓励![^1]</span><br><span class="line"></span><br><span class="line">[^1]: 沃兹·基·硕德 改编自「公鸡」普契涅拉.</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>hello world!<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
-</blockquote>
-<h1 id="链接-常用-“-”-“-”-分别包围文本与链接">链接 [常用 “[ ]” + “( )” 分别包围文本与链接]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[hello world](https://hello world.com)</span><br></pre></td></tr></table></figure>
-<p>[hello world](<a href="https://hello">https://hello</a> <a href="http://world.com">world.com</a>)</p>
-<h1 id="任务列表-“-”-空格-前置">任务列表 [“- [ ]” + 空格 前置]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Todo List:</span><br><span class="line">- [ ]刷B站</span><br><span class="line">- [ ]写代码</span><br><span class="line">- [x]起床</span><br></pre></td></tr></table></figure>
-<p>Todo List:</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><input type="checkbox" id="checkbox0"><label for="checkbox0">刷B站</label></p>
-</li>
-<li class="lvl-2">
-<p><input type="checkbox" id="checkbox1"><label for="checkbox1">写代码</label></p>
-</li>
-<li class="lvl-2">
-<p><input type="checkbox" id="checkbox2" checked="true"><label for="checkbox2">起床</label></p>
-</li>
-</ul>
-<h1 id="表格-用-“-”-绘制表格边框">表格 [用 “|” 绘制表格边框]</h1>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">第一行为表头, 并由第二行分割线决定对齐方式与长度, 第三行及之后即表格数据</span><br><span class="line">| 学号    | 姓名 | 年龄 |</span><br><span class="line">| :------ | :--: | ---: |</span><br><span class="line">| 114514  | 张三 |   24 |</span><br><span class="line">| 1919810 | 李四 |   25 |</span><br></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">学号</th>
-<th style="text-align:center">姓名</th>
-<th style="text-align:right">年龄</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">114514</td>
-<td style="text-align:center">张三</td>
-<td style="text-align:right">24</td>
-</tr>
-<tr>
-<td style="text-align:left">1919810</td>
-<td style="text-align:center">李四</td>
-<td style="text-align:right">25</td>
-</tr>
-</tbody>
-</table>
-<h1 id="图片-直接拖进来-复制粘贴">图片 [直接拖进来/复制粘贴]</h1>
-<p><img src="/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/%E9%98%BF%E5%B0%94%E6%B3%B0%E4%BA%9A.png" alt="阿尔泰亚"></p>
-<h1 id="分割线-按三个-“-”-或-“-”-或-“-”-并敲回车">分割线 [按三个 “*” 或 “-” 或 “_” 并敲回车]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***/---/___</span><br></pre></td></tr></table></figure>
-<hr>
-<hr>
-<hr>
-<h1 id="Emoji表情-“-”-前置-后置的-一般不需要手动输">Emoji表情 [“:” 前置,后置的&quot;:&quot;一般不需要手动输]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">:sweat_smile:</span><br></pre></td></tr></table></figure>
-<p>😅</p>
-<p><a href="https://emojipedia.org/apple/">全Emoji的网站</a></p>
-<h1 id="公式-用-包围">公式[用&quot;$&quot;包围]</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$a^n+b^n=c^n$</span><br></pre></td></tr></table></figure>
-<p>$ a<sup>n+b</sup>n=c^n $</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$$</span><br><span class="line">%\usepackage&#123;unicode-math&#125;</span><br><span class="line">\displaystyle \ointctrclockwise\mathcal&#123;D&#125;[x(t)]</span><br><span class="line">\sqrt&#123;\frac&#123;\displaystyle3\uppi^2-\sum_&#123;q=0&#125;^&#123;\infty&#125;(z+\hat L)^&#123;q&#125;</span><br><span class="line">\exp(\symrm&#123;i&#125;q^2 \hbar x)&#125;&#123;\displaystyle (\symsfup&#123;Tr&#125;\symbfcal&#123;A&#125;)</span><br><span class="line">\left(\symbf\Lambda_&#123;j_1j_2&#125;^&#123;i_1i_2&#125;\Gamma_&#123;i_1i_2&#125;^&#123;j_1j_2&#125;</span><br><span class="line">\hookrightarrow\vec D\cdot \symbf P \right)&#125;&#125;</span><br><span class="line">=\underbrace&#123;\widetilde&#123;\left\langle \frac&#123;\notin \emptyset&#125;</span><br><span class="line">&#123;\varpi\alpha_&#123;k\uparrow&#125;&#125;\middle\vert</span><br><span class="line">\frac&#123;\partial_\mu T_&#123;\mu\nu&#125;&#125;&#123;2&#125;\right\rangle&#125;&#125;_&#123;\mathrm&#123;K&#125;_3</span><br><span class="line">\mathrm&#123;Fe&#125;(\mathrm&#123;CN&#125;)_6&#125; ,\forall z \in \mathbb&#123;R&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
-<p>$$<br>
-%\usepackage{unicode-math}<br>
-\displaystyle \ointctrclockwise\mathcal{D}[x(t)]<br>
-\sqrt{\frac{\displaystyle3\uppi<sup>2-\sum_{q=0}</sup>{\infty}(z+\hat L)^{q}<br>
-\exp(\symrm{i}q^2 \hbar x)}{\displaystyle (\symsfup{Tr}\symbfcal{A})<br>
-\left(\symbf\Lambda_{j_1j_2}<sup>{i_1i_2}\Gamma_{i_1i_2}</sup>{j_1j_2}<br>
-\hookrightarrow\vec D\cdot \symbf P \right)}}<br>
-=\underbrace{\widetilde{\left\langle \frac{\notin \emptyset}<br>
-{\varpi\alpha_{k\uparrow}}\middle\vert<br>
-\frac{\partial_\mu T_{\mu\nu}}{2}\right\rangle}}_{\mathrm{K}_3<br>
-\mathrm{Fe}(\mathrm{CN})_6} ,\forall z \in \mathbb{R}<br>
-$$</p>
-<hr class="footnotes-sep">
-<section class="footnotes">
-<ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p>你好世界! <a href="#fnref1" class="footnote-backref">↩︎</a></p>
-</li>
-</ol>
-</section>
-]]></content>
-      <categories>
-        <category>编码格式</category>
-      </categories>
-      <tags>
-        <tag>md格式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>6 ros机器人系统仿真</title>
     <url>/2024/06/08/6-ros%E6%9C%BA%E5%99%A8%E4%BA%BA%E7%B3%BB%E7%BB%9F%E4%BB%BF%E7%9C%9F/</url>
     <content><![CDATA[<h1 id="6-1-概述">6.1 概述</h1>
@@ -2342,204 +2155,6 @@ $$</p>
       </tags>
   </entry>
   <entry>
-    <title>PyTorch-01-知识储备</title>
-    <url>/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/</url>
-    <content><![CDATA[<h1 id="文字定义">文字定义</h1>
-<p><strong>标量</strong>：仅包含一个数值被称为标量</p>
-<p><strong>向量</strong>：用标量组成的列表，这些标量值被称为元素(element)或分量（component）</p>
-<p><strong>张量（tensor）</strong>：n维数组。</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>与NumPy相比，张量类支持自动微分，支持GPU。</p>
-</li>
-<li class="lvl-2">
-<p>张量类在MXNet中为ndarray，在PyTorch和TensorFlow中为Tensor</p>
-</li>
-<li class="lvl-2">
-<p>张量中每个值称为张量的<strong>元素（element）</strong></p>
-</li>
-<li class="lvl-2">
-<p>张量多用大写字母表示</p>
-</li>
-<li class="lvl-2">
-<p>PyTorch中<strong>同形状</strong>张量可以通过运算符（+，-，*，/，**<sub>求幂</sub>，==，&lt;=，……）直接处理</p>
-</li>
-<li class="lvl-2">
-<p>PyTorch中<strong>不同形状</strong>张量可以通过<strong>广播机制</strong>来执行按元素操作</p>
-<ul class="lvl-2">
-<li class="lvl-4">先拓展一个或两个数组使其形状相同，再执行操作</li>
-</ul>
-</li>
-<li class="lvl-2">
-<p>访问张量时索引与切片可以使用</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line">X = torch.arange(<span class="number">12</span>).reshape(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line"><span class="built_in">print</span>(X, X[<span class="number">1</span>:<span class="number">3</span>,-<span class="number">1</span>], X[:,<span class="number">2</span>])</span><br><span class="line">--------------------------------------------------------------------------------------</span><br><span class="line">tensor([[ <span class="number">0</span>,  <span class="number">1</span>,  <span class="number">2</span>],</span><br><span class="line">        [ <span class="number">3</span>,  <span class="number">4</span>,  <span class="number">5</span>],</span><br><span class="line">        [ <span class="number">6</span>,  <span class="number">7</span>,  <span class="number">8</span>],</span><br><span class="line">        [ <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>]]) tensor([<span class="number">5</span>, <span class="number">8</span>]) tensor([ <span class="number">2</span>,  <span class="number">5</span>,  <span class="number">8</span>, <span class="number">11</span>])</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="卷积相关">卷积相关</h2>
-<p><strong>上采样</strong></p>
-<p>上采样（upsampling），又叫放大图像、图像插值(interpolating)，主要目的是放大原图像，从而可以显示在更高分辨率的显示设备上。上采样有3种常见的方法：双线性插值(bilinear)，反卷积(Transposed Convolution)，反池化(Unpooling)。</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><strong>优点</strong>：上采样可以恢复图像的细节信息，提高模型对局部特征的捕捉能力。</p>
-</li>
-<li class="lvl-2">
-<p><strong>缺点</strong>：某些方法（如转置卷积）可能导致计算量增加，甚至出现梯度消失的问题。</p>
-</li>
-</ul>
-<p><strong>下采样</strong></p>
-<p>下采样（subsampled）或降采样（downsampled）或者称为缩小图像，它的主要目的有两个：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>使得图像符合显示区域的大小。</p>
-</li>
-<li class="lvl-2">
-<p>生成对应图像的缩略图。</p>
-</li>
-</ul>
-<p>下采样一般为池化操作。池化最直观的作用便是<strong>降维</strong>，常见的池化有最大池化、平均池化和随机池化；池化层不需要训练参数。</p>
-<h1 id="torch包">torch包</h1>
-<p>导入torch，在代码中PyTorch称为torch</p>
-<p><code>import torch</code> 导入torch，在代码中PyTorch称为torch</p>
-<h2 id="张量生成（是个对象）">张量生成（是个对象）</h2>
-<div class="tips">
-<p><code>X = torch.tensor(列表)</code> 将数据结构转换成张量</p>
-<p><code>X = torch.arange(12, dtype = torch.float32, requires_grad = True, shuffle = True)</code> arange创建一个行向量 X 。这个行向量为0-11，可指定类型为浮点数，requires_grad 是否加入计算图，shuffle 是否打乱生成的张量。</p>
-<p><code>X = torch.zeros((高,长,宽), dtype = torch.float32)</code> 构建全0张量</p>
-<p><code>X = torch.ones((高,长,宽), dtype = torch.float32)</code> 构建全1张量</p>
-<p><code>X = torch.randn(高,长,宽)</code> 在标准高斯分布中随机采样</p>
-<p><code>X = torch.rand(高,长,宽)</code> 在（0, 1）随机生成张量参数形状的张量</p>
-<p><code>X = torch.zeros_like(Y)</code> 构造一个与张量Y形状相同的张量Z，元素皆为0</p>
-<p><code>X = Y.clone()</code> 将A的一个副本分配给B</p>
-<p><code>X =  torch.normal(mean, std, size, generator=None, out=None)</code> 该函数返回从单独的正态分布中提取的随机数的张量，该正态分布的均值是mean，标准差是std。用法如下：我们从一个标准正态分布N～(0,1)，提取一个2x2的矩阵：<code>torch.normal(mean=0.,std=1.,size=(2,2))</code>。我们也可以让每一个值服从不同的正态分布，我们还是生成2x2的矩阵：<code>torch.normal(mean=torch.arange(4.),std=torch.arange(1.,0.6,-0.1)).reshape(2,2)</code></p>
-</div>
-<h2 id="张量运算">张量运算</h2>
-<div class="success">
-<p><code>X.shape</code> 通过张量的属性shape，访问张量获得张量形状</p>
-<p><code>X.numel()</code> 统计张量中元素的总数</p>
-<p><code>X.reshape(高,长,宽)</code> 重构张量的形状</p>
-<p><code>X.sum(axis = 0, keepdims = True)</code> 对张量的所有元素求和，不加参数axis时产生一个单元素<strong>张量</strong>（不是单纯的数值是张量）；加上axis时0为按行累加，1为按列累加，参数keepdims为True时结果保持轴数<sub>维数</sub>不变</p>
-<p><code>X.mean()</code> 求平均值</p>
-<p><code>X.abs()||torch.abs(M)</code> 求绝对值</p>
-<p><code>X.exp()||torch.exp(X)</code> e<sup>x</sup></p>
-</div>
-<h3 id="矩阵-向量操作">矩阵&amp;向量操作</h3>
-<div class="tips">
-<p><code>torch.cat((X,Y), dim = 0)</code> 0：按行连接（行拓展），1：按列连接（列拓展）</p>
-<p><code>A * B或者torch.mul(A, B)</code> 哈达玛积：矩阵按元素位置相乘</p>
-<img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250201190923961.png" alt="image-20250201190923961" style="zoom:50%;">
-<p><code>torch.matmul(Matrix1, Matrix2)</code> 函数两个张量矩阵相乘</p>
-<p>向量与向量的点积 <code>torch.dot(x, y)</code></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">x = torch.arange(<span class="number">4</span>, dtype = torch.float32)</span><br><span class="line">y = torch.ones(<span class="number">4</span>, dtype = torch.float32)</span><br><span class="line"><span class="built_in">print</span>(x, y, torch.dot(x, y))</span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">tensor([<span class="number">0.</span>, <span class="number">1.</span>, <span class="number">2.</span>, <span class="number">3.</span>]) tensor([<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]) tensor(<span class="number">6.</span>)</span><br></pre></td></tr></table></figure>
-<p>矩阵与向量的点积 <code>torch.mv(A, x)</code></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">A = torch.arange(<span class="number">12</span>, dtype = torch.float32).reshape(<span class="number">3</span>,<span class="number">4</span>)</span><br><span class="line">x = torch.ones(<span class="number">4</span>, dtype = torch.float32)</span><br><span class="line"><span class="built_in">print</span>(A, x, torch.mv(A, x))</span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">tensor([[ <span class="number">0.</span>,  <span class="number">1.</span>,  <span class="number">2.</span>,  <span class="number">3.</span>],</span><br><span class="line">        [ <span class="number">4.</span>,  <span class="number">5.</span>,  <span class="number">6.</span>,  <span class="number">7.</span>],</span><br><span class="line">        [ <span class="number">8.</span>,  <span class="number">9.</span>, <span class="number">10.</span>, <span class="number">11.</span>]]) tensor([<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]) tensor([ <span class="number">6.</span>, <span class="number">22.</span>, <span class="number">38.</span>])</span><br></pre></td></tr></table></figure>
-<p>矩阵与矩阵的点积 <code>torch.mm(A, B)</code></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">A = torch.arange(<span class="number">12</span>, dtype = torch.float32).reshape(<span class="number">3</span>,<span class="number">4</span>)</span><br><span class="line">B = torch.ones((<span class="number">4</span>,<span class="number">3</span>), dtype = torch.float32)</span><br><span class="line"><span class="built_in">print</span>(A, B, torch.mm(A, B))</span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">tensor([[ <span class="number">0.</span>,  <span class="number">1.</span>,  <span class="number">2.</span>,  <span class="number">3.</span>],</span><br><span class="line">        [ <span class="number">4.</span>,  <span class="number">5.</span>,  <span class="number">6.</span>,  <span class="number">7.</span>],</span><br><span class="line">        [ <span class="number">8.</span>,  <span class="number">9.</span>, <span class="number">10.</span>, <span class="number">11.</span>]])</span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br><span class="line">tensor([[ <span class="number">6.</span>,  <span class="number">6.</span>,  <span class="number">6.</span>],</span><br><span class="line">        [<span class="number">22.</span>, <span class="number">22.</span>, <span class="number">22.</span>],</span><br><span class="line">        [<span class="number">38.</span>, <span class="number">38.</span>, <span class="number">38.</span>]])</span><br></pre></td></tr></table></figure>
-</div>
-<div class="success">
-<p><code>Matrix.T</code> 矩阵转置</p>
-<p><code>Matrix.cumsum(axis = 0)</code> 按0行1列累加不会沿任何轴降低维度</p>
-<img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250202101725883.png" alt="image-20250202101725883" style="zoom:50%;">
-<p><code>torch.norm(Matrix)</code> 平方和的开根号，求第二范数</p>
-</div>
-<h2 id="外附">外附</h2>
-<h3 id="原地更新">原地更新</h3>
-<p>原地更新参数，以节省内存（大体量更新参数时常用）：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><code>Z[:]=X+Y</code>在Z中原地更新，不用额外开辟内存</p>
-</li>
-</ul>
-<h3 id="张量与其他Python对象互换">张量与其他Python对象互换</h3>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#多元素转换</span></span><br><span class="line">X = torch.arange(<span class="number">12</span>)</span><br><span class="line">A = X.numpy()</span><br><span class="line">B = torch.tensor(A)</span><br><span class="line"><span class="comment">#单元素转换</span></span><br><span class="line">a = torch.tensor([<span class="number">3.5</span>])</span><br><span class="line"> <span class="comment">#两种方法皆可</span></span><br><span class="line">a.item()</span><br><span class="line"><span class="built_in">float</span>(a)</span><br></pre></td></tr></table></figure>
-<h1 id="数据预处理">数据预处理</h1>
-<h2 id="利用os写数据">利用os写数据</h2>
-<p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250201185030569.png" alt="image-20250201185030569"></p>
-<h2 id="利用pandas读数据">利用pandas读数据</h2>
-<p><strong>以csv为例</strong></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">data = pd.read_csv(data_file)</span><br></pre></td></tr></table></figure>
-<p><strong>处理缺失值</strong></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#使用pandas的fillna函数来填充数值列的缺失值</span></span><br><span class="line">inputs.fillna(inputs.mean())</span><br><span class="line"></span><br><span class="line"><span class="comment">#使用get_dummies函数来分裂字符串列，以0，1表示那个类型</span></span><br><span class="line">inputs = pd.get_dummies(inputs, dummy_na = <span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250201185144538.png" alt="image-20250201185144538"></p>
-<p><strong>转换为张量格式</strong></p>
-<p><code>in=torch.tensor(inputs.values)</code>通过panda的values属性来转换为列表</p>
-<h1 id="python自带的功能">python自带的功能</h1>
-<h2 id="python自带函数">python自带函数</h2>
-<p><code>dir(模块名)</code> 查找模块（python包）中可用的所有函数和类</p>
-<p><code>help(函数名)</code> 查看函数和类的用法</p>
-<p><code>random.shuffle(列表)</code> 用于将一个列表中的元素打乱顺序，这个方法不会生成新的列表，只是将原列表的次序打乱。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line">x = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>)]</span><br><span class="line"><span class="built_in">print</span>(x)</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]</span><br><span class="line"></span><br><span class="line">random.shuffle(x)</span><br><span class="line"><span class="built_in">print</span>(x)</span><br><span class="line">[<span class="number">2</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">7</span>, <span class="number">9</span>, <span class="number">1</span>, <span class="number">6</span>]</span><br></pre></td></tr></table></figure>
-<p><code>list(x)</code> 将 x 转换成列表</p>
-<p><code>id()</code> 获取变量所指向的数据的内存地址</p>
-<h2 id="python的语法特性">python的语法特性</h2>
-<div class="tips">
-<p><strong>with语句</strong></p>
-<p><code>with语句</code> 适用于对资源进行访问的场合，确保不管使用过程中是否发生异常都会执行必要的<strong>清理</strong>操作，释放资源，比如文件使用后自动关闭、线程中锁的自动获取和释放等，例：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;１.txt&quot;</span>)</span><br><span class="line">data = file.read()</span><br><span class="line">file.close()</span><br></pre></td></tr></table></figure>
-<p>存在问题如下：（１）文件读取发生异常，但没有进行任何处理；（２）可能忘记关闭文件句柄；</p>
-<p>改进：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;１.txt&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    data = file.read()</span><br></pre></td></tr></table></figure>
-</div>
-<div class="success">
-<p><strong>可变与不可变对象</strong></p>
-<p>Python对象分为不可变对象和可变对象，这里的是否可变是指内存地址是否改变。可变对象可以修改，且内存位置不变；不可变对象无法更改，即变量值虽然发生变动但是内存地址已经变化，实际上是重新生成了一个变量，类似C语言中加了const修饰</p>
-<ul class="lvl-1">
-<li class="lvl-2">
-<p>不可变对象：int(整形)、str(字符串)、float(浮点型)、tuple(元组)</p>
-</li>
-<li class="lvl-2">
-<p>可变对象：list(列表)、dict(字典)、 set(集合）</p>
-</li>
-</ul>
-<p><strong>python中赋值是在内存中建立一个对象（开辟一个空间）用于存放变量值，而变量名只是一个指向该对象的指针</strong></p>
-<p><strong>局部变量和全局变量</strong></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = <span class="number">0</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">func</span>():</span><br><span class="line">    a = <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(a)</span><br><span class="line">func()</span><br><span class="line"><span class="built_in">print</span>(a)</span><br><span class="line"></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<ul class="lvl-1">
-<li class="lvl-2">
-<p>全局变量：在函数外作用的变量即上例中为 0 的 a 。</p>
-</li>
-<li class="lvl-2">
-<p>局部变量：在函数中使用的变量即为 1 的 a ，只在函数内有效，可以在函数内通过global关键字将 a 设定为全局变量的 a ，global关键字只能将局部变量的 a 修改为全局变量的 a ，不可同时赋值。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = <span class="number">0</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">func</span>():</span><br><span class="line">    <span class="keyword">global</span> a</span><br><span class="line">    a = <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(a)</span><br><span class="line">func()</span><br><span class="line"><span class="built_in">print</span>(a)</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><strong>python中函数的传递是参数的引用（类似传统的指针），而不是副本，即可以原地更新，节省内存</strong></p>
-</div>
-<h2 id="三元运算符">三元运算符</h2>
-<p><code>变量 = true分量 if 布尔表达式 else false分量</code></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#三元运算符</span></span><br><span class="line">string = <span class="string">&quot;abcd-1234&quot;</span></span><br><span class="line">a = string[:string.find(<span class="string">&#x27;z&#x27;</span>)] <span class="keyword">if</span> string.find(<span class="string">&#x27;z&#x27;</span>) != -<span class="number">1</span> <span class="keyword">else</span> string</span><br><span class="line">b = string[:string.find(<span class="string">&#x27;d&#x27;</span>)] <span class="keyword">if</span> string.find(<span class="string">&#x27;d&#x27;</span>) != -<span class="number">1</span> <span class="keyword">else</span> string</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(a, b)</span><br></pre></td></tr></table></figure>
-<h2 id="生成器表达式">生成器表达式</h2>
-<p>下面例子中，生成器表达式生成了一个平方数序列，并使用 for 循环打印所有值。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">generator = (x * x <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>))</span><br><span class="line"><span class="keyword">for</span> value <span class="keyword">in</span> generator:</span><br><span class="line">    <span class="built_in">print</span>(value)</span><br></pre></td></tr></table></figure>
-<h2 id="print-f’">print(f’{}')</h2>
-<p>print(f’epoch：{argu_1}，loss：{float(argu_2)}') <code>print(f'---&#123;变量或表达式&#125;')</code></p>
-<p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/clip_image002.png" alt="img"></p>
-<p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250215101059421.png" alt="image-20250215101059421"></p>
-<h2 id="函数传参">函数传参</h2>
-<p><strong>设置默认值的形参</strong>：<code>形参名 = 默认值</code></p>
-<p>如果在定义函数时为参数设置了默认值，那么在调用函数时可以不给该参数传值，此情况下将会使用默认值。</p>
-<p>传递参数有两种方式：位置参数、关键字参数</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>位置参数：<code>fanc(argu_1,argu_2)</code>，按照位置先后传递参数到形参</p>
-</li>
-<li class="lvl-2">
-<p>关键字参数：<code>fanc(argu_1 = '', argu_2 = '')</code>，按照形参名传递参数到形参，需注意关键字参数必须要在位置参数后面</p>
-</li>
-</ul>
-<h2 id="yield关键字">yield关键字</h2>
-<p>在Python中，yield关键字主要用于生成器函数（generator functions），其目的是使函数能够像迭代器一样工作，即可以被遍历，但不会一次性将所有结果都加载到内存中。定义生成器函数</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">simple_generator</span>():</span><br><span class="line">    <span class="keyword">yield</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">2</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line">gen = simple_generator()</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(gen))  <span class="comment"># 输出: 1</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(gen))  <span class="comment"># 输出: 2</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(gen))  <span class="comment"># 输出: 3</span></span><br></pre></td></tr></table></figure>
-<p>使用 for 循环遍历生成器生成器对象是可迭代的，因此可以使用 for 循环来遍历生成器生成的值。下面例子中，for 循环遍历生成器函数生成的所有值，并依次打印它们。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">simple_generator</span>():</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">4</span>):</span><br><span class="line">	    <span class="keyword">yield</span> i</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> value <span class="keyword">in</span> simple_generator():</span><br><span class="line">    <span class="built_in">print</span>(value)</span><br><span class="line">    </span><br><span class="line"><span class="comment">#输出：1 2 3 </span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>PyTorch</category>
-      </categories>
-      <tags>
-        <tag>PyTorch</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>PyTorch-02-线性回归</title>
     <url>/2025/02/20/PyTorch-02-%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</url>
     <content><![CDATA[<h1 id="文字定义">文字定义</h1>
@@ -2595,6 +2210,296 @@ $$</p>
       </tags>
   </entry>
   <entry>
+    <title>PyTorch-01-知识储备</title>
+    <url>/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/</url>
+    <content><![CDATA[<h1 id="文字定义"><a href="#文字定义" class="headerlink" title="文字定义"></a>文字定义</h1><p><strong>标量</strong>：仅包含一个数值被称为标量</p>
+<p><strong>向量</strong>：用标量组成的列表，这些标量值被称为元素(element)或分量（component）</p>
+<p><strong>张量（tensor）</strong>：n维数组。</p>
+<ul>
+<li>与NumPy相比，张量类支持自动微分，支持GPU。</li>
+<li>张量类在MXNet中为ndarray，在PyTorch和TensorFlow中为Tensor</li>
+<li>张量中每个值称为张量的<strong>元素（element）</strong></li>
+<li><p>张量多用大写字母表示</p>
+</li>
+<li><p>PyTorch中<strong>同形状</strong>张量可以通过运算符（+，-，<em>，/，*</em>~求幂~，==，&lt;=，……）直接处理</p>
+</li>
+<li><p>PyTorch中<strong>不同形状</strong>张量可以通过<strong>广播机制</strong>来执行按元素操作</p>
+<ul>
+<li>先拓展一个或两个数组使其形状相同，再执行操作</li>
+</ul>
+</li>
+<li><p>访问张量时索引与切片可以使用</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line">X = torch.arange(<span class="number">12</span>).reshape(<span class="number">4</span>, <span class="number">3</span>)</span><br><span class="line"><span class="built_in">print</span>(X, X[<span class="number">1</span>:<span class="number">3</span>,-<span class="number">1</span>], X[:,<span class="number">2</span>])</span><br><span class="line">--------------------------------------------------------------------------------------</span><br><span class="line">tensor([[ <span class="number">0</span>,  <span class="number">1</span>,  <span class="number">2</span>],</span><br><span class="line">        [ <span class="number">3</span>,  <span class="number">4</span>,  <span class="number">5</span>],</span><br><span class="line">        [ <span class="number">6</span>,  <span class="number">7</span>,  <span class="number">8</span>],</span><br><span class="line">        [ <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>]]) tensor([<span class="number">5</span>, <span class="number">8</span>]) tensor([ <span class="number">2</span>,  <span class="number">5</span>,  <span class="number">8</span>, <span class="number">11</span>])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>前向传播（Forward Propagation）</strong> 是神经网络中一个核心的概念，指的是输入数据通过网络的每一层进行计算，最终生成输出的过程。在这个过程中，数据从输入层开始，依次经过每一层的处理，最终到达输出层。每一层的计算结果会作为下一层的输入，直到生成最终的输出。<em>从输入到输出</em></p>
+<p><strong>反向传播（Backpropagation）</strong> 是一种用于训练神经网络的算法，它通过计算损失函数对网络参数的梯度，来更新网络的权重和偏置，从而最小化损失函数。反向传播是深度学习中非常重要的概念，它使得神经网络能够通过梯度下降法进行有效的训练。<em>从输出到输入</em></p>
+<h2 id="卷积相关"><a href="#卷积相关" class="headerlink" title="卷积相关"></a>卷积相关</h2><p><strong>上采样</strong></p>
+<p>上采样（upsampling），又叫放大图像、图像插值(interpolating)，主要目的是放大原图像，从而可以显示在更高分辨率的显示设备上。上采样有3种常见的方法：双线性插值(bilinear)，反卷积(Transposed Convolution)，反池化(Unpooling)。</p>
+<ul>
+<li><strong>优点</strong>：上采样可以恢复图像的细节信息，提高模型对局部特征的捕捉能力。</li>
+<li><strong>缺点</strong>：某些方法（如转置卷积）可能导致计算量增加，甚至出现梯度消失的问题。</li>
+</ul>
+<p><strong>下采样</strong></p>
+<p>下采样（subsampled）或降采样（downsampled）或者称为缩小图像，它的主要目的有两个：</p>
+<ul>
+<li>使得图像符合显示区域的大小。</li>
+<li>生成对应图像的缩略图。</li>
+</ul>
+<p>下采样一般为池化操作。池化最直观的作用便是<strong>降维</strong>，常见的池化有最大池化、平均池化和随机池化；池化层不需要训练参数。</p>
+<h1 id="torch包"><a href="#torch包" class="headerlink" title="torch包"></a>torch包</h1><p>导入torch，在代码中PyTorch称为torch</p>
+<p><code>import torch</code>&emsp;导入torch，在代码中PyTorch称为torch</p>
+<h2 id="张量生成（是个对象）"><a href="#张量生成（是个对象）" class="headerlink" title="张量生成（是个对象）"></a>张量生成（是个对象）</h2><p>::: tips</p>
+<p><code>X = torch.tensor(列表)</code>&emsp;将数据结构转换成张量</p>
+<p><code>X = torch.arange(12, dtype = torch.float32, requires_grad = True, shuffle = True)</code>&emsp;arange创建一个行向量 X 。这个行向量为0-11，可指定类型为浮点数，requires_grad 是否加入计算图，shuffle 是否打乱生成的张量。</p>
+<p><code>X = torch.zeros((高,长,宽), dtype = torch.float32)</code>&emsp;构建全0张量</p>
+<p><code>X = torch.ones((高,长,宽), dtype = torch.float32)</code>&emsp;构建全1张量</p>
+<p><code>X = torch.randn(高,长,宽)</code>&emsp;在标准高斯分布中随机采样</p>
+<p><code>X = torch.rand(高,长,宽)</code>&emsp;在（0, 1）随机生成张量参数形状的张量</p>
+<p><code>X = torch.zeros_like(Y)</code>&emsp;构造一个与张量Y形状相同的张量Z，元素皆为0</p>
+<p><code>X = Y.clone()</code>&emsp;将A的一个副本分配给B</p>
+<p><code>X =  torch.normal(mean, std, size, generator=None, out=None)</code>&emsp;该函数返回从单独的正态分布中提取的随机数的张量，该正态分布的均值是mean，标准差是std。用法如下：</p>
+<blockquote>
+<p><code>torch.normal(mean=0.,std=1.,size=(2,2))</code>&emsp;从一个标准正态分布N～(0,1)，提取一个2x2的矩阵：<code>torch.normal(mean=torch.arange(4.),std=torch.arange(1.,0.6,-0.1)).reshape(2,2)</code>&emsp;可以让每一个值服从不同的正态分布</p>
+</blockquote>
+<p>:::</p>
+<h2 id="张量运算"><a href="#张量运算" class="headerlink" title="张量运算"></a>张量运算</h2><p>::: success</p>
+<p><code>X.shape</code>&emsp;通过张量的属性shape，访问张量获得张量形状</p>
+<p><code>X.numel()</code>&emsp;统计张量中元素的总数</p>
+<p><code>X.reshape(高,长,宽)</code>&emsp;重构张量的形状</p>
+<p><code>X.sum(axis = 0, keepdims = True)</code>&emsp;对张量的所有元素求和，不加参数axis时产生一个单元素<strong>张量</strong>（不是单纯的数值是张量）；加上axis时0为按行累加，1为按列累加，参数keepdims为True时结果保持轴数<sub>维数</sub>不变</p>
+<p><code>X.mean()</code>&emsp;求平均值</p>
+<p><code>X.abs()||torch.abs(M)</code>&emsp;求绝对值</p>
+<p><code>X.exp()||torch.exp(X)</code>&emsp;e^x^</p>
+<p><code>torch.tensor(x).to(device)</code>&emsp;将张量 x 拷贝到 device(CPU、GPU)中</p>
+<p>:::</p>
+<h3 id="矩阵-amp-向量操作"><a href="#矩阵-amp-向量操作" class="headerlink" title="矩阵&amp;向量操作"></a>矩阵&amp;向量操作</h3><p>::: tips</p>
+<p><code>torch.cat((X,Y), dim = 0)</code>&emsp;0：按行连接（行拓展），1：按列连接（列拓展）</p>
+<p><code>A * B或者torch.mul(A, B)</code>&emsp;哈达玛积：矩阵按元素位置相乘</p>
+<p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250201190923961.png" alt="image-20250201190923961" style="zoom:50%;"></p>
+<p><code>torch.matmul(Matrix1, Matrix2)</code>&emsp;函数两个张量矩阵相乘</p>
+<p>向量与向量的点积&emsp;<code>torch.dot(x, y)</code></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">x = torch.arange(<span class="number">4</span>, dtype = torch.float32)</span><br><span class="line">y = torch.ones(<span class="number">4</span>, dtype = torch.float32)</span><br><span class="line"><span class="built_in">print</span>(x, y, torch.dot(x, y))</span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">tensor([<span class="number">0.</span>, <span class="number">1.</span>, <span class="number">2.</span>, <span class="number">3.</span>]) tensor([<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]) tensor(<span class="number">6.</span>)</span><br></pre></td></tr></table></figure>
+<p>矩阵与向量的点积&emsp;<code>torch.mv(A, x)</code></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">A = torch.arange(<span class="number">12</span>, dtype = torch.float32).reshape(<span class="number">3</span>,<span class="number">4</span>)</span><br><span class="line">x = torch.ones(<span class="number">4</span>, dtype = torch.float32)</span><br><span class="line"><span class="built_in">print</span>(A, x, torch.mv(A, x))</span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">tensor([[ <span class="number">0.</span>,  <span class="number">1.</span>,  <span class="number">2.</span>,  <span class="number">3.</span>],</span><br><span class="line">        [ <span class="number">4.</span>,  <span class="number">5.</span>,  <span class="number">6.</span>,  <span class="number">7.</span>],</span><br><span class="line">        [ <span class="number">8.</span>,  <span class="number">9.</span>, <span class="number">10.</span>, <span class="number">11.</span>]]) tensor([<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]) tensor([ <span class="number">6.</span>, <span class="number">22.</span>, <span class="number">38.</span>])</span><br></pre></td></tr></table></figure>
+<p>矩阵与矩阵的点积&emsp;<code>torch.mm(A, B)</code></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">A = torch.arange(<span class="number">12</span>, dtype = torch.float32).reshape(<span class="number">3</span>,<span class="number">4</span>)</span><br><span class="line">B = torch.ones((<span class="number">4</span>,<span class="number">3</span>), dtype = torch.float32)</span><br><span class="line"><span class="built_in">print</span>(A, B, torch.mm(A, B))</span><br><span class="line">-----------------------------------------------------------------------------------------</span><br><span class="line">tensor([[ <span class="number">0.</span>,  <span class="number">1.</span>,  <span class="number">2.</span>,  <span class="number">3.</span>],</span><br><span class="line">        [ <span class="number">4.</span>,  <span class="number">5.</span>,  <span class="number">6.</span>,  <span class="number">7.</span>],</span><br><span class="line">        [ <span class="number">8.</span>,  <span class="number">9.</span>, <span class="number">10.</span>, <span class="number">11.</span>]])</span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br><span class="line">tensor([[ <span class="number">6.</span>,  <span class="number">6.</span>,  <span class="number">6.</span>],</span><br><span class="line">        [<span class="number">22.</span>, <span class="number">22.</span>, <span class="number">22.</span>],</span><br><span class="line">        [<span class="number">38.</span>, <span class="number">38.</span>, <span class="number">38.</span>]])</span><br></pre></td></tr></table></figure>
+<p>:::</p>
+<p>::: success</p>
+<p><code>Matrix.T</code>&emsp;矩阵转置</p>
+<p><code>Matrix.cumsum(axis = 0)</code>&emsp;按0行1列累加不会沿任何轴降低维度</p>
+<p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250202101725883.png" alt="image-20250202101725883" style="zoom:50%;"></p>
+<p><code>torch.norm(Matrix)</code>&emsp;平方和的开根号，求第二范数</p>
+<p>:::</p>
+<h2 id="外附"><a href="#外附" class="headerlink" title="外附"></a>外附</h2><h3 id="原地更新"><a href="#原地更新" class="headerlink" title="原地更新"></a>原地更新</h3><p>原地更新参数，以节省内存（大体量更新参数时常用）：</p>
+<ul>
+<li><code>Z[:]=X+Y</code>在Z中原地更新，不用额外开辟内存</li>
+</ul>
+<h3 id="张量与其他Python对象互换"><a href="#张量与其他Python对象互换" class="headerlink" title="张量与其他Python对象互换"></a>张量与其他Python对象互换</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#多元素转换</span></span><br><span class="line">X = torch.arange(<span class="number">12</span>)</span><br><span class="line">A = X.numpy()</span><br><span class="line">B = torch.tensor(A)</span><br><span class="line"><span class="comment">#单元素转换</span></span><br><span class="line">a = torch.tensor([<span class="number">3.5</span>])</span><br><span class="line"> <span class="comment">#两种方法皆可</span></span><br><span class="line">a.item()</span><br><span class="line"><span class="built_in">float</span>(a)</span><br></pre></td></tr></table></figure>
+<h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><h2 id="利用os写数据"><a href="#利用os写数据" class="headerlink" title="利用os写数据"></a>利用os写数据</h2><p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250201185030569.png" alt="image-20250201185030569"></p>
+<h2 id="利用pandas读数据"><a href="#利用pandas读数据" class="headerlink" title="利用pandas读数据"></a>利用pandas读数据</h2><p><strong>以csv为例</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">data = pd.read_csv(data_file)</span><br></pre></td></tr></table></figure>
+<p><strong>处理缺失值</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#使用pandas的fillna函数来填充数值列的缺失值</span></span><br><span class="line">inputs.fillna(inputs.mean())</span><br><span class="line"></span><br><span class="line"><span class="comment">#使用get_dummies函数来分裂字符串列，以0，1表示那个类型</span></span><br><span class="line">inputs = pd.get_dummies(inputs, dummy_na = <span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/2025/01/30/PyTorch-01-%E7%9F%A5%E8%AF%86%E5%82%A8%E5%A4%87/image-20250201185144538.png" alt="image-20250201185144538"></p>
+<p><strong>转换为张量格式</strong></p>
+<p><code>in=torch.tensor(inputs.values)</code>通过panda的values属性来转换为列表</p>
+]]></content>
+      <categories>
+        <category>PyTorch</category>
+      </categories>
+      <tags>
+        <tag>PyTorch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MarkDown格式</title>
+    <url>/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="hexo的-md文件开头">hexo的.md文件开头</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">tag: [格式]</span><br><span class="line">第二个 &quot;---&quot; 不用打,按enter即可</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<h1 id="hexo缩进">hexo缩进</h1>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">使用Html的空格符<span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;emsp;</span>控制缩进。（噩梦碎片）</span><br><span class="line"></span><br><span class="line"><span class="symbol">&amp;emsp;</span>hello</span><br><span class="line">hello</span><br></pre></td></tr></table></figure>
+<p> hello</p>
+<p>hello</p>
+<h1 id="小标题缩进">小标题缩进</h1>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#一级小标题</span></span><br><span class="line">    <span class="number">1</span>.空格 xxx </span><br><span class="line">    <span class="comment">#在 1. 的行末跳格，就可以直接出现 2.</span></span><br><span class="line">    <span class="comment">#在 1. 的下一行输入 2.空格 结果相同</span></span><br><span class="line">    <span class="number">2</span>.空格 yyy</span><br><span class="line">	<span class="comment">#在 n. 的行末直接两次跳格就可以不出现 n+1. 的行首（即空行首）</span></span><br><span class="line"><span class="comment">#二级小标题</span></span><br><span class="line">	<span class="comment">#在 n. 的行末输入一次跳格，一次退格就可以得到二级小标题的空行首</span></span><br><span class="line">	<span class="number">1</span>.空格 xxx </span><br><span class="line">		zzz</span><br></pre></td></tr></table></figure>
+<ol>
+<li class="lvl-3">
+<p>xxx</p>
+</li>
+<li class="lvl-3">
+<p>yyy</p>
+<p>zzz</p>
+</li>
+</ol>
+<h1 id="自定义容器。">自定义容器。</h1>
+<div class="tips">
+<p><strong>提示</strong></p>
+<p>这是一个提示</p>
+</div>
+<div class="warning">
+<p><strong>注意</strong></p>
+<p>这是一个警告</p>
+</div>
+<div class="danger">
+<p><strong>警告</strong></p>
+<p>这是一个危险信号</p>
+</div>
+<div class="success">
+<p><strong>成功</strong></p>
+<p>这是一个成功信号</p>
+</div>
+<div class="note flat"><p>默认</p>
+</div>
+<div class="note default flat"><p>default</p>
+</div>
+<div class="note primary flat"><p>primary</p>
+</div>
+<div class="note success flat"><p>success</p>
+</div>
+<div class="note info flat"><p>info</p>
+</div>
+<div class="note warning flat"><p>warning</p>
+</div>
+<div class="note danger flat"><p>danger</p>
+</div>
+<h1 id="标题-数个-空格-前置">标题[数个&quot;#&quot;+空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">### 三级标题</span><br><span class="line">#### 四级标题</span><br><span class="line">##### 五级标题</span><br><span class="line">###### 六级标题</span><br></pre></td></tr></table></figure>
+<h1 id="强调-用-“-”-或-“-”-包围">强调 [用 “**” 或 “__” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">**欢迎报考南京大学!** (我喜欢用这种)</span><br><span class="line">__欢迎报考南京大学!__</span><br></pre></td></tr></table></figure>
+<p><strong>hello</strong></p>
+<h1 id="斜体-用-“-”-或-“-”-包围">斜体 [用 “*” 或 “_” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">*欢迎大佬来浇浇我各种知识* (我喜欢用这种)</span><br><span class="line">_欢迎大佬来浇浇我各种知识_</span><br></pre></td></tr></table></figure>
+<p><em>hello</em></p>
+<h1 id="斜体并强调">斜体并强调</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***hello***</span><br></pre></td></tr></table></figure>
+<p><em><strong>hello</strong></em></p>
+<h1 id="高亮-用-包围">高亮[用&quot;==&quot;包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">==hello==</span><br></pre></td></tr></table></figure>
+<p><mark>hello</mark></p>
+<h1 id="删除线-用-“-”-包围">删除线 [用 “~~” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~~hello~~</span><br></pre></td></tr></table></figure>
+<p><s>hello</s></p>
+<h1 id="代码-用-“-”-包围">代码[用 “`” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">`cd ..`</span><br></pre></td></tr></table></figure>
+<p><code>cd ..</code></p>
+<h1 id="代码块-用-并敲回车">代码块 [用&quot;```&quot; 并敲回车]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">​```hello</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mian</span><span class="params">()</span> &#123;</span><br><span class="line">    print（“Hello, world!\n<span class="string">&quot;）;</span></span><br><span class="line"><span class="string">    return 0;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="引用-“-”-空格-前置">引用 [“&gt;” + 空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; hello</span><br><span class="line">&gt;</span><br><span class="line">&gt;&gt;hi</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>hello</p>
+<blockquote>
+<p>hi</p>
+</blockquote>
+</blockquote>
+<h1 id="无序列标-“-“或”-”-空格-前置">无序列标 [“-“或”+” + 空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">- hello</span><br><span class="line">+ hello</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>hello</p>
+</li>
+</ul>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>hello</p>
+</li>
+</ul>
+<h1 id="上标-用-“-”-包围">上标 [用 “^” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2^3^</span><br></pre></td></tr></table></figure>
+<p>2<sup>3</sup></p>
+<h1 id="下标-用-“-”-包围">下标 [用 “~” 包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">H~2~O</span><br></pre></td></tr></table></figure>
+<p>H<sub>2</sub>O</p>
+<h1 id="注释-“-”-后置">注释 [“[^]” 后置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; 今日我们相聚于此, 是为了学习 Markdown 的使用, 它的教程对于全体「观众」而言, 值得足足两个硬币的支持鼓励![^1]</span><br><span class="line"></span><br><span class="line">[^1]: 沃兹·基·硕德 改编自「公鸡」普契涅拉.</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>hello world!<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+</blockquote>
+<h1 id="链接-常用-“-”-“-”-分别包围文本与链接">链接 [常用 “[ ]” + “( )” 分别包围文本与链接]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[hello world](https://hello world.com)</span><br></pre></td></tr></table></figure>
+<p>[hello world](<a href="https://hello">https://hello</a> <a href="http://world.com">world.com</a>)</p>
+<h1 id="任务列表-“-”-空格-前置">任务列表 [“- [ ]” + 空格 前置]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Todo List:</span><br><span class="line">- [ ]刷B站</span><br><span class="line">- [ ]写代码</span><br><span class="line">- [x]起床</span><br></pre></td></tr></table></figure>
+<p>Todo List:</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><input type="checkbox" id="checkbox0"><label for="checkbox0">刷B站</label></p>
+</li>
+<li class="lvl-2">
+<p><input type="checkbox" id="checkbox1"><label for="checkbox1">写代码</label></p>
+</li>
+<li class="lvl-2">
+<p><input type="checkbox" id="checkbox2" checked="true"><label for="checkbox2">起床</label></p>
+</li>
+</ul>
+<h1 id="表格-用-“-”-绘制表格边框">表格 [用 “|” 绘制表格边框]</h1>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">第一行为表头, 并由第二行分割线决定对齐方式与长度, 第三行及之后即表格数据</span><br><span class="line">| 学号    | 姓名 | 年龄 |</span><br><span class="line">| :------ | :--: | ---: |</span><br><span class="line">| 114514  | 张三 |   24 |</span><br><span class="line">| 1919810 | 李四 |   25 |</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">学号</th>
+<th style="text-align:center">姓名</th>
+<th style="text-align:right">年龄</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">114514</td>
+<td style="text-align:center">张三</td>
+<td style="text-align:right">24</td>
+</tr>
+<tr>
+<td style="text-align:left">1919810</td>
+<td style="text-align:center">李四</td>
+<td style="text-align:right">25</td>
+</tr>
+</tbody>
+</table>
+<h1 id="图片-直接拖进来-复制粘贴">图片 [直接拖进来/复制粘贴]</h1>
+<p><img src="/2024/05/03/MarkDown%E6%A0%BC%E5%BC%8F/%E9%98%BF%E5%B0%94%E6%B3%B0%E4%BA%9A.png" alt="阿尔泰亚"></p>
+<h1 id="分割线-按三个-“-”-或-“-”-或-“-”-并敲回车">分割线 [按三个 “*” 或 “-” 或 “_” 并敲回车]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">***/---/___</span><br></pre></td></tr></table></figure>
+<hr>
+<hr>
+<hr>
+<h1 id="Emoji表情-“-”-前置-后置的-一般不需要手动输">Emoji表情 [“:” 前置,后置的&quot;:&quot;一般不需要手动输]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">:sweat_smile:</span><br></pre></td></tr></table></figure>
+<p>😅</p>
+<p><a href="https://emojipedia.org/apple/">全Emoji的网站</a></p>
+<h1 id="公式-用-包围">公式[用&quot;$&quot;包围]</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$a^n+b^n=c^n$</span><br></pre></td></tr></table></figure>
+<p>$ a<sup>n+b</sup>n=c^n $</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$$</span><br><span class="line">%\usepackage&#123;unicode-math&#125;</span><br><span class="line">\displaystyle \ointctrclockwise\mathcal&#123;D&#125;[x(t)]</span><br><span class="line">\sqrt&#123;\frac&#123;\displaystyle3\uppi^2-\sum_&#123;q=0&#125;^&#123;\infty&#125;(z+\hat L)^&#123;q&#125;</span><br><span class="line">\exp(\symrm&#123;i&#125;q^2 \hbar x)&#125;&#123;\displaystyle (\symsfup&#123;Tr&#125;\symbfcal&#123;A&#125;)</span><br><span class="line">\left(\symbf\Lambda_&#123;j_1j_2&#125;^&#123;i_1i_2&#125;\Gamma_&#123;i_1i_2&#125;^&#123;j_1j_2&#125;</span><br><span class="line">\hookrightarrow\vec D\cdot \symbf P \right)&#125;&#125;</span><br><span class="line">=\underbrace&#123;\widetilde&#123;\left\langle \frac&#123;\notin \emptyset&#125;</span><br><span class="line">&#123;\varpi\alpha_&#123;k\uparrow&#125;&#125;\middle\vert</span><br><span class="line">\frac&#123;\partial_\mu T_&#123;\mu\nu&#125;&#125;&#123;2&#125;\right\rangle&#125;&#125;_&#123;\mathrm&#123;K&#125;_3</span><br><span class="line">\mathrm&#123;Fe&#125;(\mathrm&#123;CN&#125;)_6&#125; ,\forall z \in \mathbb&#123;R&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure>
+<p>$$<br>
+%\usepackage{unicode-math}<br>
+\displaystyle \ointctrclockwise\mathcal{D}[x(t)]<br>
+\sqrt{\frac{\displaystyle3\uppi<sup>2-\sum_{q=0}</sup>{\infty}(z+\hat L)^{q}<br>
+\exp(\symrm{i}q^2 \hbar x)}{\displaystyle (\symsfup{Tr}\symbfcal{A})<br>
+\left(\symbf\Lambda_{j_1j_2}<sup>{i_1i_2}\Gamma_{i_1i_2}</sup>{j_1j_2}<br>
+\hookrightarrow\vec D\cdot \symbf P \right)}}<br>
+=\underbrace{\widetilde{\left\langle \frac{\notin \emptyset}<br>
+{\varpi\alpha_{k\uparrow}}\middle\vert<br>
+\frac{\partial_\mu T_{\mu\nu}}{2}\right\rangle}}_{\mathrm{K}_3<br>
+\mathrm{Fe}(\mathrm{CN})_6} ,\forall z \in \mathbb{R}<br>
+$$</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>你好世界! <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+      <categories>
+        <category>编码格式</category>
+      </categories>
+      <tags>
+        <tag>md格式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PyTorch-03-多重感知机</title>
     <url>/2025/02/24/PyTorch-03-%E5%A4%9A%E9%87%8D%E6%84%9F%E7%9F%A5%E6%9C%BA/</url>
     <content><![CDATA[<h1 id="文字定义">文字定义</h1>
@@ -2640,6 +2545,10 @@ $$</p>
 <p><strong>hexo s</strong>：启动hexo服务功能</p>
 <p><strong>npm start</strong>：在package.json中添加 “start” 这一行，可以启动博客服务，并自动打开博客网页</p>
 <p><img src="/2024/05/04/hexo%E7%9A%84%E6%90%AD%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/image-20241231160522481.png" alt="image-20241231160522481"></p>
+<h1 id="确认hexo和github连接">确认hexo和github连接</h1>
+<p>打开 Git Bash，输入</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p>出现 “Are you sure……”，输入 yes 回车确认。</p>
 <h1 id="1-安装node-js">1. 安装node.js</h1>
 <p><a href="https://nodejs.org/en">Node.js官网</a></p>
 <p>打开终端输入<strong>node -v</strong>，如果输出版本号则说明安装成功。</p>
@@ -2753,6 +2662,666 @@ $$</p>
       <tags>
         <tag>md格式</tag>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python常识与torch模型入门</title>
+    <url>/2025/04/06/python%E5%B8%B8%E8%AF%86%E4%B8%8Etorch%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[<h1 id="python常识"><a href="#python常识" class="headerlink" title="python常识"></a>python常识</h1><h2 id="python自带函数"><a href="#python自带函数" class="headerlink" title="python自带函数"></a>python自带函数</h2><p><code>dir(模块名)</code>&emsp;查找模块（python包）中可用的所有函数和类</p>
+<p><code>help(函数名)</code>&emsp;查看函数和类的用法</p>
+<p><code>random.shuffle(列表)</code>&emsp;用于将一个列表中的元素打乱顺序，这个方法不会生成新的列表，只是将原列表的次序打乱。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line">x = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>)]</span><br><span class="line"><span class="built_in">print</span>(x)</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]</span><br><span class="line"></span><br><span class="line">random.shuffle(x)</span><br><span class="line"><span class="built_in">print</span>(x)</span><br><span class="line">[<span class="number">2</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">7</span>, <span class="number">9</span>, <span class="number">1</span>, <span class="number">6</span>]</span><br></pre></td></tr></table></figure>
+<p><code>list(x)</code>&emsp;将 x 转换成列表</p>
+<p><code>id()</code>&emsp;获取变量所指向的数据的内存地址</p>
+<p><code>getattr(object, &quot;name&quot;)</code>&emsp;从object中获取属性name</p>
+<p>是 Python 内置的一个函数，用于动态地从一个对象或模块中获取属性（如方法、类或变量）</p>
+<p><code>hasattr(object, &quot;name&quot;)</code>&emsp;检查object中是否含有属性name</p>
+<p>object — 对象， name — 字符串，属性名。</p>
+<p><code>callable(object)</code> &emsp;判断object是否是可执行对象</p>
+<p>任何可以使用括号 <code>()</code> 来执行的对象都可以被称为 <code>callable</code>。</p>
+<p><code>isinstance(object, classinfo)</code>&emsp;object – 实例对象，classinfo – 可以是直接或间接类名、基本类型或者由它们组成的元组。</p>
+<p>如果对象的类型与参数二的类型（classinfo）相同则返回 True，否则返回 False。</p>
+<h2 id="python的保留关键字"><a href="#python的保留关键字" class="headerlink" title="python的保留关键字"></a>python的保留关键字</h2><p>:::  tips</p>
+<p><strong>with语句</strong></p>
+<p><code>with语句</code> 适用于对资源进行访问的场合，确保不管使用过程中是否发生异常都会执行必要的<strong>清理</strong>操作，释放资源，比如文件使用后自动关闭、线程中锁的自动获取和释放等，例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;１.txt&quot;</span>)</span><br><span class="line">data = file.read()</span><br><span class="line">file.close()</span><br></pre></td></tr></table></figure>
+<p>存在问题如下：<br>（１）文件读取发生异常，但没有进行任何处理；<br>（２）可能忘记关闭文件句柄；</p>
+<p>改进：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;１.txt&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    data = file.read()</span><br></pre></td></tr></table></figure>
+<p><strong>assert语句</strong></p>
+<p><code>assert语句</code>用于断言某个条件是真的。如果条件为 <code>False</code>，则会触发一个 <code>AssertionError</code>。这种机制常用于在开发阶段检查程序的状态，确保代码在某个特定点满足预期条件。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">assert</span> condition, message</span><br></pre></td></tr></table></figure>
+<p>:::</p>
+<p>::: success</p>
+<p><strong>可变与不可变对象</strong></p>
+<p>Python对象分为不可变对象和可变对象，这里的是否可变是指内存地址是否改变。可变对象可以修改，且内存位置不变；不可变对象无法更改，即变量值虽然发生变动但是内存地址已经变化，实际上是重新生成了一个变量，类似C语言中加了const修饰</p>
+<ul>
+<li><p>不可变对象：int(整形)、str(字符串)、float(浮点型)、tuple(元组)</p>
+</li>
+<li><p>可变对象：list(列表)、dict(字典)、 set(集合）</p>
+</li>
+</ul>
+<p><strong>python中赋值是在内存中建立一个对象（开辟一个空间）用于存放变量值，而变量名只是一个指向该对象的指针</strong></p>
+<p><strong>局部变量和全局变量</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = <span class="number">0</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">func</span>():</span><br><span class="line">    a = <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(a)</span><br><span class="line">func()</span><br><span class="line"><span class="built_in">print</span>(a)</span><br><span class="line"></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>全局变量：在函数外作用的变量即上例中为 0 的 a 。</p>
+</li>
+<li><p>局部变量：在函数中使用的变量即为 1 的 a ，只在函数内有效，可以在函数内通过global关键字将 a 设定为全局变量的 a ，global关键字只能将局部变量的 a 修改为全局变量的 a ，不可同时赋值。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = <span class="number">0</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">func</span>():</span><br><span class="line">    <span class="keyword">global</span> a</span><br><span class="line">    a = <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(a)</span><br><span class="line">func()</span><br><span class="line"><span class="built_in">print</span>(a)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>python中函数的传递是参数的引用（类似传统的指针），而不是副本，即可以原地更新，节省内存</strong></p>
+<p>:::</p>
+<h2 id="三元运算符"><a href="#三元运算符" class="headerlink" title="三元运算符"></a>三元运算符</h2><p><code>变量 = true分量 if 布尔表达式 else false分量</code> </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#三元运算符</span></span><br><span class="line">string = <span class="string">&quot;abcd-1234&quot;</span></span><br><span class="line">a = string[:string.find(<span class="string">&#x27;z&#x27;</span>)] <span class="keyword">if</span> string.find(<span class="string">&#x27;z&#x27;</span>) != -<span class="number">1</span> <span class="keyword">else</span> string</span><br><span class="line">b = string[:string.find(<span class="string">&#x27;d&#x27;</span>)] <span class="keyword">if</span> string.find(<span class="string">&#x27;d&#x27;</span>) != -<span class="number">1</span> <span class="keyword">else</span> string</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(a, b)</span><br></pre></td></tr></table></figure>
+<h2 id="生成器表达式"><a href="#生成器表达式" class="headerlink" title="生成器表达式"></a>生成器表达式</h2><p>下面例子中，生成器表达式生成了一个平方数序列，并使用 for 循环打印所有值。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">generator = (x * x <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>))</span><br><span class="line"><span class="keyword">for</span> value <span class="keyword">in</span> generator:</span><br><span class="line">    <span class="built_in">print</span>(value)</span><br></pre></td></tr></table></figure>
+<h2 id="print-f’-’"><a href="#print-f’-’" class="headerlink" title="print(f’{}’)"></a>print(f’{}’)</h2><p>print(f’epoch：{argu_1}，loss：{float(argu_2)}’)&emsp;<code>print(f&#39;---&#123;变量或表达式&#125;&#39;)</code></p>
+<p><img src="/2025/04/06/python%E5%B8%B8%E8%AF%86%E4%B8%8Etorch%E5%85%A5%E9%97%A8/clip_image002.png" alt="img"></p>
+<p><img src="/2025/04/06/python%E5%B8%B8%E8%AF%86%E4%B8%8Etorch%E5%85%A5%E9%97%A8/image-20250215101059421.png" alt="image-20250215101059421"></p>
+<h2 id="函数传参"><a href="#函数传参" class="headerlink" title="函数传参"></a>函数传参</h2><p><strong>设置默认值的形参</strong>：<code>形参名 = 默认值</code></p>
+<p>如果在定义函数时为参数设置了默认值，那么在调用函数时可以不给该参数传值，此情况下将会使用默认值。</p>
+<p>传递参数有两种方式：位置参数、关键字参数</p>
+<ul>
+<li>位置参数：<code>fanc(argu_1,argu_2)</code>，按照位置先后传递参数到形参</li>
+<li>关键字参数：<code>fanc(argu_1 = &#39;&#39;, argu_2 = &#39;&#39;)</code>，按照形参名传递参数到形参，需注意关键字参数必须要在位置参数后面</li>
+</ul>
+<h2 id="yield关键字"><a href="#yield关键字" class="headerlink" title="yield关键字"></a>yield关键字</h2><p>在Python中，yield关键字主要用于生成器函数（generator functions），其目的是使函数能够像迭代器一样工作，即可以被遍历，但不会一次性将所有结果都加载到内存中。<br>定义生成器函数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">simple_generator</span>():</span><br><span class="line">    <span class="keyword">yield</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">2</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line">gen = simple_generator()</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(gen))  <span class="comment"># 输出: 1</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(gen))  <span class="comment"># 输出: 2</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(gen))  <span class="comment"># 输出: 3</span></span><br></pre></td></tr></table></figure>
+<p>使用 for 循环遍历生成器<br>生成器对象是可迭代的，因此可以使用 for 循环来遍历生成器生成的值。<br>下面例子中，for 循环遍历生成器函数生成的所有值，并依次打印它们。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">simple_generator</span>():</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">4</span>):</span><br><span class="line">	    <span class="keyword">yield</span> i</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> value <span class="keyword">in</span> simple_generator():</span><br><span class="line">    <span class="built_in">print</span>(value)</span><br><span class="line">    </span><br><span class="line"><span class="comment">#输出：1 2 3 </span></span><br></pre></td></tr></table></figure>
+<h1 id="torch使用入门"><a href="#torch使用入门" class="headerlink" title="torch使用入门"></a>torch使用入门</h1><h2 id="torch-nn-module"><a href="#torch-nn-module" class="headerlink" title="torch.nn.module"></a>torch.nn.module</h2><p><code>torch.nn.Module</code> 是 PyTorch 中所有神经网络模块的基类。它提供了一个通用的框架，用于构建和管理神经网络的各个组件。以下是 <code>torch.nn.Module</code> 的常规用法和作用的详细解释：</p>
+<p><strong>定义一个自定义模块</strong></p>
+<p><code>torch.nn.Module</code> 的主要用途是定义自定义的神经网络模块。通过继承 <code>torch.nn.Module</code>，你可以构建自己的网络层、模型或模块。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyModule</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MyModule, self).__init__()</span><br><span class="line">        self.linear = nn.Linear(<span class="number">10</span>, <span class="number">5</span>)  <span class="comment"># 定义一个线性层</span></span><br><span class="line">        self.activation = nn.ReLU()    <span class="comment"># 定义一个激活函数</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.linear(x)            <span class="comment"># 应用线性层</span></span><br><span class="line">        x = self.activation(x)        <span class="comment"># 应用激活函数</span></span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p><strong>初始化子模块</strong></p>
+<p>在 <code>__init__</code> 方法中，你可以初始化子模块（如层、激活函数等）。这些子模块可以是 PyTorch 提供的标准层（如 <code>nn.Linear</code>、<code>nn.Conv2d</code> 等），也可以是其他自定义模块。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyModule</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MyModule, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">1</span>, <span class="number">10</span>, kernel_size=<span class="number">3</span>)  <span class="comment"># 卷积层</span></span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">10</span>, <span class="number">20</span>, kernel_size=<span class="number">3</span>) <span class="comment"># 另一个卷积层</span></span><br><span class="line">        self.fc = nn.Linear(<span class="number">320</span>, <span class="number">50</span>)                 <span class="comment"># 全连接层</span></span><br></pre></td></tr></table></figure>
+<p><strong>定义前向传播</strong></p>
+<p><code>forward</code> 方法定义了模块的前向传播逻辑。它接收输入张量，并返回输出张量。在 <code>forward</code> 方法中，你可以调用子模块和其他操作来构建计算图。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyModule</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MyModule, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">1</span>, <span class="number">10</span>, kernel_size=<span class="number">3</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">10</span>, <span class="number">20</span>, kernel_size=<span class="number">3</span>)</span><br><span class="line">        self.fc = nn.Linear(<span class="number">320</span>, <span class="number">50</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.conv1(x)  <span class="comment"># 应用第一个卷积层</span></span><br><span class="line">        x = torch.relu(x)  <span class="comment"># 应用ReLU激活函数</span></span><br><span class="line">        x = self.conv2(x)  <span class="comment"># 应用第二个卷积层</span></span><br><span class="line">        x = torch.relu(x)</span><br><span class="line">        x = x.view(-<span class="number">1</span>, <span class="number">320</span>)  <span class="comment"># 将特征图展平</span></span><br><span class="line">        x = self.fc(x)       <span class="comment"># 应用全连接层</span></span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p><strong>参数管理</strong></p>
+<p><code>torch.nn.Module</code> 自动管理参数（<code>torch.nn.Parameter</code>）。当你在 <code>__init__</code> 方法中定义子模块时，这些子模块的参数会自动注册到父模块中。你可以通过 <code>parameters()</code> 方法访问所有参数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model = MyModule()</span><br><span class="line"><span class="keyword">for</span> param <span class="keyword">in</span> model.parameters():</span><br><span class="line">    <span class="built_in">print</span>(param.size())</span><br></pre></td></tr></table></figure>
+<p><strong>模块的嵌套</strong></p>
+<p><code>torch.nn.Module</code> 支持模块的嵌套。你可以将一个模块作为另一个模块的子模块，从而构建复杂的网络结构。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MySubModule</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MySubModule, self).__init__()</span><br><span class="line">        self.linear = nn.Linear(<span class="number">10</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.linear(x)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyModule</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MyModule, self).__init__()</span><br><span class="line">        self.submodule = MySubModule()  <span class="comment"># 嵌套子模块</span></span><br><span class="line">        self.activation = nn.ReLU()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = self.submodule(x)  <span class="comment"># 调用子模块</span></span><br><span class="line">        x = self.activation(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p><strong>模块的状态管理</strong></p>
+<p><code>torch.nn.Module</code> 提供了方法来管理模块的状态，例如：</p>
+<ul>
+<li><code>train()</code>：将模块设置为训练模式。</li>
+<li><code>eval()</code>：将模块设置为评估模式。</li>
+<li><code>requires_grad_(True/False)</code>：控制模块的参数是否需要计算梯度。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model = MyModule()</span><br><span class="line">model.train()  <span class="comment"># 设置为训练模式</span></span><br><span class="line">model.<span class="built_in">eval</span>()   <span class="comment"># 设置为评估模式</span></span><br><span class="line">model.requires_grad_(<span class="literal">False</span>)  <span class="comment"># 冻结所有参数</span></span><br></pre></td></tr></table></figure>
+<p><strong>模块的移动</strong></p>
+<p>你可以将模块移动到不同的设备（如 GPU 或 CPU）。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">model = MyModule()</span><br><span class="line">model.to(device)  <span class="comment"># 将模块移动到指定设备</span></span><br></pre></td></tr></table></figure>
+<p><strong>模块的保存和加载</strong></p>
+<p>你可以保存和加载模块的状态字典（<code>state_dict</code>），从而实现模型的持久化。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 保存模型</span></span><br><span class="line">torch.save(model.state_dict(), <span class="string">&#x27;model.pth&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载模型</span></span><br><span class="line">model = MyModule()</span><br><span class="line">model.load_state_dict(torch.load(<span class="string">&#x27;model.pth&#x27;</span>))</span><br></pre></td></tr></table></figure>
+<h2 id="模块的自定义操作"><a href="#模块的自定义操作" class="headerlink" title="模块的自定义操作"></a><strong>模块的自定义操作</strong></h2><p><code>torch.nn.Module</code> 还支持自定义操作，如自定义层、自定义激活函数等。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCustomLayer</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MyCustomLayer, self).__init__()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> x * <span class="number">2</span>  <span class="comment"># 自定义操作</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyModule</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MyModule, self).__init__()</span><br><span class="line">        self.custom_layer = MyCustomLayer()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.custom_layer(x)</span><br></pre></td></tr></table></figure>
+<p><strong>总结</strong></p>
+<p><code>torch.nn.Module</code> 是 PyTorch 中构建神经网络的核心类。它提供了以下功能：</p>
+<ul>
+<li>定义自定义模块。</li>
+<li>初始化子模块。</li>
+<li>定义前向传播逻辑。</li>
+<li>自动管理参数。</li>
+<li>支持模块的嵌套。</li>
+<li>管理模块的状态（训练/评估模式）。</li>
+<li>将模块移动到不同设备。</li>
+<li>保存和加载模块的状态。</li>
+<li>支持自定义操作。</li>
+</ul>
+<p>通过继承 <code>torch.nn.Module</code>，你可以构建各种复杂的神经网络模型，满足不同的需求。</p>
+<h1 id="optimizer-torch-optim-AdamW"><a href="#optimizer-torch-optim-AdamW" class="headerlink" title="optimizer=torch.optim.AdamW()"></a>optimizer=torch.optim.AdamW()</h1><p>优化器 <strong><code>optimizer = torch.optim.AdamW()</code></strong></p>
+<h2 id="1-核心参数解析"><a href="#1-核心参数解析" class="headerlink" title="1. 核心参数解析"></a><strong>1. 核心参数解析</strong></h2><h4 id="1-params"><a href="#1-params" class="headerlink" title="(1) params"></a><strong>(1) <code>params</code></strong></h4><ul>
+<li><p><strong>类型</strong>: <code>Iterable[torch.Tensor]</code> 或 <code>Iterable[dict]</code></p>
+</li>
+<li><p><strong>作用</strong>: 需要优化的模型参数，通常通过<code>model.parameters()</code>传递。</p>
+</li>
+<li><p><strong>示例</strong>:</p>
+<p>python</p>
+<p>复制</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<h4 id="2-lr-学习率"><a href="#2-lr-学习率" class="headerlink" title="(2) lr (学习率)"></a><strong>(2) <code>lr</code> (学习率)</strong></h4><ul>
+<li><strong>类型</strong>: <code>float</code></li>
+<li><strong>默认值</strong>: <code>1e-3</code></li>
+<li><strong>作用</strong>: 控制参数更新的步长。</li>
+<li><strong>调整策略</strong>:<ul>
+<li>初始值通常设为 <code>1e-3</code> 到 <code>1e-5</code>，具体取决于任务复杂度。</li>
+<li>配合学习率调度器（如<code>CosineAnnealingLR</code>、<code>ReduceLROnPlateau</code>）动态调整。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="3-betas-动量系数"><a href="#3-betas-动量系数" class="headerlink" title="(3) betas (动量系数)"></a><strong>(3) <code>betas</code> (动量系数)</strong></h4><ul>
+<li><strong>类型</strong>: <code>Tuple[float, float]</code></li>
+<li><strong>默认值</strong>: <code>(0.9, 0.999)</code></li>
+<li><strong>作用</strong>:<ul>
+<li><code>beta1</code>: 控制一阶矩（梯度均值）的指数衰减率，类似动量。</li>
+<li><code>beta2</code>: 控制二阶矩（梯度平方均值）的指数衰减率，用于自适应学习率。</li>
+</ul>
+</li>
+<li><strong>调整策略</strong>:<ul>
+<li>一般无需调整，保持默认值即可。</li>
+<li>若梯度噪声较大，可尝试减小<code>beta1</code>（如<code>0.8</code>）以加速收敛。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="4-eps-数值稳定性项"><a href="#4-eps-数值稳定性项" class="headerlink" title="(4) eps (数值稳定性项)"></a><strong>(4) <code>eps</code> (数值稳定性项)</strong></h4><ul>
+<li><strong>类型</strong>: <code>float</code></li>
+<li><strong>默认值</strong>: <code>1e-8</code></li>
+<li><strong>作用</strong>: 防止分母为零的小常数，添加到二阶矩估计的分母中。</li>
+<li><strong>调整策略</strong>: 通常无需调整，仅在极端数值问题时尝试修改（如<code>1e-6</code>）。</li>
+</ul>
+<hr>
+<h4 id="5-weight-decay-权重衰减"><a href="#5-weight-decay-权重衰减" class="headerlink" title="(5) weight_decay (权重衰减)"></a><strong>(5) <code>weight_decay</code> (权重衰减)</strong></h4><ul>
+<li><strong>类型</strong>: <code>float</code></li>
+<li><strong>默认值</strong>: <code>1e-2</code></li>
+<li><strong>作用</strong>: 控制权重衰减（L2正则化的解耦形式）。</li>
+<li><strong>关键区别</strong>:<ul>
+<li><strong>AdamW vs Adam</strong>: AdamW将权重衰减与梯度更新分离，直接对参数进行衰减（而非通过梯度）。</li>
+</ul>
+</li>
+<li><strong>调整策略</strong>:<ul>
+<li>常用范围 <code>1e-2</code> 到 <code>1e-5</code>，较大数据集可适当增大。</li>
+<li>若模型过拟合，尝试增大该值；若欠拟合则减小。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="6-amsgrad-AMSGrad变体"><a href="#6-amsgrad-AMSGrad变体" class="headerlink" title="(6) amsgrad (AMSGrad变体)"></a><strong>(6) <code>amsgrad</code> (AMSGrad变体)</strong></h4><ul>
+<li><strong>类型</strong>: <code>bool</code></li>
+<li><strong>默认值</strong>: <code>False</code></li>
+<li><strong>作用</strong>: 是否使用AMSGrad改进算法，避免二阶矩估计过早下降。</li>
+<li><strong>调整策略</strong>:<ul>
+<li>当训练不稳定或收敛困难时，启用<code>amsgrad=True</code>。</li>
+<li>可能略微增加内存和计算开销。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="2-进阶参数"><a href="#2-进阶参数" class="headerlink" title="2. 进阶参数"></a><strong>2. 进阶参数</strong></h2><h4 id="7-maximize-最大化目标"><a href="#7-maximize-最大化目标" class="headerlink" title="(7) maximize (最大化目标)"></a><strong>(7) <code>maximize</code> (最大化目标)</strong></h4><ul>
+<li><strong>类型</strong>: <code>bool</code></li>
+<li><strong>默认值</strong>: <code>False</code></li>
+<li><strong>作用</strong>: 若设为<code>True</code>，优化器将尝试最大化目标函数（梯度上升）。</li>
+<li><strong>应用场景</strong>: 强化学习中的奖励最大化。</li>
+</ul>
+<hr>
+<h4 id="8-foreach-向量化加速"><a href="#8-foreach-向量化加速" class="headerlink" title="(8) foreach (向量化加速)"></a><strong>(8) <code>foreach</code> (向量化加速)</strong></h4><ul>
+<li><strong>类型</strong>: <code>bool</code></li>
+<li><strong>默认值</strong>: <code>None</code>（自动选择）</li>
+<li><strong>作用</strong>: 使用向量化操作加速参数更新，可能增加内存占用。</li>
+<li><strong>调整策略</strong>:<ul>
+<li>显存充足时设为<code>True</code>以加速训练。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="9-capturable-CUDA图捕获"><a href="#9-capturable-CUDA图捕获" class="headerlink" title="(9) capturable (CUDA图捕获)"></a><strong>(9) <code>capturable</code> (CUDA图捕获)</strong></h4><ul>
+<li><strong>类型</strong>: <code>bool</code></li>
+<li><strong>默认值</strong>: <code>False</code></li>
+<li><strong>作用</strong>: 支持在CUDA图中捕获优化器步骤，用于高性能计算优化。</li>
+</ul>
+<hr>
+<h4 id="10-differentiable-可微分性"><a href="#10-differentiable-可微分性" class="headerlink" title="(10) differentiable (可微分性)"></a><strong>(10) <code>differentiable</code> (可微分性)</strong></h4><ul>
+<li><strong>类型</strong>: <code>bool</code></li>
+<li><strong>默认值</strong>: <code>False</code></li>
+<li><strong>作用</strong>: 允许优化器步骤参与自动微分（如二阶导数计算）。</li>
+<li><strong>应用场景</strong>: 元学习、优化器内循环。</li>
+</ul>
+<hr>
+<h2 id="3-参数调优建议"><a href="#3-参数调优建议" class="headerlink" title="3. 参数调优建议"></a><strong>3. 参数调优建议</strong></h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"><strong>参数</strong></th>
+<th style="text-align:left"><strong>典型范围/值</strong></th>
+<th style="text-align:left"><strong>调整优先级</strong></th>
+<th style="text-align:left"><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>lr</code></td>
+<td style="text-align:left">1e-5 到 1e-3</td>
+<td style="text-align:left">高</td>
+<td style="text-align:left">配合学习率调度器动态调整</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>betas</code></td>
+<td style="text-align:left">(0.9, 0.999)</td>
+<td style="text-align:left">低</td>
+<td style="text-align:left">一般无需调整</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>weight_decay</code></td>
+<td style="text-align:left">1e-5 到 1e-2</td>
+<td style="text-align:left">中</td>
+<td style="text-align:left">根据过拟合程度调整</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>amsgrad</code></td>
+<td style="text-align:left"><code>False</code> 或 <code>True</code></td>
+<td style="text-align:left">中</td>
+<td style="text-align:left">训练不稳定时启用</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>eps</code></td>
+<td style="text-align:left">1e-8</td>
+<td style="text-align:left">低</td>
+<td style="text-align:left">保持默认</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="argparse-参数包"><a href="#argparse-参数包" class="headerlink" title="argparse 参数包"></a>argparse 参数包</h1><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    parser = argparse.ArgumentParser(description=<span class="string">&quot;文件处理工具&quot;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&quot;input_file&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;输入文件路径&quot;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&quot;-o&quot;</span>, <span class="string">&quot;--output&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;输出文件路径&quot;</span>, default=<span class="string">&quot;output.txt&quot;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&quot;-n&quot;</span>, <span class="string">&quot;--number&quot;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>, <span class="built_in">help</span>=<span class="string">&quot;重复次数&quot;</span>, required=<span class="literal">True</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&quot;-v&quot;</span>, <span class="string">&quot;--verbose&quot;</span>, action=<span class="string">&quot;store_true&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;显示详细信息&quot;</span>)</span><br><span class="line">	</span><br><span class="line">    args = parser.parse_args()</span><br><span class="line">	</span><br><span class="line">    <span class="keyword">if</span> args.verbose:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;正在处理文件: <span class="subst">&#123;args.input_file&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;输出到: <span class="subst">&#123;args.output&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;重复次数: <span class="subst">&#123;args.number&#125;</span>&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<h2 id="参数名和类型"><a href="#参数名和类型" class="headerlink" title="参数名和类型"></a>参数名和类型</h2><p><strong>位置参数</strong>&emsp;<code>parser.add_argument(&quot;argname&quot;)</code>&emsp;使用python命令调用时，不需要额外参数</p>
+<ul>
+<li><code>python file.py argvalue</code></li>
+</ul>
+<p><strong>关键字参数</strong>&emsp;<code>parser.add_argument(&quot;--argname&quot;)</code>&emsp;使用python命令调用时，需要添加额外参数—argname</p>
+<ul>
+<li><code>python file.py --argname argvalue</code></li>
+</ul>
+<p><strong>短选项</strong>&emsp;<code>parser.add_argument(&quot;-x&quot;, &quot;--argname&quot;)</code>&emsp;使用python命令调用时，需要添加短参数-x（x可以是其他单词）</p>
+<ul>
+<li><code>python file.py -x argvalue</code></li>
+</ul>
+<h2 id="设置参数-parser-add-argument"><a href="#设置参数-parser-add-argument" class="headerlink" title="设置参数 parser.add_argument"></a>设置参数 parser.add_argument</h2><p><code>action</code></p>
+<ul>
+<li><p><strong>作用</strong>：指定参数触发时的动作。</p>
+<ul>
+<li><p><code>store_true</code>/<code>store_false</code>：参数存在时设为 <code>True</code>/<code>False</code>。</p>
+</li>
+<li><p><code>store_const</code>：存储 <code>const</code> 指定的常量。</p>
+</li>
+<li><p><code>append</code>：多次使用参数时，值追加到列表。</p>
+</li>
+<li><p><code>count</code>：统计参数出现的次数。</p>
+</li>
+<li><p><code>version</code>：打印版本信息并退出（需配合 <code>version</code> 参数）。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--verbose&quot;, action=&quot;store_true&quot;)  # 存在时 args.verbose=True</span><br><span class="line">parser.add_argument(&quot;--level&quot;, action=&quot;store_const&quot;, const=10)  # args.level=10</span><br><span class="line">parser.add_argument(&quot;--file&quot;, action=&quot;append&quot;)  # --file a.txt --file b.txt → [&#x27;a.txt&#x27;, &#x27;b.txt&#x27;]</span><br><span class="line">parser.add_argument(&quot;-v&quot;, action=&quot;count&quot;)  # -vvv → args.v=3</span><br><span class="line">parser.add_argument(&quot;--version&quot;, action=&quot;version&quot;, version=&quot;1.0&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><code>type</code></p>
+<ul>
+<li><p><strong>作用</strong>：将输入值转换为指定类型（如 <code>int</code>, <code>float</code>, 或自定义函数）。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--port&quot;, type=int)  # 输入字符串转为整数</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><code>default</code></p>
+<ul>
+<li><p><strong>作用</strong>：参数未提供时的默认值。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--log&quot;, default=&quot;info.log&quot;)  # 默认 args.log=&quot;info.log&quot;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><code>help</code></p>
+<ul>
+<li><p><strong>作用</strong>：参数的帮助信息（显示在 <code>--help</code> 中）。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--input&quot;, help=&quot;Path to input file&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><code>required</code></p>
+<ul>
+<li><p><strong>作用</strong>：仅对可选参数有效，设为 <code>True</code> 时强制用户必须提供该参数。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--user&quot;, required=True)  # 必须提供 --user</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><code>dest</code></p>
+<ul>
+<li><p><strong>作用</strong>：自定义解析后结果的属性名称。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;-o&quot;, dest=&quot;output_file&quot;)  # 通过 args.output_file 访问</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><code>choices</code></p>
+<ul>
+<li><p><strong>作用</strong>：限制参数的允许值。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--color&quot;, choices=[&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><code>nargs</code></p>
+<ul>
+<li><p><strong>作用</strong>：指定参数接收值的数量。</p>
+<ul>
+<li><p><code>N</code>：固定数量（如 <code>nargs=3</code> 需要 3 个值）。</p>
+</li>
+<li><p><code>?</code>：0 或 1 个值（常配合 <code>default</code> 和 <code>const</code> 使用）。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># --foo 不带值 → 使用 const；不带 --foo → 使用 default</span><br><span class="line">parser.add_argument(&quot;--foo&quot;, nargs=&quot;?&quot;, const=&quot;const_val&quot;, default=&quot;default_val&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>*</code>：0 或多个值（列表形式）。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--files&quot;, nargs=&quot;*&quot;)  # --files a.txt b.txt → [&#x27;a.txt&#x27;, &#x27;b.txt&#x27;]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>+</code>：1 或多个值（类似 <code>*</code>，但至少一个）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><code>metavar</code></p>
+<ul>
+<li><p><strong>作用</strong>：在帮助信息中显示参数名称（默认用大写参数名）。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--size&quot;, metavar=&quot;INT&quot;)  # 帮助中显示 --size INT</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<p><code>const</code></p>
+<ul>
+<li><p><strong>作用</strong>：配合 <code>action=&quot;store_const&quot;</code> 或 <code>nargs=&quot;?&quot;</code> 使用，指定常量值。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">parser.add_argument(&quot;--max&quot;, action=&quot;store_const&quot;, const=100)  # --max → args.max=100</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="利用yaml文件管理参数"><a href="#利用yaml文件管理参数" class="headerlink" title="利用yaml文件管理参数"></a>利用yaml文件管理参数</h1><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip install yaml</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="创建-YAML-配置文件"><a href="#创建-YAML-配置文件" class="headerlink" title="创建 YAML 配置文件"></a>创建 YAML 配置文件</h2><p>创建一个 <code>config.yaml</code> 文件，定义神经网络参数：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># config.yaml</span></span><br><span class="line"><span class="attr">model:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">&quot;ResNet-18&quot;</span></span><br><span class="line">  <span class="attr">input_size:</span> <span class="number">224</span></span><br><span class="line">  <span class="attr">num_classes:</span> <span class="number">10</span></span><br><span class="line">  <span class="attr">layers:</span></span><br><span class="line">    <span class="attr">conv1:</span> </span><br><span class="line">      <span class="attr">out_channels:</span> <span class="number">64</span></span><br><span class="line">      <span class="attr">kernel_size:</span> <span class="number">7</span></span><br><span class="line">    <span class="attr">layer1:</span></span><br><span class="line">      <span class="attr">blocks:</span> <span class="number">2</span></span><br><span class="line">      <span class="attr">channels:</span> <span class="number">64</span></span><br><span class="line"></span><br><span class="line"><span class="attr">training:</span></span><br><span class="line">  <span class="attr">batch_size:</span> <span class="number">64</span></span><br><span class="line">  <span class="attr">epochs:</span> <span class="number">100</span></span><br><span class="line">  <span class="attr">learning_rate:</span> <span class="number">0.001</span></span><br><span class="line">  <span class="attr">optimizer:</span> <span class="string">&quot;Adam&quot;</span></span><br><span class="line">  <span class="attr">lr_scheduler:</span> </span><br><span class="line">    <span class="attr">name:</span> <span class="string">&quot;StepLR&quot;</span></span><br><span class="line">    <span class="attr">step_size:</span> <span class="number">30</span></span><br><span class="line">    <span class="attr">gamma:</span> <span class="number">0.1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="attr">dataset:</span> <span class="string">&quot;CIFAR10&quot;</span></span><br><span class="line">  <span class="attr">data_dir:</span> <span class="string">&quot;./data&quot;</span></span><br><span class="line">  <span class="attr">num_workers:</span> <span class="number">4</span></span><br><span class="line">  <span class="attr">shuffle:</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="读取-YAML-文件的-Python-代码"><a href="#读取-YAML-文件的-Python-代码" class="headerlink" title="读取 YAML 文件的 Python 代码"></a>读取 YAML 文件的 Python 代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> yaml</span><br><span class="line"><span class="keyword">from</span> pprint <span class="keyword">import</span> pprint</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_config</span>(<span class="params">config_path=<span class="string">&quot;config.yaml&quot;</span></span>):</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(config_path, <span class="string">&quot;r&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        config = yaml.safe_load(f)</span><br><span class="line">    <span class="keyword">return</span> config</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    cfg = load_config()</span><br><span class="line">    pprint(cfg)  <span class="comment"># 打印结构化参数</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="在神经网络代码中使用参数"><a href="#在神经网络代码中使用参数" class="headerlink" title="在神经网络代码中使用参数"></a>在神经网络代码中使用参数</h2><p>结合 PyTorch 的示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">from</span> torch.optim <span class="keyword">import</span> Adam, SGD</span><br><span class="line"><span class="keyword">from</span> torch.optim.lr_scheduler <span class="keyword">import</span> StepLR</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CustomModel</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, config</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.model_cfg = config[<span class="string">&quot;model&quot;</span>]</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 根据配置构建模型</span></span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">3</span>, self.model_cfg[<span class="string">&quot;layers&quot;</span>][<span class="string">&quot;conv1&quot;</span>][<span class="string">&quot;out_channels&quot;</span>],</span><br><span class="line">                               kernel_size=self.model_cfg[<span class="string">&quot;layers&quot;</span>][<span class="string">&quot;conv1&quot;</span>][<span class="string">&quot;kernel_size&quot;</span>])</span><br><span class="line">        <span class="comment"># ... 其他层定义</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>(<span class="params">config</span>):</span><br><span class="line">    <span class="comment"># 加载参数</span></span><br><span class="line">    data_cfg = config[<span class="string">&quot;data&quot;</span>]</span><br><span class="line">    train_cfg = config[<span class="string">&quot;training&quot;</span>]</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 初始化优化器</span></span><br><span class="line">    <span class="keyword">if</span> train_cfg[<span class="string">&quot;optimizer&quot;</span>] == <span class="string">&quot;Adam&quot;</span>:</span><br><span class="line">        optimizer = Adam(model.parameters(), lr=train_cfg[<span class="string">&quot;learning_rate&quot;</span>])</span><br><span class="line">    <span class="keyword">elif</span> train_cfg[<span class="string">&quot;optimizer&quot;</span>] == <span class="string">&quot;SGD&quot;</span>:</span><br><span class="line">        optimizer = SGD(model.parameters(), lr=train_cfg[<span class="string">&quot;learning_rate&quot;</span>])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 初始化学习率调度器</span></span><br><span class="line">    <span class="keyword">if</span> train_cfg[<span class="string">&quot;lr_scheduler&quot;</span>][<span class="string">&quot;name&quot;</span>] == <span class="string">&quot;StepLR&quot;</span>:</span><br><span class="line">        scheduler = StepLR(optimizer, </span><br><span class="line">                           step_size=train_cfg[<span class="string">&quot;lr_scheduler&quot;</span>][<span class="string">&quot;step_size&quot;</span>],</span><br><span class="line">                           gamma=train_cfg[<span class="string">&quot;lr_scheduler&quot;</span>][<span class="string">&quot;gamma&quot;</span>])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 训练循环</span></span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(train_cfg[<span class="string">&quot;epochs&quot;</span>]):</span><br><span class="line">        <span class="comment"># ... 训练代码</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    config = load_config()</span><br><span class="line">    model = CustomModel(config)</span><br><span class="line">    train(config)</span><br></pre></td></tr></table></figure>
+<p><strong>完整工作流程</strong></p>
+<ol>
+<li><p>定义 YAML 配置文件</p>
+</li>
+<li><p>使用 <code>yaml.safe_load()</code> 加载配置</p>
+</li>
+<li><p>将配置转换为 Python 对象</p>
+</li>
+<li><p>在模型构建、数据加载、训练流程中使用配置参数</p>
+</li>
+<li><p>(可选) 将最终配置保存为实验记录</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;experiment_log.yaml&quot;</span>, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    yaml.dump(config, f)</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>PyTorch</category>
+      </categories>
+      <tags>
+        <tag>torch</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>STM32-01-概述</title>
+    <url>/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="第1章-STM32概述"><a href="#第1章-STM32概述" class="headerlink" title="第1章 STM32概述"></a>第1章 STM32概述</h1><h2 id="1-1-关于ARM内核"><a href="#1-1-关于ARM内核" class="headerlink" title="1.1 关于ARM内核"></a>1.1 关于ARM内核</h2><p><strong>ARM是什么</strong></p>
+<p>ARM首先是一家英国公司然后卖给日本软银，主要产品是：<strong>ARM架构处理器及相关外围组件的电路设计方案</strong></p>
+<p>ARM然后是<strong>处理器架构</strong>：几乎所有的<strong>移动端处理器</strong>均采用ARM授权方案设计</p>
+<ul>
+<li><p>电脑端处理器目前常用的是AMD和Intel设计的X86架构的CPU</p>
+<ul>
+<li>X86是复杂指令计算机架构（CISC）</li>
+<li>ARM是精简指令计算机架构的代表（RISC）</li>
+</ul>
+</li>
+</ul>
+<p><strong>ARM处理器架构发展</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1984</td>
+<td>2004</td>
+</tr>
+<tr>
+<td>ARM1</td>
+<td>ARM11</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>放弃数字命名，用cortex来命令处理器产品</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>系列名</th>
+<th>对应产品</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cortex-A系列</td>
+<td>主打 高性能手机，平板，智能电视等</td>
+</tr>
+<tr>
+<td>Cortex-R系列</td>
+<td>主打 实时汽车，工业控制，医疗设备等</td>
+</tr>
+<tr>
+<td>Cortex-M系列</td>
+<td>主打嵌入式 传感器、智能家居等</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="1-2-STM32简介"><a href="#1-2-STM32简介" class="headerlink" title="1.2 STM32简介"></a>1.2 STM32简介</h2><p>STM32 指的是：<strong>ST公司设计的一系列以ARM Cortex-M为核心的32位微控制器</strong></p>
+<ul>
+<li>ST：意法半导体(STMicroelectronics，简称ST)集团于1987年成立，是由意大利的SGS微电子公司和法国Thomson半导体公司合并而成。</li>
+<li>M：以ARM Cortex-M为核心</li>
+<li>32：32位微控制器</li>
+</ul>
+<p><strong>分类</strong></p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250423103517449.png" alt="image-20250423103517449"></p>
+<p><strong>应用领域</strong>：STM32因其灵活性和强大的处理能力，在众多领域都有广泛应用。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>应用领域</th>
+<th>应用方面</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>物联网(IoT)</td>
+<td>智能农场管理系统，使用STM32控制传感器收集环境数据并通过无线网络发送到云端进行处理。</td>
+</tr>
+<tr>
+<td>工业自动化</td>
+<td>用于制造业中的自动化装配线，STM32控制机器人臂的精确移动和操作。</td>
+</tr>
+<tr>
+<td>汽车电子</td>
+<td>在高级驾驶辅助系统(ADAS)中，STM32用于处理车辆周围环境的实时数据，提高驾驶安全。</td>
+</tr>
+<tr>
+<td>消费电子</td>
+<td>在智能手表中，STM32处理各种传感器数据，提供健康追踪、消息通知等功能。</td>
+</tr>
+<tr>
+<td>医疗设备</td>
+<td>可穿戴心率监测设备，使用STM32进行实时数据处理和分析，监控患者心脏健康状况。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>STM32产品型号命名规范</strong></p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250423105905019.png" alt="image-20250423105905019"></p>
+<h2 id="工具选择"><a href="#工具选择" class="headerlink" title="工具选择"></a>工具选择</h2><p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425104246897.png" alt="image-20250425104246897"></p>
+<h1 id="第2章-开发板简介"><a href="#第2章-开发板简介" class="headerlink" title="第2章 开发板简介"></a>第2章 开发板简介</h1><p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425150519434.png" alt="image-20250425150519434" style="zoom: 150%;"></p>
+<h2 id="2-1-STM32最小系统"><a href="#2-1-STM32最小系统" class="headerlink" title="2.1 STM32最小系统"></a>2.1 STM32最小系统</h2><p>STM32单片机能工作的最小外围电路就叫<strong>最小系统</strong>。</p>
+<p>最小系统通常包括：STM32芯片、电源、时钟、下载调试和复位5部分组成。</p>
+<p><strong>1. STM32芯片</strong></p>
+<p>我们选用的是<strong>STM32F103ZET6</strong>这款芯片。</p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425152030426.png" alt="image-20250425152030426"></p>
+<p><strong>2. 电源</strong></p>
+<p>采用3.3V电源供电。我们电路采用了两路供电。</p>
+<p>一路是USB的TypeC供电， TypeC提供的是5V，使用芯片AMS1117<sup><a href="#fn_1" id="reffn_1">1</a></sup>把5V转成3.3V。</p>
+<p>另一路是STLink下载器直接提供3.3V供电（下载器内部已经把5V转成了3.3V）。</p>
+<p><strong>（1）MCU电源</strong></p>
+<p>多组VDD，VSS分别给不同的芯片部位供电，避免因导线长度不同导致的电压不稳和电路复杂问题</p>
+<ul>
+<li><p>VDD：正电，高电压</p>
+</li>
+<li><p>VSS：负电，地线</p>
+</li>
+<li><p>电容：电源滤波（去耦电容）</p>
+<ul>
+<li><p>电容两端电压不能突变，其充电和放电需要一段时间，因此可以起到滤波的作用（过滤掉一些不稳的电压）</p>
+</li>
+<li><p>通过充放电平滑电压波动，将脉动的直流（如整流后波形）转换为稳定的直流。</p>
+</li>
+<li><p>位置：在电源（VDD）和地（VSS）之间靠近芯片放置。</p>
+</li>
+</ul>
+</li>
+<li><p>作用：</p>
+<ul>
+<li>滤除高频开关噪声（如MCU、数字IC的瞬态电流变化）。<ul>
+<li>提供局部储能，减少电源线上的电压波动。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>电容的阻抗公式：</p>
+<script type="math/tex; mode=display">
+\mathbf{x_{c} = \frac{1}{2πfC}}</script><ul>
+<li><strong>低频（如直流）</strong>：阻抗趋近无穷大（电容视为开路）。</li>
+<li><strong>高频（如噪声）</strong>：阻抗极低（电容视为短路），高频噪声被旁路到地。</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425155627488.png" alt="image-20250425155627488"></p>
+<p><strong>（2）USB供电转3.3v</strong></p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425155558918.png" alt="image-20250425155558918"></p>
+<p><strong>3. 时钟</strong></p>
+<p>SMT32提供了两路外部时钟：外部高速时钟和外部低速时钟。</p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425160027975.png" alt="image-20250425160027975"></p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425160042264.png" alt="image-20250425160042264"></p>
+<p><strong>4. 复位</strong></p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425155733826.png" alt="image-20250425155733826"></p>
+<p><strong>5. 下载调试</strong></p>
+<p><img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425155804487.png" alt="image-20250425155804487"></p>
+<blockquote id="fn_1">
+<sup>1</sup>. <img src="/2025/04/23/STM32-01-%E6%A6%82%E8%BF%B0/image-20250425154312289.png" alt="image-20250425154312289"><a href="#reffn_1" title="Jump back to footnote [1] in the text."> &#8617;</a>
+</blockquote>
+]]></content>
+      <categories>
+        <category>单片机</category>
+        <category>STM32</category>
+      </categories>
+      <tags>
+        <tag>单片机</tag>
+        <tag>STM32</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>STM32-天气时钟</title>
+    <url>/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/</url>
+    <content><![CDATA[<h1 id="软件安装-来自天气时钟"><a href="#软件安装-来自天气时钟" class="headerlink" title="软件安装-来自天气时钟"></a>软件安装-来自天气时钟</h1><p>不完全</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250519160309943.png" alt="image-20250519160309943"></p>
+<h1 id="工程模板搭建-来自天气时钟"><a href="#工程模板搭建-来自天气时钟" class="headerlink" title="工程模板搭建-来自天气时钟"></a>工程模板搭建-来自天气时钟</h1><ol>
+<li><p><strong>SDK Library （官方网站下载）</strong></p>
+<blockquote>
+<p>SDK: Software Development Kit的缩写，译软件开发工具包，</p>
+<p>包含外设驱动库，CMSIS：arm官方提供的一套标准接口和内核访问文件</p>
+</blockquote>
+</li>
+<li><p><strong>搭建工程</strong></p>
+<p>工程名为母文件夹</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/智能闹钟-工程文件夹框架.png" alt></p>
+</li>
+<li><p><strong>通过μvision创建项目，调整设置，导入配置</strong></p>
+<blockquote>
+<p>创建项目，选定芯片</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616110415636.png" alt="image-20250616110415636"></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616110630358.png" alt="image-20250616110630358"></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616110643756.png" alt="image-20250616110643756" style="zoom:50%;"></p>
+<p>进入文件拓展页面</p>
+<blockquote>
+<p>修改项目目标名（Project Targets里），创建子文件夹（Groups里），</p>
+<p>导入文件</p>
+<blockquote>
+<p>\app\main.c，</p>
+<p>\firmware\cmsis\core\core_cm3.c，</p>
+<p>\firmware\cmsis\device 的 <strong>system_stm32f10x.c 、stm32f10x_conf.h、stm32f10x_it.c、stm32f10x_it.h (此四个文件来自样板STM32F10x_StdPeriph_Template文件夹)</strong>、 startup_stm32f10x_md.s，</p>
+<p>\firmware\driver\src\所有.c文件</p>
+</blockquote>
+</blockquote>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616111948365.png" alt="image-20250616111948365"></p>
+<p>进入项目配置页面，修改设置</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616112354776.png" alt="image-20250616112354776"></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616112326724.png" alt="image-20250616112326724"></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616112629535.png" alt="image-20250616112629535"></p>
+<p>修改编辑器配置</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616113034229.png" alt="image-20250616113034229"></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616113152739.png" alt="image-20250616113152739"></p>
+</blockquote>
+</li>
+<li><p><strong>遇到下图error，导入conf.h没有效果是因为未定义标记USE_STDPERIPH_DRIVER</strong></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616114156458.png" alt="image-20250616114156458"></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> USE_STDPERIPH_DRIVER <span class="comment">//只有定义了该标记才导入conf.h</span></span></span><br><span class="line">  <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stm32f10x_conf.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>定义标记</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616114118054.png" alt="image-20250616114118054"></p>
+</li>
+<li><p><strong>无main则编写main即可，此时编译应该没有error</strong></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">        ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>单片机</category>
+        <category>STM32</category>
+      </categories>
+      <tags>
+        <tag>STM32</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>word-使用指南</title>
+    <url>/2025/06/21/word-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</url>
+    <content><![CDATA[<h1 id="交叉引用"><a href="#交叉引用" class="headerlink" title="交叉引用"></a>交叉引用</h1><h2 id="为参考文献添加编号"><a href="#为参考文献添加编号" class="headerlink" title="为参考文献添加编号"></a>为参考文献添加编号</h2><p>选中所有参考文献，点击 <strong>“开始” → “编号”</strong>，选择一种编号格式（如 <code>[1], [2], [3]</code>）。</p>
+<h2 id="插入交叉引用"><a href="#插入交叉引用" class="headerlink" title="插入交叉引用"></a>插入交叉引用</h2><ol>
+<li><strong>定位光标</strong>：在正文中需要引用参考文献的位置（如“详见文献[1]”）点击鼠标。</li>
+<li><strong>插入交叉引用</strong>：<ul>
+<li>点击 <strong>“引用” → “交叉引用”</strong>（Word 2016/2019/365 路径相同）。</li>
+<li>在弹出的对话框中：<ul>
+<li><strong>引用类型</strong>：选择“编号项”。</li>
+<li><strong>引用内容</strong>：选择“段落编号”（显示如 <code>[1]</code>）或“段落编号（无上下文）”。</li>
+<li><strong>选择文献</strong>：在列表中点击要引用的参考文献编号。</li>
+</ul>
+</li>
+<li>点击 <strong>“插入”</strong>，然后关闭对话框。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="更新交叉引用"><a href="#更新交叉引用" class="headerlink" title="更新交叉引用"></a>更新交叉引用</h2><p>如果参考文献编号或顺序发生变化（如新增文献），需手动更新：</p>
+<ol>
+<li>按 <code>Ctrl + A</code> 全选文档。</li>
+<li>按 <code>F9</code> 键更新域代码（或右键点击任意交叉引用，选择“更新域”）。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>word</category>
+      </categories>
+      <tags>
+        <tag>word</tag>
       </tags>
   </entry>
 </search>
