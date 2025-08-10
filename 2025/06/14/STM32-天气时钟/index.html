@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>STM32-天气时钟 | 雪尘的博客</title><meta name="author" content="雪尘"><meta name="copyright" content="雪尘"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1、软件安装-来自天气时钟不完全  2、 工程模板搭建-来自天气时钟2.1 SDK Library （官方网站下载） SDK: Software Development Kit的缩写，译软件开发工具包， 包含外设驱动库，CMSIS：arm官方提供的一套标准接口和内核访问文件  2.2 搭建工程工程名为母文件夹  2.3 通过μvision创建项目，调整设置，导入配置 创建项目，选定芯片    进入">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>STM32-天气时钟 | 雪尘的博客</title><meta name="author" content="雪尘"><meta name="copyright" content="雪尘"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1、软件安装-来自天气时钟 不完全  2、 工程模板搭建-来自天气时钟 2.1 SDK Library （官方网站下载）  SDK: Software Development Kit的缩写，译软件开发工具包， 包含外设驱动库，CMSIS：arm官方提供的一套标准接口和内核访问文件  2.2 搭建工程 工程名为母文件夹  2.3 通过μvision创建项目，调整设置，导入配置  创建项目，选定芯片">
 <meta property="og:type" content="article">
 <meta property="og:title" content="STM32-天气时钟">
 <meta property="og:url" content="http://example.com/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/index.html">
 <meta property="og:site_name" content="雪尘的博客">
-<meta property="og:description" content="1、软件安装-来自天气时钟不完全  2、 工程模板搭建-来自天气时钟2.1 SDK Library （官方网站下载） SDK: Software Development Kit的缩写，译软件开发工具包， 包含外设驱动库，CMSIS：arm官方提供的一套标准接口和内核访问文件  2.2 搭建工程工程名为母文件夹  2.3 通过μvision创建项目，调整设置，导入配置 创建项目，选定芯片    进入">
+<meta property="og:description" content="1、软件安装-来自天气时钟 不完全  2、 工程模板搭建-来自天气时钟 2.1 SDK Library （官方网站下载）  SDK: Software Development Kit的缩写，译软件开发工具包， 包含外设驱动库，CMSIS：arm官方提供的一套标准接口和内核访问文件  2.2 搭建工程 工程名为母文件夹  2.3 通过μvision创建项目，调整设置，导入配置  创建项目，选定芯片">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/%E5%B0%81%E9%9D%A2-STM32.png">
 <meta property="article:published_time" content="2025-06-14T06:51:23.000Z">
@@ -174,19 +174,26 @@
     document.addEventListener('pjax:send', () => { preloader.initLoading() })
     document.addEventListener('pjax:complete', () => { preloader.endLoading() })
   }
-})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-STM32.png')"><nav id="nav"><span id="blog-info"><a href="/" title="雪尘的博客"><img class="site-icon" src="/img/logo.png"/><span class="site-name">雪尘的博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">STM32-天气时钟</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-14T06:51:23.000Z" title="发表于 2025-06-14 14:51:23">2025-06-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-08-10T08:01:32.866Z" title="更新于 2025-08-10 16:01:32">2025-08-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%8D%95%E7%89%87%E6%9C%BA/">单片机</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%8D%95%E7%89%87%E6%9C%BA/STM32/">STM32</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="STM32-天气时钟"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="1、软件安装-来自天气时钟"><a href="#1、软件安装-来自天气时钟" class="headerlink" title="1、软件安装-来自天气时钟"></a>1、软件安装-来自天气时钟</h1><p>不完全</p>
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/%E5%A4%B4%E5%83%8F.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/./images/%E5%B0%81%E9%9D%A2-STM32.png')"><nav id="nav"><span id="blog-info"><a href="/" title="雪尘的博客"><img class="site-icon" src="/img/logo.png"/><span class="site-name">雪尘的博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">STM32-天气时钟</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-14T06:51:23.000Z" title="发表于 2025-06-14 14:51:23">2025-06-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-08-10T08:01:32.866Z" title="更新于 2025-08-10 16:01:32">2025-08-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%8D%95%E7%89%87%E6%9C%BA/">单片机</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%8D%95%E7%89%87%E6%9C%BA/STM32/">STM32</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="STM32-天气时钟"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="1、软件安装-来自天气时钟">1、软件安装-来自天气时钟</h1>
+<p>不完全</p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250519160309943.png" alt="image-20250519160309943"></p>
-<h1 id="2、-工程模板搭建-来自天气时钟"><a href="#2、-工程模板搭建-来自天气时钟" class="headerlink" title="2、 工程模板搭建-来自天气时钟"></a>2、 工程模板搭建-来自天气时钟</h1><h2 id="2-1-SDK-Library-（官方网站下载）"><a href="#2-1-SDK-Library-（官方网站下载）" class="headerlink" title="2.1 SDK Library （官方网站下载）"></a>2.1 SDK Library （官方网站下载）</h2><blockquote>
+<h1 id="2、-工程模板搭建-来自天气时钟">2、 工程模板搭建-来自天气时钟</h1>
+<h2 id="2-1-SDK-Library-（官方网站下载）">2.1 SDK Library （官方网站下载）</h2>
+<blockquote>
 <p>SDK: Software Development Kit的缩写，译软件开发工具包，</p>
 <p>包含外设驱动库，CMSIS：arm官方提供的一套标准接口和内核访问文件</p>
 </blockquote>
-<h2 id="2-2-搭建工程"><a href="#2-2-搭建工程" class="headerlink" title="2.2 搭建工程"></a>2.2 搭建工程</h2><p>工程名为母文件夹</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/智能闹钟-工程文件夹框架.png" alt></p>
-<h2 id="2-3-通过μvision创建项目，调整设置，导入配置"><a href="#2-3-通过μvision创建项目，调整设置，导入配置" class="headerlink" title="2.3 通过μvision创建项目，调整设置，导入配置"></a>2.3 通过μvision创建项目，调整设置，导入配置</h2><blockquote>
+<h2 id="2-2-搭建工程">2.2 搭建工程</h2>
+<p>工程名为母文件夹</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/%E6%99%BA%E8%83%BD%E9%97%B9%E9%92%9F-%E5%B7%A5%E7%A8%8B%E6%96%87%E4%BB%B6%E5%A4%B9%E6%A1%86%E6%9E%B6.png" alt></p>
+<h2 id="2-3-通过μvision创建项目，调整设置，导入配置">2.3 通过μvision创建项目，调整设置，导入配置</h2>
+<blockquote>
 <p>创建项目，选定芯片</p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616110415636.png" alt="image-20250616110415636"></p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616110630358.png" alt="image-20250616110630358"></p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616110643756.png" alt="image-20250616110643756" style="zoom:50%;"></p>
+<img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616110643756.png" alt="image-20250616110643756" style="zoom:50%;">
+</blockquote>
+<blockquote>
 <p>进入文件拓展页面</p>
 <blockquote>
 <p>修改项目目标名（Project Targets里），创建子文件夹（Groups里），</p>
@@ -199,50 +206,70 @@
 </blockquote>
 </blockquote>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616111948365.png" alt="image-20250616111948365"></p>
+</blockquote>
+<blockquote>
 <p>进入项目配置页面，修改设置</p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616112354776.png" alt="image-20250616112354776"></p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616112326724.png" alt="image-20250616112326724"></p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616112629535.png" alt="image-20250616112629535"></p>
+</blockquote>
+<blockquote>
 <p>修改编辑器配置</p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616113034229.png" alt="image-20250616113034229"></p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616113152739.png" alt="image-20250616113152739"></p>
 </blockquote>
-<h2 id="2-4-遇到下图error，导入conf-h没有效果是因为未定义标记USE-STDPERIPH-DRIVER"><a href="#2-4-遇到下图error，导入conf-h没有效果是因为未定义标记USE-STDPERIPH-DRIVER" class="headerlink" title="2.4 遇到下图error，导入conf.h没有效果是因为未定义标记USE_STDPERIPH_DRIVER"></a>2.4 遇到下图error，导入conf.h没有效果是因为未定义标记USE_STDPERIPH_DRIVER</h2><p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616114156458.png" alt="image-20250616114156458"></p>
+<h2 id="2-4-遇到下图error，导入conf-h没有效果是因为未定义标记USE-STDPERIPH-DRIVER">2.4 遇到下图error，导入conf.h没有效果是因为未定义标记USE_STDPERIPH_DRIVER</h2>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616114156458.png" alt="image-20250616114156458"></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> USE_STDPERIPH_DRIVER <span class="comment">//只有定义了该标记才导入conf.h</span></span></span><br><span class="line">  <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stm32f10x_conf.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
 <p>定义标记</p>
 <p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/image-20250616114118054.png" alt="image-20250616114118054"></p>
-<h2 id="2-5-无main则编写main即可，此时编译应该没有error"><a href="#2-5-无main则编写main即可，此时编译应该没有error" class="headerlink" title="2.5 无main则编写main即可，此时编译应该没有error"></a>2.5 无main则编写main即可，此时编译应该没有error</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">        ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="3、芯片介绍"><a href="#3、芯片介绍" class="headerlink" title="3、芯片介绍"></a>3、芯片介绍</h1><p>STM32CubeMX 的 Start My project from MCU（第一个选项），搜索栏里输入芯片名，然后按图查找手册</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍1.png" style="zoom:50%;"></p>
+<h2 id="2-5-无main则编写main即可，此时编译应该没有error">2.5 无main则编写main即可，此时编译应该没有error</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="literal">true</span>) &#123;</span><br><span class="line">        ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="3、芯片介绍">3、芯片介绍</h1>
+<p>STM32CubeMX 的 Start My project from MCU（第一个选项），搜索栏里输入芯片名，然后按图查找手册</p>
+<img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍1.png" style="zoom:50%;">
 <p>通过双击上图的1，开启未命名项目</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍2.png" style="zoom:50%;"></p>
+<img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍2.png" style="zoom:50%;">
 <p>开启高速时钟-晶振</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍3.png" style="zoom:50%;"></p>
+<img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍3.png" style="zoom:50%;">
 <p>调整参数如下图（依HZ值除以整数）</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍5.png" alt></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/%E8%8A%AF%E7%89%87%E4%BB%8B%E7%BB%8D5.png" alt></p>
 <p>芯片走向如下</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/芯片介绍4.png" alt></p>
-<h1 id="4、LED点灯"><a href="#4、LED点灯" class="headerlink" title="4、LED点灯"></a>4、LED点灯</h1><h2 id="4-1-LED"><a href="#4-1-LED" class="headerlink" title="4.1 LED"></a>4.1 LED</h2><p>LED发光二极管，<strong>单向通电</strong>，驱动时只要在LED的两端加载电压，使LED有电流通过即可发光</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/%E8%8A%AF%E7%89%87%E4%BB%8B%E7%BB%8D4.png" alt></p>
+<h1 id="4、LED点灯">4、LED点灯</h1>
+<h2 id="4-1-LED">4.1 LED</h2>
+<p>LED发光二极管，<strong>单向通电</strong>，驱动时只要在LED的两端加载电压，使LED有电流通过即可发光</p>
 <p><strong>开发板原理图</strong></p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED点灯1.png" style="zoom:67%;"></p>
-<h2 id="4-2-GPIO"><a href="#4-2-GPIO" class="headerlink" title="4.2 GPIO"></a>4.2 GPIO</h2><p>GPIO是General Purpose IO，通用IO，实现基本的输入和输出功能，其stm32f103c8t6的引脚有112个（数据手册说明），但是实际可以使用的只有64个（可见芯片引脚图），这是因为芯片有不同的封装，多的话有完整的112封装的芯片</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED点灯2.png" alt></p>
+<img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED点灯1.png" style="zoom:67%;">
+<h2 id="4-2-GPIO">4.2 GPIO</h2>
+<p>GPIO是General Purpose IO，通用IO，实现基本的输入和输出功能，其stm32f103c8t6的引脚有112个（数据手册说明），但是实际可以使用的只有64个（可见芯片引脚图），这是因为芯片有不同的封装，多的话有完整的112封装的芯片</p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED%E7%82%B9%E7%81%AF2.png" alt></p>
 <p><strong>IO有8种模式：</strong></p>
-<ul>
-<li><p><strong>输入浮空</strong></p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><strong>输入浮空</strong></p>
 </li>
-<li><p><strong>输入上拉</strong></p>
+<li class="lvl-2">
+<p><strong>输入上拉</strong></p>
 </li>
-<li><p><strong>输入下拉</strong></p>
+<li class="lvl-2">
+<p><strong>输入下拉</strong></p>
 </li>
-<li><p><strong>开漏输出</strong></p>
+<li class="lvl-2">
+<p><strong>开漏输出</strong></p>
 </li>
-<li><p><strong>推挽式输出</strong></p>
+<li class="lvl-2">
+<p><strong>推挽式输出</strong></p>
 </li>
-<li><p>模拟输入</p>
+<li class="lvl-2">
+<p>模拟输入</p>
 </li>
-<li>推挽式复用功能</li>
-<li>开漏复用功能</li>
+<li class="lvl-2">
+<p>推挽式复用功能</p>
+</li>
+<li class="lvl-2">
+<p>开漏复用功能</p>
+</li>
 </ul>
 <p>GPIO使用的只有前5种，模拟输入是AD转换使用，推挽复用和开漏复用模式用于GPIO外的其他外设功能，比如SPI</p>
 <p><strong>1、浮空输入模式</strong></p>
@@ -257,8 +284,7 @@
 <p>在STM32中，模拟输入模式（GPIO_Mode_AIN）是指关闭施密特触发器，直接将电压信号传输至片上外设模块，且不连接上下拉电阻。这种模式常用于需要精确测量电压的应用场景。</p>
 <p>6、复用开漏推挽输出</p>
 <p>GPIO_Mode_AF_OD代表复用开漏输出，而GPIO_Mode_AF_PP则代表复用推挽输出。这两种模式描述了GPIO口在作为第二功能时的配置情况，即它们并非被用作通用IO口。</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED点灯3.png" alt></p>
-<div class="table-container">
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED%E7%82%B9%E7%81%AF3.png" alt></p>
 <table>
 <thead>
 <tr>
@@ -295,26 +321,42 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p>开漏模式，IO口内部没有上拉电阻，没有接MOS管，所以开漏电路不能输出高电平；要输出高电平，需要外部接上拉电阻，如果外部上拉电阻接的电压不是芯片IO电压，就相当于实现了IO口电平转换功能。比如，推挽模式下，IO口输出高电平就是3.3V，用开漏模式，外部接电阻上拉到5V，那么输出高电平就是5V（常用USB输出电压为5V）。</p>
-<ul>
-<li>电平转换速度指芯片0/1翻转的速度。</li>
-<li>线与，两根IO直接连接在一-起， 电平按照与逻辑。通常用在-些可挂载多设备的总线上，比如12C。</li>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>电平转换速度指芯片0/1翻转的速度。</p>
+</li>
+<li class="lvl-2">
+<p>线与，两根IO直接连接在一-起， 电平按照与逻辑。通常用在-些可挂载多设备的总线上，比如12C。</p>
+</li>
 </ul>
 <p>因此， 驱动LED<strong>除了必须用开漏的场合，我们都习惯用推挽输出</strong></p>
 <p>第二，SMT32的IO有速度需要配置</p>
-<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED点灯4.png" alt></p>
+<p><img src="/2025/06/14/STM32-%E5%A4%A9%E6%B0%94%E6%97%B6%E9%92%9F/LED%E7%82%B9%E7%81%AF4.png" alt></p>
 <p>如果不知道如何选，全部用50M, 功能肯定正常。但是可能会增加耗电。</p>
-<ul>
-<li>普通功能的IO，通常2M就可以了。</li>
-<li>如果一个IO用作I2C通信，速度通常就10K到400K，选10M就好了。</li>
-<li>如果是用作SPI功能，可能会到20M速度，那就要选50M了。</li>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>普通功能的IO，通常2M就可以了。</p>
+</li>
+<li class="lvl-2">
+<p>如果一个IO用作I2C通信，速度通常就10K到400K，选10M就好了。</p>
+</li>
+<li class="lvl-2">
+<p>如果是用作SPI功能，可能会到20M速度，那就要选50M了。</p>
+</li>
 </ul>
-<h2 id="4-3-LED点灯代码"><a href="#4-3-LED点灯代码" class="headerlink" title="4.3 LED点灯代码"></a>4.3 LED点灯代码</h2><p>stm32驱动外设的步骤</p>
+<h2 id="4-3-LED点灯代码">4.3 LED点灯代码</h2>
+<p>stm32驱动外设的步骤</p>
 <ol>
-<li>打开外设时钟</li>
-<li>配置外设</li>
-<li>使用外设</li>
+<li class="lvl-3">
+<p>打开外设时钟</p>
+</li>
+<li class="lvl-3">
+<p>配置外设</p>
+</li>
+<li class="lvl-3">
+<p>使用外设</p>
+</li>
 </ol>
 <p>RCC(reset and clock control)，复位和时钟控制</p>
 <p>APB(Advanced Peripheral Bus)，翻译为高级外设总线。APB主要用于低带宽的周边外设之间的连接。</p>
